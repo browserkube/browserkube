@@ -1,0 +1,7 @@
+@import "@app/styles/theme.module.scss";
+
+.btn-logs {
+    &:global(.MuiIconButton-root) {
+        color: $info;
+    }
+}

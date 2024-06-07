@@ -1,0 +1,64 @@
+.buttonDropContainer {
+  position: absolute;
+  display: flex;
+  width: max-content;
+  flex-direction: column;
+  cursor: pointer;
+  margin: 0 10px 0 12px;
+  padding: 8px 0;
+  top: 99px;
+  z-index: 1;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 8px 40px 0 #00000026;
+
+  .buttonDropTitle {
+    background-color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+  }
+}
+
+.title {
+  margin-right: 12px;
+}
+
+.dropValueTitleContainer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.dropValueContainer {
+  position: relative;
+  display: inline-block;
+  padding: 7px 16px;
+  cursor: pointer;
+  font-size: 13px;
+
+  &:hover {
+    background-color: #ECEFF4;
+  }
+}
+
+.dropValueListContainer {
+  position: absolute;
+  border-radius: 8px;
+  padding: 8px 0;
+  top: 0;
+  left: 100%;
+  width: 100%;
+  z-index: 1;
+  background-color: #fff;
+  box-shadow: 0 2px 4px #0000001a;
+  margin-left: 13px;
+
+  .dropValueItem {
+    padding: 7px 16px;
+
+    &:hover {
+      background-color: #ECEFF4;
+    }
+  }
+}

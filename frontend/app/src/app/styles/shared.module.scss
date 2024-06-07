@@ -1,0 +1,29 @@
+.tooltipContainer {
+    position: relative;
+}
+  
+.tooltipStyle {
+    display: block;
+    position: absolute;
+    border-radius: 8px;
+    background: #3f3f3ff2;
+    color: white;
+    padding: 16px;
+    transition: opacity 1s;
+    width: max-content;
+    font-size: 13px;
+    z-index: 100;
+    right: 40px;
+    bottom: -10px;
+  }
+  
+.tooltipCursor {
+    content: ';';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    border: solid transparent;
+    border-left-color: #3f3f3ff2;
+    border-width: 8px;
+    transform: translateY(-50%);
+  }

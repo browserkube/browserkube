@@ -1,0 +1,91 @@
+@import 'colors.module.scss';
+
+.left_command_line {
+    display: flex;
+    padding-left: 16px;
+    align-items: center;
+    width: 74%;
+}
+
+.command_input {
+    border-radius: 3px;
+    margin: 4px 0 12px;
+    padding: 7px 24px 7px 12px;
+    border: 1px solid $gray200;
+    background-color: $white;
+    font-size: 13px;
+    width: 50%;
+}
+
+.status_icon {
+    display: flex;
+    padding-left: 8px;
+}
+
+.timestamp {
+    padding: 0 16px;
+    color: $gray300;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.command_info {
+    display: flex;
+    flex-direction: column;
+    background-color: $white;
+    padding: 0 16px 16px 48px;
+    border-radius: 4px;
+}
+
+.command_name {
+    margin: 12px 0 12px 8px;
+    white-space: nowrap;
+    overflow-x: scroll;
+}
+
+.more_commands {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 45px 0 50px;
+}
+
+.more_commands_text {
+    text-align: center;
+    font-size: 13px;
+    color: $gray300;
+    margin-top: 15px;
+}
+
+.logs_section {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.details_section {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.download {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: $topaz;
+}
+
+.commands_container {
+    display: flex;
+}
+
+.player {
+    width: 50%;
+    height: 50%;
+    margin-top: 12px;
+}
+

@@ -1,0 +1,114 @@
+@import 'colors.module.scss';
+
+.filterArea {
+    padding: 8px 16px;
+    width: 100%;
+    background-color: #ECEFF4;
+}
+
+
+.selectionContainer {
+    margin-top: 12px;
+    background-color: $white;
+    padding: 8px 16px;
+    position: absolute;
+    border-radius: 8px;
+    height: max-content;
+    width: 480px;
+    z-index: 9999;
+    box-shadow: 0 8px 40px 0 #00000026;
+}
+
+
+.download {
+    display: flex;
+    color: $topaz;
+    align-items: center;
+}
+
+;
+
+.filterHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+;
+
+.leftBlock {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+}
+
+;
+
+.filterInputArea {
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    background-color: $white;
+    justify-content: space-between;
+    border-radius: 8px;
+    white-space: nowrap;
+    align-items: center;
+}
+
+.checkboxItem {
+    padding: 7px 0;
+    color: #3F3F3F !important;
+    font-weight: 400 !important;
+}
+
+;
+
+.tooltipCursor {
+    content: '';
+    position: absolute;
+    left: 43px;
+    top: 14px;
+    border: solid transparent;
+    border-bottom-color: $white;
+    border-width: 14px;
+    transform: translateY(-150%);
+}
+
+;
+
+.filterList {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+    max-height: calc(100% - 180px);
+}
+
+.filterListHeader {
+    font-size: 13px;
+}
+
+.clearButton {
+    cursor: pointer;
+}
+
+.my_input {
+    display: flex;
+    padding: 7px 24px 7px 8px;
+    border: 2px solid #C1C7D0;
+    border-radius: 3px;
+    gap: 4px;
+
+    &:focus-within {
+        border-color: $topaz-focused;
+    }
+}
+
+.default_input {
+    border: none;
+    width: 100%;
+
+    &:focus {
+        outline: none;
+    }
+}

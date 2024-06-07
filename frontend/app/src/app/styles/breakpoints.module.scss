@@ -1,0 +1,18 @@
+$xs: 0;
+$sm: 600;
+$md: 900;
+$lg: 1200;
+$xl: 1536;
+$breakpoints: (
+  'xs': $xs,
+  'sm': $sm,
+  'md': $md,
+  'lg': $lg,
+  'xl': $xl,
+);
+
+@each $breakpoint, $value in $breakpoints {
+  :export {
+    #{unquote($breakpoint)}: $value;
+  }
+}

@@ -1,0 +1,52 @@
+@import 'colors.module.scss';
+
+.terminated {
+    width: 16px;
+    height: 16px;
+    line-height: 13px;
+    color: #DC5959;
+    font-weight: 600;
+    border-radius: 50%;
+    border: 2px solid #DC5959;
+    text-align: center;
+    font-size: 10px;
+}
+
+.active {
+    width: 16px;
+    height: 16px;
+    line-height: 12px;
+    color: #3AA76D;
+    font-weight: 600;
+    border-radius: 50%;
+    border: 2px solid #3AA76D;
+    text-align: center;
+    font-size: 10px;
+}
+
+.pending {
+    width: 16px;
+    height: 16px;
+    background: conic-gradient(transparent, $topaz);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pending::before{
+    content: '';
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    border-radius: 50%;
+    background-color: $background100;
+}
+
+@keyframes spin{
+    100%
+    {
+        transform: rotate(360deg)
+    }
+}

@@ -1,0 +1,17 @@
+@import "@app/styles/theme.module.scss";
+
+.field_container {
+  margin-bottom: spacing(4);
+}
+
+.field {
+  min-width: 100%;
+}
+
+.dropdown button {
+  padding: 7px 12px;
+}
+
+.icon span {
+  height: 100%;
+}

@@ -1,0 +1,73 @@
+{
+  "plugins": [
+    "stylelint-no-unsupported-browser-features"
+  ],
+  "extends": [
+    "stylelint-config-standard-scss",
+    "stylelint-config-prettier-scss"
+  ],
+  "rules": {
+    "plugin/no-unsupported-browser-features": [
+      true,
+      {
+        "severity": "warning",
+        "ignore": "css3-cursors",
+        "ignorePartialSupport": true
+      }
+    ],
+    "alpha-value-notation": "number",
+    "scss/at-extend-no-missing-placeholder": null,
+    "scss/at-import-no-partial-leading-underscore": null,
+    "scss/at-import-partial-extension": "always",
+    "scss/dollar-variable-pattern": "[a-z][a-zA-Z]+",
+    "scss/at-import-partial-extension-blacklist": [""],
+    "property-no-unknown": [
+      true,
+      {
+        "ignoreProperties": [
+          "composes",
+          "compose-with"
+        ],
+        "ignoreSelectors": [
+          ":export",
+          "/^:import/"
+        ]
+      }
+    ],
+    "selector-class-pattern": [
+      "^(Mui.+)|^([a-z][a-z0-9]*)(_[a-z0-9]+)*|infinite-scroll-component$",
+      {
+        "resolveNestedSelectors": true,
+        "message": "Expected class name to be in snake_case, or start with Mui"
+      }
+    ],
+    "scss/at-mixin-pattern": [
+      "^[a-z][a-zA-Z0-9]+$",
+      {
+        "message": "Expected mixin name to be lowerCamelCase"
+      }
+    ],
+    "font-family-no-missing-generic-family-keyword": [
+      true,
+      {
+        "severity": "warning"
+      }
+    ],
+    "no-descending-specificity": [
+      true,
+      {
+        "severity": "warning"
+      }
+    ],
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": [
+          "global",
+          "local",
+          "export"
+        ]
+      }
+    ]
+  }
+}

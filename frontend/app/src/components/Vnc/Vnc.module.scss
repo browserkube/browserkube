@@ -1,0 +1,33 @@
+@import "@app/styles/theme.module.scss";
+@import "@app/styles/globals.scss";
+
+%vnc-common {
+    flex-grow: 1;
+    position: relative;
+    background: $black;
+}
+
+.vnc {
+    @extend %vnc-common;
+
+    height: 60%;
+}
+
+.vnc_extended {
+    @extend %vnc-common;
+
+    height: 100%;
+}
+
+.vnc-screen {
+    position: absolute;
+    inset: 0;
+}
+
+.vnc-loader {
+    @extend .loader;
+
+    position: absolute;
+    inset: 50% 0 0 50%;
+    translate: -50%;
+}

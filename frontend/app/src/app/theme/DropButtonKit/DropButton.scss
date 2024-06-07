@@ -1,0 +1,49 @@
+@import '@app/styles/colors.module.scss';
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+
+    &:hover {
+      background-color: $topaz-hover;
+    }
+  }
+  
+  .dropdown-button {
+    padding: 7px 16px;
+    color: white;
+    border-radius: 3px;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    background-color: $topaz;
+    border-color: $topaz;
+
+    &:hover {
+      background-color: $topaz-hover;
+    }
+  }
+  
+  .dropdown-list {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 3px;
+    box-shadow: 0 8px 40px 0 #00000026;
+    background-color: $white;
+  }
+  
+  .dropdown-item {
+    padding: 8px 12px;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }

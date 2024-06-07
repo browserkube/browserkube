@@ -1,0 +1,45 @@
+@use 'sass:map';
+@use 'sass:string';
+
+@mixin media($from: false, $until: false, $and: false, $media-type: all) {
+  $min-width: 0;
+  $max-width: 0;
+  $query: '';
+
+  @if $from {
+    @if type-of($from) == number {
+      $min-width: $from;
+    } @else {
+      $min-width: map.get($breakpoints, $from);
+    }
+  }
+
+  @if $until {
+    @if type-of($until) == number {
+      $max-width: $until - 1;
+    } @else {
+      $max-width: map.get($breakpoints, $until) - 1;
+    }
+  }
+
+  @if $min-width != 0 {
+    $query: '#{$query} and (min-width: #{$min-width}px)';
+  }
+
+  @if $max-width != 0 {
+    $query: '#{$query} and (max-width: #{$max-width}px)';
+  }
+
+  @if $and {
+    $query: '#{$query} and (#{$and})';
+  }
+
+  @if $media-type == 'all' and $query != '' {
+    $media-type: '';
+    $query: string.slice(string.unquote($query), 6);
+  }
+
+  @media #{$media-type + $query} {
+    @content;
+  }
+}

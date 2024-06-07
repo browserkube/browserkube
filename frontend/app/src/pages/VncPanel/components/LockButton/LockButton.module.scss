@@ -1,0 +1,8 @@
+@import "@app/styles/theme.module.scss";
+
+.btn-lock {
+    &:global(.MuiIconButton-root) {
+        color: $warning;
+    }
+}
+

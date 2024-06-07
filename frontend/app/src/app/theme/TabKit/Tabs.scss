@@ -1,0 +1,32 @@
+@import '@app/styles/colors.module.scss';
+
+.tabs-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.tabs {
+    display: flex;
+    background-color: white;
+}
+
+.tab {
+    cursor: pointer;
+    font-size: 15px;
+    color: #3F3F3F;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: background-color 0.5s ease;
+
+
+    &:hover {
+        color: $topaz;
+    }
+
+    &.active-tab {
+        border-bottom-color: $topaz;
+        color: $topaz;
+    }
+}

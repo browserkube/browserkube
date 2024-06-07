@@ -1,0 +1,11 @@
+.vnc-panel-terminated {
+    display: flex;
+    flex-direction: row;
+
+    h1 {
+        font-size: 18px;
+        font-weight: normal;
+        align-self: center;
+        margin: 0;
+    }
+}

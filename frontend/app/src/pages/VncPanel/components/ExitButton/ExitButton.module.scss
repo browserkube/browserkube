@@ -1,0 +1,7 @@
+@import "@app/styles/theme.module.scss";
+
+.btn-close {
+    &:global(.MuiIconButton-root) {
+        color: $errorLight;
+    }
+}

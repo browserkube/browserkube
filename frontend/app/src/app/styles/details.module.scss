@@ -1,0 +1,60 @@
+@import 'colors.module.scss';
+
+.container {
+    margin: 24px 32px 0;
+    height: auto;
+}
+
+.details_section {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.detail_line {
+    display: flex;
+
+    &:first-child {
+        margin-top: 12px;
+    }
+
+    &:not(:last-child) {
+        margin-bottom: 8px;
+    }
+}
+
+.download {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: $topaz;
+}
+
+.logs_section {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.logs_area {
+    background-color: $white;
+    padding: 12px 0 12px 24px;
+    margin-left: 32px;
+    color: $almostDark;
+}
+
+.logs_text {
+    white-space: break-spaces;
+    overflow: auto;
+    height: 300px;
+    font-size: 12px;
+}
+
+.screenshot_section {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+}

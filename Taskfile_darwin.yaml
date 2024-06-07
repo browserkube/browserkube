@@ -1,0 +1,9 @@
+version: '3'
+tasks:
+  install-prerequisites:
+    desc: Install prerequisites (docker, kubectl, kustomize, skaffold)
+    preconditions:
+      - sh: command -v brew
+        msg: Brew is required but it's not installed. Aborting.
+    cmds:
+      - brew install docker kubernetes-cli kustomize skaffold

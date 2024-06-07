@@ -1,0 +1,9 @@
+version: '3'
+tasks:
+  install-prerequisites:
+    desc: Install prerequisites (docker, kubectl, kustomize, skaffold)
+    preconditions:
+      - sh: choco -v
+        msg: Chocolatey is required but it's not installed. Aborting.
+    cmds:
+      - choco install docker kubernetes-cli kustomize skaffold -y

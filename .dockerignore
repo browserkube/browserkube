@@ -1,0 +1,15 @@
+.git/
+.ci/
+.drivers/
+.idea/
+.github/
+bin/
+#example/
+Dockerfile
+skaffold.yaml
+.gitignore
+*/**/node_modules/
+frontend/app/dist/
+frontend/server
+epm.env
+*/**/playwright-report

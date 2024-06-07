@@ -1,0 +1,9 @@
+version: '3'
+tasks:
+  install-prerequisites:
+    desc: Install prerequisites (docker, kubectl, kustomize, skaffold)
+    preconditions:
+      - sh: apt -v
+        msg: Aptitude is required but it's not installed. Aborting.
+    cmds:
+      - apt install docker kubernetes-cli kustomize skaffold -y

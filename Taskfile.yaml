@@ -1,0 +1,100 @@
+version: '3'
+
+includes:
+  install-prerequisites: Taskfile_{{OS}}.yaml
+  docs:
+    taskfile: ./docs/Taskfile.yaml
+    dir: ./docs
+  example-playwright:
+    taskfile: ./example/playwright/Taskfile.yaml
+    dir: ./example/playwright
+  recorder:
+    taskfile: ./.taskfiles/go.yaml
+    dir: ./cmds/recorder
+  clipboard:
+    taskfile: ./.taskfiles/go.yaml
+    dir: ./cmds/clipboard
+  extension-installer:
+    taskfile: ./.taskfiles/go.yaml
+    dir: ./cmds/extension-installer
+
+  operator:
+    taskfile: ./operator/Taskfile.yaml
+    dir: ./operator
+
+vars:
+  GO_PROJECTS: recorder clipboard extension-installer operator
+tasks:
+  all:fmt:
+    cmds:
+      - for: { var: GO_PROJECTS }
+        task: "{{.ITEM}}:fmt"
+  all:lint:
+    cmds:
+      - for: { var: GO_PROJECTS }
+        task: "{{.ITEM}}:lint"
+  all:test:
+    cmds:
+      - for: { var: GO_PROJECTS }
+        task: "{{.ITEM}}:test"
+
+
+  install-prerequisites:
+    desc: Install prerequisites (docker, kubectl, kustomize, skaffold)
+
+
+  skaffold:dev:
+    desc: Start the local development environment with port forwarding
+    preconditions:
+      - sh: command -v skaffold
+        msg: Skaffold is required but it's not installed. Aborting.
+    cmds:
+      - skaffold dev {{.CLI_ARGS}}
+
+  skaffold:run-remote:
+    desc: Run deployment to the dev stand
+    preconditions:
+      - sh: command -v skaffold
+        msg: Skaffold is required but it's not installed. Aborting.
+    cmds:
+      - skaffold run -p=remote-dev
+
+  skaffold:deploy-remote:
+    desc: Run deployment to the dev stand
+    env:
+      AWS_DEFAULT_PROFILE: EPAM
+    requires:
+      vars: [TAG]
+    cmds:
+      - skaffold deploy -p remote-dev,rp-beta -t {{.TAG}}
+
+  minio:install:
+    desc: "Installs minio as Helm Chart for development purposes"
+    cmds:
+      - |
+        helm install -n browserkube minio oci://registry-1.docker.io/bitnamicharts/minio \
+        --set persistence.size=10Gi \
+        --set ingress.enabled=true \
+        --set ingress.hostname=minio.docker.internal \
+        --set ingress.tls=true \
+        --set ingress.ingressClassName=nginx \
+        --set apiIngress.enabled=true
+  minio:get-pass:
+    desc: "Prints admin password for Min.io"
+    cmd: kubectl get secret --namespace browserkube minio -o jsonpath="{.data.root-password}" | base64 -d
+
+  minio:init:
+    vars:
+      ROOT_USER:
+        sh: kubectl get secret --namespace browserkube minio -o jsonpath="{.data.root-user}" | base64 -d
+      ROOT_PASSWORD:
+        sh: kubectl get secret --namespace browserkube minio -o jsonpath="{.data.root-password}" | base64 -d
+    cmds:
+      - |
+        kubectl run --namespace browserkube minio-client \
+        --rm --tty -i --restart='Never' \
+        --env MINIO_SERVER_ROOT_USER={{.ROOT_USER}} \
+        --env MINIO_SERVER_ROOT_PASSWORD={{.ROOT_PASSWORD}} \
+        --env MINIO_SERVER_HOST=minio \
+        --image docker.io/bitnami/minio-client:2024.5.9 -- /opt/bitnami/scripts/minio-client/run.sh mb minio/browserkube
+

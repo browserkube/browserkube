@@ -1,0 +1,205 @@
+apiVersion: skaffold/v3
+kind: Config
+metadata:
+  name: browserkube
+
+build:
+  artifacts:
+    - image: browserkube
+      sync:
+        infer: ["**/*.go"]
+      docker:
+        dockerfile: backend/Dockerfile
+        buildArgs:
+          COMPONENT: browserkube
+    - image: sidecar
+      sync:
+        auto: false
+      docker:
+        dockerfile: backend/Dockerfile
+        buildArgs:
+          COMPONENT: sidecar
+    - image: ui
+      context: ./frontend
+      sync:
+        infer:
+          - app/**/*
+      docker:
+        dockerfile: Dockerfile
+    - image: operator
+      context: ./operator
+      sync:
+        infer: ["**/*.go"]
+      docker:
+        dockerfile: Dockerfile
+    - image: extension-installer
+      context: ./cmds/extension-installer
+      sync:
+        auto: false
+      docker:
+        dockerfile: Dockerfile
+    - image: recorder
+      sync:
+        auto: false
+      context: ./cmds/recorder
+      docker:
+        dockerfile: Dockerfile
+    - image: browser-updater
+      sync:
+        auto: false
+      docker:
+        dockerfile: jobs/browser-updater/Dockerfile
+    - image: session-archiver
+      sync:
+        auto: false
+      docker:
+        dockerfile: jobs/session-archiver/Dockerfile
+    - image: x-server
+      sync:
+        auto: false
+      context: ./cmds/x-server
+      docker:
+        dockerfile: Dockerfile
+    - image: vnc-server
+      sync:
+        auto: false
+      context: ./cmds/vnc-server
+      docker:
+        dockerfile: Dockerfile
+    - image: clipboard
+      sync:
+        auto: false
+      docker:
+        dockerfile: cmds/clipboard/Dockerfile
+  tagPolicy:
+    inputDigest: {}
+  platforms:
+    - linux/amd64
+#        - linux/arm64
+  local:
+    useBuildkit: true
+manifests:
+  helm:
+    flags:
+      upgrade:
+        - -i
+    releases:
+      - name: browserkube
+        chartPath: helm/charts/browserkube
+        namespace: browserkube
+        setValueTemplates:
+          ingress.enabled: "true"
+          operator.image: '{{.IMAGE_FULLY_QUALIFIED_operator}}'
+          recorder.image: '{{.IMAGE_FULLY_QUALIFIED_recorder}}'
+          ui.image: '{{.IMAGE_FULLY_QUALIFIED_ui}}'
+          backend.image: '{{.IMAGE_FULLY_QUALIFIED_browserkube}}'
+          extensionInstaller.image: '{{.IMAGE_FULLY_QUALIFIED_extension_installer}}'
+          sidecar.image: '{{.IMAGE_FULLY_QUALIFIED_sidecar}}'
+          browserUpdater.image: "{{.IMAGE_FULLY_QUALIFIED_browser_updater}}"
+          sessionArchiver.image: "{{.IMAGE_FULLY_QUALIFIED_session_archiver}}"
+          xServer.image: '{{.IMAGE_FULLY_QUALIFIED_x_server}}'
+          vncServer.image: '{{.IMAGE_FULLY_QUALIFIED_vnc_server}}'
+          clipboard.image: '{{.IMAGE_FULLY_QUALIFIED_clipboard}}'
+          blob.minio.enabled: true
+
+deploy:
+  helm:
+    hooks:
+      before:
+        - host:
+            command:
+              - sh
+              - -c
+              - '(cd operator && ./bin/kustomize build config/crd) | kubectl apply -f - '
+            os:
+              - darwin
+              - linux
+        - host:
+            command:
+              - powershell
+              - -c
+              - cd operator ; kustomize build config/crd | kubectl apply -f -
+            os:
+              - windows
+  statusCheckDeadlineSeconds: 600
+profiles:
+  - name: arm64
+    activation:
+      - kubeContext: docker-desktop
+        command: dev-arm64
+    patches:
+      - op: replace
+        path: /build/platforms/0
+        value: linux/arm64
+  - name: dev
+    activation:
+      - kubeContext: docker-desktop
+        command: dev
+    patches:
+      ## Replace dockerfiles with live-reload enabled
+      - op: replace
+        path: /build/artifacts/0/docker/dockerfile
+        value: backend/develop.dockerfile
+      - op: replace
+        path: /build/artifacts/3/docker/dockerfile
+        value: develop.dockerfile
+      ## Dev containers aren't distroless so set proper security context
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/operator.runAsUser
+        value: 65532
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/operator.runAsGroup
+        value: 65532
+      ## Since the build is being performed within the container on runtime
+      ## disable health check and resource consumption limitations
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/resources.enabled
+        value: false
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/healthcheck.enabled
+        value: false
+
+  - name: remote-dev
+    patches:
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/ingress.hosts[0]
+        value: '{{.BROWSERKUBE_INGRESS_HOST}}'
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/tls[0].hosts[0]
+        value: '{{.BROWSERKUBE_INGRESS_HOST}}'
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/ingress.class
+        value: nginx
+      - op: replace
+        path: /manifests/helm/releases/0/setValueTemplates/ingress.enabled
+        value: true
+      - op: replace
+        path: /build/platforms/0
+        value: linux/amd64
+
+  - name: rp-beta
+    patches:
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/browsers.nodeSelector.eks\.amazonaws\.com~1nodegroup
+        value: "{{.BROWSERKUBE_BROWSERS_NODE_SELECTOR}}"
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/blob.url
+        value: "{{.BROWSERKUBE_BUCKET}}"
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/blob.minio.enabled
+        value: false
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/blob.aws.enabled
+        value: true
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/blob.aws.accessKeyID
+        value: "{{.BROWSERKUBE_AWS_ACCESS_KEY_ID}}"
+      - op: add
+        path: /manifests/helm/releases/0/setValueTemplates/blob.aws.accessKeySecret
+        value: "{{.BROWSERKUBE_AWS_SECRET_ACCESS_KEY}}"
+
+  - name: github-build
+    build:
+      tagPolicy:
+        envTemplate:
+          template: "{{.BUILD_NUMBER}}"

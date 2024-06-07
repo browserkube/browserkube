@@ -1,4 +1,4 @@
-module github.com/browserkube/browserkube/cmds/recorder
+module github.com/fleetframework/goga/cmds/recorder
 
 go 1.21
 

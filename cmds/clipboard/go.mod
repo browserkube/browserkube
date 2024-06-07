@@ -1,4 +1,4 @@
-module github.com/browserkube/browserkube/clipboard
+module github.com/fleetframework/goga/clipboard
 
 go 1.20
 

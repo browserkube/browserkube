@@ -1,0 +1,12 @@
+apiVersion: api.browserkube.io/v1
+kind: Browser
+metadata:
+  labels:
+    app.kubernetes.io/name: browser
+    app.kubernetes.io/instance: browser-sample
+    app.kubernetes.io/part-of: operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operator
+  name: browser-sample
+spec:
+  # TODO(user): Add fields here

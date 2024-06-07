@@ -1,0 +1,96 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  name: sessionresults.api.browserkube.io
+spec:
+  group: api.browserkube.io
+  names:
+    kind: SessionResult
+    listKind: SessionResultList
+    plural: sessionresults
+    singular: sessionresult
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              browser:
+                properties:
+                  browserName:
+                    type: string
+                  browserVersion:
+                    type: string
+                  caps:
+                    format: byte
+                    type: string
+                  enableVNC:
+                    type: boolean
+                  enableVideo:
+                    type: boolean
+                  extensions:
+                    items:
+                      properties:
+                        extensionId:
+                          type: string
+                        updateUrl:
+                          type: string
+                        version:
+                          type: string
+                      type: object
+                    type: array
+                  platformName:
+                    type: string
+                  screenResolution:
+                    type: string
+                  timeZone:
+                    type: string
+                  type:
+                    type: string
+                required:
+                - browserName
+                - browserVersion
+                - type
+                type: object
+              browserImage:
+                type: string
+              files:
+                properties:
+                  bookmarks:
+                    type: string
+                  browserLog:
+                    type: string
+                  video:
+                    type: string
+                required:
+                - bookmarks
+                - browserLog
+                - video
+                type: object
+              finishedAt:
+                format: date-time
+                type: string
+              startedAt:
+                format: date-time
+                type: string
+            required:
+            - files
+            type: object
+          status:
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

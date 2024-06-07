@@ -1,0 +1,8 @@
+version: 3
+
+## proxy tasks to skaffolded Makefile
+tasks:
+  lint:
+    cmd: make lint
+  test:
+    cmd: make test

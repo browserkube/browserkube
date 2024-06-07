@@ -1,0 +1,6 @@
+## Append samples of your project ##
+resources:
+- api_v1_browser.yaml
+- api_v1_browserset.yaml
+- api_v1_sessionresult.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

@@ -1,0 +1,71 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: manager-role
+  namespace: browserkube
+rules:
+- apiGroups:
+  - api.browserkube.io
+  resources:
+  - browsers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - api.browserkube.io
+  resources:
+  - browsers/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - api.browserkube.io
+  resources:
+  - browsers/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - api.browserkube.io
+  resources:
+  - browsersets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - api.browserkube.io
+  resources:
+  - sessionresults
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/status
+  verbs:
+  - get

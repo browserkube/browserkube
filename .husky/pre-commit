@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd frontend/app || exit
+npm run lint:fix && npm run lint:styles:fix

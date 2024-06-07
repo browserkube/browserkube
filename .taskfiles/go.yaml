@@ -1,0 +1,60 @@
+version: '3'
+
+env:
+  GOLANGCI_LINT_VERSION: v1.56.0
+  GOTESTSUM_VERSION: v1.11.0
+
+vars:
+  MODULE:
+    sh: go list
+  GOFILES_NOVENDOR:
+    sh: find . -type f -name '*.go' -not -path "./vendor/*"
+  COMMIT_HASH:
+    sh: git rev-parse --short HEAD 2>/dev/null
+  BUILD_DATE:
+    sh: date +%FT%T%z
+  BUILD_INFO_LDFLAGS: -ldflags "-w -extldflags '"-static"' -X main.buildDate={{.BUILD_DATE}} -X main.version={{.COMMIT_HASH}}"
+
+
+tasks:
+  install-lint:
+    desc: "Installs GolangCI linter into ./bin folder. Version can be overridden via $GOLANGCI_LINT_VERSION env variable"
+    cmds:
+      - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s {{.GOLANGCI_LINT_VERSION}}
+    status: ["test -f bin/golangci-lint"]
+
+  install-gotestsum:
+    desc: "Installs GolangCI linter into ./bin folder. Version can be overridden via $GOLANGCI_LINT_VERSION env variable"
+    cmds:
+      - GOBIN=$(pwd)/bin go install gotest.tools/gotestsum@{{.GOTESTSUM_VERSION}}
+    status: ["bin/gotestsum --version"]
+
+  lint:
+    desc: "Executes GolangCI linter"
+    deps: [install-lint]
+    cmds: ["bin/golangci-lint run ./..."]
+
+  fmt:
+    desc: "Formats the code. Uses gofumpt,goimports,tagalign,gci"
+    preconditions:
+      - gofumpt -version
+      - gci -v
+      - tagalign -V=full
+    cmds:
+      - gofumpt -extra -l -w .
+      - goimports -local {{.MODULE}} -w .
+      - tagalign -fix .
+      - gci write --skip-generated -s standard -s default --section "prefix({{.MODULE}})" .
+
+  download-deps:
+    desc: "Downloads go module dependencies"
+    cmds: ["go mod download"]
+
+  build:
+    desc: "Builds an application. Use $BUILD_INFO_LDFLAGS, $APP_NAME variables"
+    cmds: ["go build {{.BUILD_INFO_LDFLAGS}} -o bin/${APP_NAME} ./${APP_NAME}"]
+
+  test:
+    desc: "Executes go test"
+    deps: [install-gotestsum]
+    cmds: ["bin/gotestsum ./..."]

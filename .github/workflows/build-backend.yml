@@ -1,0 +1,42 @@
+name: Check Back-End
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - uses: arduino/setup-task@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.2' # The Go version to download (if necessary) and use.
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.54.2
+          only-new-issues: false
+          working-directory: backend
+          args: --timeout=10m
+      # Run build backend of the application
+      - name: Build Sidecar
+        run: make build component=sidecar
+        working-directory: backend
+      - name: Build Browserkube
+        run: make build component=browserkube
+        working-directory: backend
+
+      # Run testing on the code
+      - name: Run Tests
+        run: task all:test

@@ -1,0 +1,62 @@
+name: Build
+on:
+  workflow_dispatch:
+    inputs:
+      aws-region:
+        description: 'AWS Region'
+        required: false
+        type: string
+        default: 'eu-central-1'
+      build-platforms:
+        description: 'Build platforms'
+        required: false
+        type: string
+        default: 'linux/amd64'
+      scan-image:
+        description: 'Scan image for vulnerabilities'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: 'AWS Access Key ID'
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: 'AWS Secret Access Key'
+        required: true
+env:
+  AWS_REGION: ${{ inputs.aws-region }}         # set this to your preferred AWS region, e.g. us-west-1
+  BUILD_NUMBER: run-number-${{ github.run_number }}
+  VERSION: ${{ github.ref_name }}
+  BRANCH: ${{ github.ref_name }}
+jobs:
+  build-images:
+    runs-on: ubuntu-latest
+    steps:
+    # Run scaffold build
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          # role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Run Skaffold pipeline as action
+        uses: hiberbee/github-action-skaffold@1.27.0
+        with:
+            command: build
+            profile: github-build
+            repository: ${{ secrets.ECR_REPOSITORY }}

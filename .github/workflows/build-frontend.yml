@@ -1,0 +1,43 @@
+name: Check Front-End
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+defaults:
+  run:
+    working-directory: ./frontend/app
+jobs:
+  setup:
+    name: Setup
+    runs-on: self-hosted
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npx webpack build
+
+      - name: Run ESLint
+        run: npx eslint src/
+
+      - name: Run Stylelint
+        run: npx stylelint **/*.scss
+
+      - name: Run Jest tests
+        run: npx jest
+        env:
+          CI: true

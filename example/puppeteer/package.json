@@ -1,0 +1,12 @@
+{
+    "name": "puppeteer_examples",
+    "description": "Browserkube examples of puppeteer",
+    "version": "1.0.0",
+    "engines": {
+        "node": ">=8"
+    },
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "puppeteer": "^1.4.0"
+    }
+}

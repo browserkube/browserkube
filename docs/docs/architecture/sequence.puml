@@ -1,0 +1,36 @@
+@startuml
+
+    skinparam backgroundColor #EEEBDC
+    skinparam handwritten true
+    actor Client
+    Client -> "BrowserKube" : create session
+    activate "BrowserKube"
+    BrowserKube -> BrowserOperator : create browser
+
+    activate "BrowserOperator"
+    BrowserOperator ->  Kubernetes : create pod
+    activate Kubernetes
+    BrowserOperator <-- Kubernetes : pod created
+    deactivate Kubernetes
+
+    activate BrowserOperator #DarkSalmon
+    BrowserOperator -> BrowserOperator : wait for SE/PW \nto start
+    BrowserKube <-- BrowserOperator : browser created
+    deactivate BrowserOperator
+
+   BrowserKube -> Browser : start session
+   activate Browser
+   BrowserKube <-- Browser : <<session id>>
+   deactivate Browser
+
+
+    activate BrowserKube #DarkSalmon
+    BrowserKube -> BrowserKube : replace session ID \nwith pod ID
+    Client <-- "BrowserKube" : <<session id>>
+    deactivate BrowserKube
+
+
+    deactivate "BrowserOperator"
+    deactivate "BrowserKube"
+
+@enduml

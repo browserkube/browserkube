@@ -1,0 +1,6 @@
+version: '3'
+
+tasks:
+  run-dev:
+    desc: Running the development server
+    cmd: yarn run start

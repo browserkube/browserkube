@@ -1,0 +1,9 @@
+const { {{{.BrowserName}}} } = require('playwright');
+
+(async () => {
+  const browser = await {{{.BrowserName}}}.connect({ timeout: 0, wsEndpoint: 'wss://moon.example.com/playwright/{{{.BrowserName}}}/playwright-1.23.3' });
+  const page = await browser.newPage();
+  await page.goto('https://aerokube.com/moon/');
+  await page.screenshot({ path: `screenshot.png` });
+  await browser.close();
+})();

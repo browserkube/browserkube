@@ -1,0 +1,46 @@
+apiVersion: v1
+description: Browserkube
+appVersion: "1.0"
+name: browserkube
+version: "1.0.0"
+sources:
+  - https://github.com/browserkube/browserkube
+  - https://grafana.github.io/helm-charts
+  - https://github.com/grafana/grafana
+  - https://github.com/grafana/tempo
+annotations:
+  "artifacthub.io/links": |
+    - name: Chart Source
+      url: https://github.com/grafana/helm-charts
+    - name: Grafana
+      url: https://github.com/grafana/grafana
+    - name: Tempo
+      url: https://github.com/grafana/tempo
+keywords:
+  - browserkube
+maintainers:
+  - name: Andrei Varabyeu
+    email: andrei_varabyeu@epam.com
+engine: gotpl
+
+dependencies:
+  - name: grafana
+    alias: grafana
+    version: "7.0.0"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: grafana.enabled
+  - name: tempo
+    alias: tempo
+    condition: tempo.enabled
+    repository: "https://grafana.github.io/helm-charts"
+    version: "1.6.2"
+  - name: prometheus
+    alias: prometheus
+    condition: prometheus.enabled
+    version: "25.3.1"
+    repository: "https://prometheus-community.github.io/helm-charts"
+  - name: minio
+    alias: minio
+    condition: minio.enabled
+    version: "14.4.0"
+    repository: "oci://registry-1.docker.io/bitnamicharts"

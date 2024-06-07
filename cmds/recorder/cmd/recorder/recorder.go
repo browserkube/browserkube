@@ -7,7 +7,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/fleetframework/goga/cmds/recorder/internal"
+	"github.com/browserkube/browserkube/cmds/recorder/internal"
 )
 
 func main() {

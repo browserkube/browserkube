@@ -1,0 +1,21 @@
+{{- if .Values.openshift.enabled }}
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "browserkube.fullname" . }}-backend
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.name }}
+spec:
+  rules:
+    - host: {{ $.Values.openshift.backendHost }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "browserkube.fullname" . }}-backend
+                port:
+                  number: 4444
+{{- end -}}

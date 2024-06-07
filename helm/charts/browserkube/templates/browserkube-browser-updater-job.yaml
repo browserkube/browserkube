@@ -1,0 +1,36 @@
+{{- if .Values.browserUpdater.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "browserkube.fullname" . }}-browser-updater-job
+  namespace: '{{.Release.Namespace | default "default" }}'
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      name: {{ include "browserkube.fullname" . }}-browser-updater-job
+      labels:
+        {{ include "labels" . | indent 8 }}
+    spec:
+      serviceAccountName: {{ template "browserkube.serviceAccountName" . }}
+      restartPolicy: Never
+      containers:
+        - name: browser-updater-job
+          env:
+            - name: BROWSER_NS
+              value: {{ .Values.browsers.namespace }}
+          image: "{{ .Values.browserUpdater.image }}"
+          imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
+          resources:
+            limits:
+              cpu: 200m
+              memory: 32Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
+{{ end }}

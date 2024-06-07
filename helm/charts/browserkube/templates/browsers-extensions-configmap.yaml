@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-browser-extension-config
+  namespace: {{ .Values.browsers.namespace }}
+data:
+#  Coma-separated extension ID's of addons/extensions that you want to whitelist:
+  whitelist.chrome: |
+    placeholder1,placeholder2
+  whitelist.firefox: |
+    placeholder

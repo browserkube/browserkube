@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.browsers.serviceName }}
+  namespace: {{ .Values.browsers.namespace }}
+spec:
+  selector:
+    component: {{ include "browserkube.fullname" . }}-browser
+  clusterIP: None
+  publishNotReadyAddresses: true

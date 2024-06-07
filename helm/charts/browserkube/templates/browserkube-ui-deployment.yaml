@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "browserkube.fullname" . }}-ui
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ include "browserkube.fullname" . }}-ui
+  template:
+    metadata:
+      labels:
+        component: {{ include "browserkube.fullname" . }}-ui
+    spec:
+      containers:
+        - image: "{{ .Values.ui.image }}"
+          imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
+          name: ui
+          ports:
+            - containerPort: {{ .Values.ui.port }}
+              protocol: TCP
+              name: http
+
+          {{- if .Values.openshift.enabled }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - "ALL"
+          {{- end -}}

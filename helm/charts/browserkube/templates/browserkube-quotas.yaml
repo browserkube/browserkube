@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: ResourceQuota
+    metadata:
+      name: {{ .Release.Name }}-sessions
+      labels: {{ include "labels" . | indent 8 }}
+      namespace: {{ .Values.browsers.namespace }}
+    spec:
+      hard:
+        count/browsers.api.browserkube.io: "20"

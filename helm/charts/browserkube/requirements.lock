@@ -1,0 +1,15 @@
+dependencies:
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 7.0.0
+- name: tempo
+  repository: https://grafana.github.io/helm-charts
+  version: 1.6.2
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 25.3.1
+- name: minio
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 14.4.0
+digest: sha256:7e6cb7c272b761345f9ae20bd8230c660e5d3fc2a002ea06c7b78203089cfaa6
+generated: "2024-05-13T15:49:23.623175+02:00"

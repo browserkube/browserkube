@@ -1,0 +1,36 @@
+{{- if .Values.ingress.enabled }}
+{{- $fullName := include "browserkube.fullname" . -}}
+{{- $browserkubeUiPort  := .Values.ui.port -}}
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-ui
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    {{- if .Values.ingress.tls }}
+    {{- range $key, $value := .Values.ingress.tlsAnnotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end}}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end}}
+  ingressClassName: {{ .Values.ingress.class }}
+  rules:
+  {{- range $host := .Values.ingress.hosts }}
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}-ui
+                port:
+                  number: {{$browserkubeUiPort}}
+    {{- end -}}
+{{ end }}

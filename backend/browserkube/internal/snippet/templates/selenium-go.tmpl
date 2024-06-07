@@ -1,0 +1,27 @@
+{{{`// import "github.com/tebeka/selenium"`}}}
+
+caps := selenium.Capabilities{
+        "browserName":    "{{{.BrowserName}}}",
+		"browserVersion": "{{{.BrowserVersion}}}",
+		"browserkube:options": map[string]interface{}{
+                "name": "Test badge...",
+
+                "sessionTimeout": "5m",
+
+                "env": []string{
+                        "TZ=UTC",
+                },
+
+                "labels": map[string]interface{}{
+                        "manual": "true",
+                },
+
+                "enableVideo": true,
+        },
+}
+
+driver, err := selenium.NewRemote(caps, "http://localhost:4444/wd/hub")
+if err != nil {
+        t.Errorf("starting browser: %v", err)
+}
+defer driver.Quit()

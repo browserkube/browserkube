@@ -1,0 +1,77 @@
+linters-settings:
+  govet:
+    check-shadowing: true
+  cyclop:
+    max-complexity: 14
+  maligned:
+    suggest-new: true
+  dupl:
+    threshold: 500
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  misspell:
+    locale: US
+  lll:
+    line-length: 160
+  goimports:
+    local-prefixes: github.com/browserkube/browserkube
+  depguard:
+    rules:
+      # deny for all go files
+      AllGoFiles:
+        files:
+          - $all
+        deny:
+          - pkg: go.opencensus.io
+            desc: "do not use OpenCensus; use OpenTelemetry instead"
+  gocritic:
+    enabled-tags:
+      - performance
+      - style
+      - experimental
+    disabled-checks:
+      - wrapperFunc
+      - commentFormatting
+      - yodaStyleExpr
+      - unnamedResult
+      - commentedOutCode
+      - assignOp
+      - docStub
+      - whyNoLint
+#      - exhaustruct
+
+linters:
+  enable-all: true
+  disable:
+    - gochecknoglobals
+    - interfacer
+    - wsl
+    - funlen
+    - unused
+    - gomnd
+    - goerr113
+    - godot
+    - nestif
+    - nlreturn
+    - sqlclosecheck
+    - exhaustive
+    - gci
+    - exhaustivestruct
+    - godox
+    - varnamelen
+    - ireturn
+    - gocritic
+    - exhaustruct
+    - gomoddirectives
+    - wrapcheck
+    - structcheck
+
+run:
+  concurrency: 1
+  tests: false
+  skip-dirs:
+    - tests
+  go: '1.22'
+service:
+  golangci-lint-version: 1.50.1

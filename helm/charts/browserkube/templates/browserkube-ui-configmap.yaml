@@ -1,0 +1,10 @@
+{{- $fullName := include "browserkube.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}-ui-config
+data:
+  web.properties: |
+{{- with $host:=(first .Values.ingress.hosts) }}
+    window.browserkubeConfig =  { backendHost: "{{$host}}/browserkube" };
+{{- end }}

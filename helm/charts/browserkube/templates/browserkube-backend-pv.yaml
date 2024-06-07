@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "browserkube.fullname" . }}-session-results-pvc
+spec:
+  storageClassName: {{.Values.backend.volumes.sessionResult.storageClassName}}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{.Values.backend.volumes.sessionResult.sizeLimit}}
+  volumeName: {{ include "browserkube.fullname" . }}-session-results-pv
+  {{- if not .Values.openshift.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "browserkube.fullname" . }}-session-results-pv
+spec:
+  storageClassName: {{.Values.backend.volumes.sessionResult.storageClassName}}
+  hostPath:
+    path: /tmp/browserkube
+  capacity:
+    storage: {{.Values.backend.volumes.sessionResult.sizeLimit}}
+  accessModes:
+    - ReadWriteOnce
+  {{- end }}

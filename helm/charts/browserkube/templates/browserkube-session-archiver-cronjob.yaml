@@ -1,0 +1,38 @@
+{{- if .Values.sessionArchiver.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "browserkube.fullname" . }}-session-archiver-cronjob
+  namespace: '{{.Release.Namespace | default "default" }}'
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  schedule: "@daily"
+  successfulJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ template "browserkube.serviceAccountName" . }}
+          restartPolicy: Never
+          containers:
+            - name: session-archiver-job
+              image: "{{ .Values.sessionArchiver.image }}"
+              imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
+              env:
+                - name: CONTEXT_TIMEOUT
+                  value: "{{ .Values.cronJobContext.contextTimeout }}"
+                - name: BLOB_URL
+                  value: {{ .Values.blob.url }}
+                - name: BLOB_URL_ARCHIVE
+                  value: {{ .Values.blob.archive.url }}
+                - name: AWS_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.minio.name }}
+                      key: root-user
+                - name: AWS_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.minio.name }}
+                      key: root-password
+{{ end }}

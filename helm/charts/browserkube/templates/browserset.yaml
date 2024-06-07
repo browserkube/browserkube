@@ -1,0 +1,87 @@
+apiVersion: api.browserkube.io/v1
+kind: BrowserSet
+metadata:
+  namespace: {{ .Values.browsers.namespace }}
+  labels:
+    app.kubernetes.io/name: browserset
+    app.kubernetes.io/instance: browserset-sample
+    app.kubernetes.io/part-of: operator
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: operator
+    {{ include "labels" . | indent 4 }}
+  name: browserkube-browserset
+spec:
+  defaultTimezone: "UTC"
+  {{- if .Values.browsers.nodeSelector }}
+  podSpec:
+    nodeSelector:
+      {{ toYaml .Values.browsers.nodeSelector }}
+  {{- end }}
+  webdriver:
+    edge:
+      defaultVersion: "120.0"
+      defaultPath: "/wd/hub"
+      versions:
+        "120.0":
+          image: browsers/edge:120.0
+          port: "4444"
+          provider: k8s
+    firefox:
+      defaultVersion: "122.0-vnc"
+      defaultPath: "/wd/hub"
+      versions:
+        "122.0-standalone":
+          image: selenium/standalone-firefox:122.0
+          port: "4444"
+          provider: k8s
+        "122.0-selenoid-vnc":
+          image: selenoid/vnc_firefox:122.0
+          port: "4444"
+          provider: k8s
+        "122.0":
+          image: selenoid/firefox:122.0
+          port: "4444"
+          provider: k8s
+        "125.0-moon":
+          image: quay.io/browser/firefox-mozilla-build:125.0
+          port: "4444"
+          provider: k8s
+    chrome:
+      defaultVersion: "124.0-selenoid"
+      defaultPath: "/"
+      versions:
+        "123.0-selenium":
+          image: selenium/standalone-chrome:123.0
+          port: "4444"
+          provider: k8s
+        "124.0-selenoid":
+          image: selenoid/chrome:124.0
+          port: "4444"
+          provider: k8s
+        "124.0-moon":
+          image: quay.io/browser/google-chrome-stable:124.0
+          port: "4444"
+          provider: k8s
+  playwright:
+    firefox:
+      defaultVersion: "playwright-1.39.0"
+      defaultPath: "/"
+      versions:
+        "playwright-1.36.2":
+          image: mcr.microsoft.com/playwright:v1.36.0-jammy
+          port: "4444"
+          provider: k8s
+          registrySecret: mcr-regcred-public
+        "playwright-1.39.0":
+          image: quay.io/browser/playwright-firefox:playwright-1.39.0
+          port: "4444"
+          provider: k8s
+    chrome:
+      defaultVersion: "playwright-1.39.0"
+      defaultPath: "/"
+      versions:
+        "playwright-1.39.0":
+          image: quay.io/browser/playwright-chrome:playwright-1.39.0
+          port: "4444"
+          provider: k8s
+          registrySecret: mcr-regcred-public

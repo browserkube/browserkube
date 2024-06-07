@@ -1,0 +1,18 @@
+{{{seleniumJavaBrowserOptions .BrowserName}}};
+options.setCapability("browserVersion", "{{{.BrowserVersion}}}");
+options.setCapability("selenoid:options", new HashMap<String, Object>() {{
+	put("name", "Test badge...");
+
+    put("sessionTimeout", "15m");
+
+    put("env", new ArrayList<String>() {{
+        add("TZ=UTC");
+    }});
+
+    put("labels", new HashMap<String, Object>() {{
+        put("manual", "true");
+    }});
+
+    put("enableVideo", true);
+}});
+RemoteWebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), options);

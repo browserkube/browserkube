@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "browserkube.fullname" . }}
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ include "browserkube.fullname" . }}
+  template:
+    metadata:
+      labels:
+        component: {{ include "browserkube.fullname" . }}
+    spec:
+      serviceAccountName: {{ template "browserkube.serviceAccountName" . }}
+      volumes:
+        - name: session-results-files
+          persistentVolumeClaim:
+            claimName: {{ include "browserkube.fullname" . }}-session-results-pvc
+      containers:
+        - image: "{{ .Values.backend.image }}"
+          imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
+          name: server
+          ports:
+            - containerPort: 4444
+              protocol: TCP
+          env:
+            - name: BROWSER_NS
+              value: {{ .Values.browsers.namespace }}
+            - name: TELEMETRY_PROMETHEUS_ENABLED
+              value: {{ .Values.telemetry.prometheus_enabled }}
+            - name: TELEMETRY_VERSION
+              value: {{ .Values.telemetry.version }}
+            - name: ENVIRONMENT
+              value: {{ .Values.env }}
+            - name: BLOB_URL
+              value: {{ .Values.blob.url }}
+            - name: BLOB_URL_ARCHIVE
+              value: {{ .Values.blob.archive.url }}
+            {{- if .Values.telemetry.providerEnabled }}
+            - name: TELEMETRY_PROVIDER_ENABLED
+              value: {{ .Values.telemetry.providerEnabled }}
+            - name: TELEMETRY_PROVIDER_TYPE
+              value: {{ .Values.telemetry.providerType.zipkin }}
+            {{- end }}
+            {{- if .Values.blob.minio.enabled }}
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                 secretKeyRef:
+                   name: {{ .Values.minio.name }}
+                   key: root-user
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                 secretKeyRef:
+                   name: {{ .Values.minio.name }}
+                   key: root-password
+            {{- end }}
+            {{- if .Values.blob.aws.enabled }}
+            - name: AWS_ACCESS_KEY
+              value: {{ .Values.blob.aws.accessKeyID }}
+            - name: AWS_SECRET_KEY
+              value: {{ .Values.blob.aws.accessKeySecret }}
+            {{- end }}
+          volumeMounts:
+            - name: session-results-files
+              mountPath: "/session-results"
+          {{- if .Values.resources.enabled }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          {{- end -}}
+          {{- if .Values.healthcheck.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.healthcheck.port | default 4444}}
+            initialDelaySeconds: {{ .Values.healthcheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthcheck.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthcheck.failureThreshold }}
+          {{- end -}}
+          {{- if .Values.openshift.enabled }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - "ALL"
+          {{- end -}}

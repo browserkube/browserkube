@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-browsers-readinessprobe-config
+  namespace: {{ .Values.browsers.namespace }}
+data:
+  webdriver.enabled: "true"
+  webdriver.initialDelaySeconds: "2"
+  webdriver.timeoutSecond: "10"
+  webdriver.failureThreshold: "10"

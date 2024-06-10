@@ -71,7 +71,6 @@ spec:
           image: mcr.microsoft.com/playwright:v1.36.0-jammy
           port: "4444"
           provider: k8s
-          registrySecret: mcr-regcred-public
         "playwright-1.39.0":
           image: quay.io/browser/playwright-firefox:playwright-1.39.0
           port: "4444"
@@ -84,4 +83,3 @@ spec:
           image: quay.io/browser/playwright-chrome:playwright-1.39.0
           port: "4444"
           provider: k8s
-          registrySecret: mcr-regcred-public

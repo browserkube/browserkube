@@ -8,6 +8,7 @@ pullPolicy: IfNotPresent
 blob:
   minio:
     enabled: true
+    secretName:
   url: "s3://browserkube?endpoint=minio.browserkube.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=us-east-1"
   aws:
     enabled: false

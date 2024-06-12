@@ -48,12 +48,12 @@ spec:
             - name: AWS_ACCESS_KEY
               valueFrom:
                  secretKeyRef:
-                   name: {{ .Values.minio.name }}
+                   name: {{ .Values.blob.minio.secretName }}
                    key: root-user
             - name: AWS_SECRET_KEY
               valueFrom:
                  secretKeyRef:
-                   name: {{ .Values.minio.name }}
+                   name: {{ .Values.blob.minio.secretName }}
                    key: root-password
             {{- end }}
             {{- if .Values.blob.aws.enabled }}

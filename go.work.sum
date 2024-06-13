@@ -1595,7 +1595,6 @@ github.com/flatcar/container-linux-config-transpiler v0.9.4 h1:yXQ0NB8PeNrKJPrZv
 github.com/flatcar/container-linux-config-transpiler v0.9.4/go.mod h1:LxanhPvXkWgHG9PrkT4rX/p7YhUPdDGGsUdkNpV3L5U=
 github.com/flatcar/ignition v0.36.2 h1:xGHgScUe0P4Fkprjqv7L2CE58emiQgP833OCCn9z2v4=
 github.com/flatcar/ignition v0.36.2/go.mod h1:uk1tpzLFRXus4RrvzgMI+IqmmB8a/RGFSBlI+tMTbbA=
-github.com/fleetframework/goga v1.0.3-0.20230222124429-fc23ac15613a/go.mod h1:rwxC+5RzUYNWUorhV/wQWBGhSg5bqVZUYTQh4/rarZs=
 github.com/flowstack/go-jsonschema v0.1.1 h1:dCrjGJRXIlbDsLAgTJZTjhwUJnnxVWl1OgNyYh5nyDc=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 h1:BHsljHzVlRcyQhjrss6TZTdY2VfCqZPbv5k3iBFa2ZQ=
 github.com/fogleman/gg v1.2.1-0.20190220221249-0403632d5b90 h1:WXb3TSNmHp2vHoCroCIB1foO/yQ36swABL8aOVeDpgg=

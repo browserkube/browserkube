@@ -3,7 +3,7 @@ module github.com/browserkube/browserkube/clipboard
 go 1.20
 
 require (
-	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-chi/chi/v5 v5.0.13
 	github.com/ory/graceful v0.1.3
 )
 

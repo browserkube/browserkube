@@ -660,7 +660,13 @@ func (h *handler) getSessionFile(w http.ResponseWriter, rq *http.Request) error 
 	sessionID := chi.URLParam(rq, "sessionID")
 	file, err := h.sessionStorage.GetFile(rq.Context(), sessionID, fPath)
 	if err != nil {
-		return browserkubehttp.NewHTTPErr(http.StatusInternalServerError, errors.WithStack(err))
+		status := http.StatusInternalServerError
+
+		var notFoundErr session.ErrSessionNotFound
+		if errors.Is(err, notFoundErr) {
+			status = http.StatusNotFound
+		}
+		return browserkubehttp.NewHTTPErr(status, errors.WithStack(err))
 	}
 	w.Header().Set("Content-Type", file.ContentType)
 	if _, err = io.Copy(w, file.Content); err != nil {

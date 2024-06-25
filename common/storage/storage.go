@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"gocloud.dev/gcerrors"
 	"io"
 	"path/filepath"
 	"strings"
@@ -36,6 +37,8 @@ type blobStorage struct {
 	bucket *blob.Bucket
 	log    *zap.SugaredLogger
 }
+
+var ErrNotFound = errors.New("Not Found")
 
 // New creates Storage driver for the given url.
 // For local filesystem storage use url like: "file:///absolute/path/" (note the trailing slash is required)
@@ -71,8 +74,12 @@ type BlobFile struct {
 
 // GetFile returns session record file for given sessionID and filename
 func (s *blobStorage) GetFile(ctx context.Context, sessionID, filename string) (*BlobFile, error) {
-	r, err := s.bucket.NewReader(ctx, buildPath(sessionID, filename), nil)
+	path := buildPath(sessionID, filename)
+	r, err := s.bucket.NewReader(ctx, path, nil)
 	if err != nil {
+		if gcerrors.Code(err) == gcerrors.NotFound {
+			return nil, fmt.Errorf("not found: %s, %w", path, ErrNotFound)
+		}
 		return nil, errors.WithStack(err)
 	}
 	defer r.Close()

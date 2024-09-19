@@ -13,10 +13,11 @@ import (
 	"path"
 	"strings"
 
-	"dario.cat/mergo"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+
+	"dario.cat/mergo"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
@@ -305,14 +306,21 @@ func (p *ProxyManager) ProxySessionHandler(w http.ResponseWriter, rq *http.Reque
 
 	// load the session
 	sess, err := p.sessionRepo.FindByID(sID)
-	if err != nil || sess == nil {
-		if sess.Caps.BrowserKubeOpts.Manual {
-			return
-		}
+	if err != nil {
 		log.Error("unable to find session")
 		wdproto.BadGatewayError(w, err)
 		return
 	}
+
+	if sess == nil {
+		log.Error("unable to find session")
+		wdproto.BadGatewayError(w, errors.New("session is nil"))
+		return
+	}
+
+	/*	if sess.Caps.BrowserKubeOpts.Manual {
+		return
+	}*/
 
 	parentCtx := otel.GetTextMapPropagator().Extract(rq.Context(), propagation.MapCarrier(sess.Browser.Annotations))
 	innerCtx, cancel := context.WithCancel(parentCtx)

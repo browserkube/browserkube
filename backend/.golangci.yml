@@ -45,7 +45,6 @@ linters:
   enable-all: true
   disable:
     - gochecknoglobals
-    - interfacer
     - wsl
     - funlen
     - unused
@@ -57,7 +56,6 @@ linters:
     - sqlclosecheck
     - exhaustive
     - gci
-    - exhaustivestruct
     - godox
     - varnamelen
     - ireturn
@@ -65,13 +63,21 @@ linters:
     - exhaustruct
     - gomoddirectives
     - wrapcheck
-    - structcheck
+    - mnd
+    - revive
+    - inamedparam
+    - perfsprint
+    - contextcheck
+    - canonicalheader
+    - intrange
+    - usestdlibvars
 
 run:
   concurrency: 1
   tests: false
   skip-dirs:
     - tests
-  go: '1.22'
+    - mocks
+  go: '1.23'
 service:
   golangci-lint-version: 1.50.1

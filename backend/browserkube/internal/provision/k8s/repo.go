@@ -38,8 +38,8 @@ func (pps *k8sSessionRepository) FindAll() ([]*session.Session, error) {
 func (pps *k8sSessionRepository) Quota() (int, int, error) {
 	currentQ, maxQ := pps.sessionWatch.GetQuotas()
 	current, _ := currentQ.AsInt64()
-	max, _ := maxQ.AsInt64()
-	return int(current), int(max), nil
+	maxQuotaInt, _ := maxQ.AsInt64()
+	return int(current), int(maxQuotaInt), nil
 }
 
 func (pps *k8sSessionRepository) Watch(ctx context.Context) <-chan *session.Session {

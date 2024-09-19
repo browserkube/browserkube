@@ -17,7 +17,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build ${BUILD_INFO_LDFLAGS} -o ${BINARY_DIR}/${component}/${BINARY_NAME} ./${component}
 
 install-lint:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.54.2
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.61.0
 
 lint:
 	#docker run --rm -v $(CURR_DIR):/app -w /app golangci/golangci-lint:v1.32.2 golangci-lint run --enable-all --deadline 10m ./...

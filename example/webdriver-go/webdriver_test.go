@@ -22,7 +22,7 @@ import (
 // Chrome Store Extension ID for "metamask" addon
 const (
 	extensionID   = "nkbihfbeogaeaoehlefnkodbefgpgknn"
-	chromeVersion = "117.0"
+	chromeVersion = "124.0"
 )
 
 func defaultCaps() selenium.Capabilities {
@@ -224,60 +224,58 @@ func (suite *WebDriverTestsSuite) testBasic(seleniumCaps selenium.Capabilities) 
 	require.NoError(suite.T(), err)
 	defer wd.Quit()
 
-	for i := 0; i < 20; i++ {
+	// Navigate to the simple playground interface.
+	err = wd.Get("https://go.dev/play/?simple=1")
+	require.NoError(suite.T(), err)
 
-		// Navigate to the simple playground interface.
-		err = wd.Get("https://go.dev/play/?simple=1")
-		require.NoError(suite.T(), err)
+	// Get a reference to the text box containing code.
+	elem, err := wd.FindElement(selenium.ByCSSSelector, "#code")
+	require.NoError(suite.T(), err)
 
-		// Get a reference to the text box containing code.
-		elem, err := wd.FindElement(selenium.ByCSSSelector, "#code")
-		require.NoError(suite.T(), err)
+	// Remove the boilerplate code already in the text box.
+	require.NoError(suite.T(), elem.Clear())
 
-		// Remove the boilerplate code already in the text box.
-		require.NoError(suite.T(), elem.Clear())
-
-		// Enter some new code in text box.
-		err = elem.SendKeys(`
+	// Enter some new code in text box.
+	err = elem.SendKeys(`
 		package main
 		import "fmt"
 		func main() {
 			fmt.Println("Hello WebDriver!\n")
 		}
 	`)
+	require.NoError(suite.T(), err)
+
+	// Click the run button.
+	btn, err := wd.FindElement(selenium.ByCSSSelector, "#run")
+	require.NoError(suite.T(), err)
+
+	require.NoError(suite.T(), btn.Click())
+
+	// Wait for the program to finish running and get the output.
+	outputDiv, err := wd.FindElement(selenium.ByCSSSelector, "pre.Playground-output")
+	require.NoError(suite.T(), err)
+
+	for {
+		output, err := outputDiv.Text()
 		require.NoError(suite.T(), err)
 
-		// Click the run button.
-		btn, err := wd.FindElement(selenium.ByCSSSelector, "#run")
-		require.NoError(suite.T(), err)
-
-		require.NoError(suite.T(), btn.Click())
-
-		// Wait for the program to finish running and get the output.
-		outputDiv, err := wd.FindElement(selenium.ByCSSSelector, "pre.Playground-output")
-		require.NoError(suite.T(), err)
-
-		for {
-			output, err := outputDiv.Text()
-			require.NoError(suite.T(), err)
-
-			if output != "Waiting for remote server..." {
-				break
-			}
-			time.Sleep(time.Millisecond * 100)
+		if output != "Waiting for remote server..." {
+			break
 		}
-
-		// Wait for the program to finish running and get the output.
-		outputPre, err := outputDiv.FindElement(selenium.ByCSSSelector, "span.stdout")
-		require.NoError(suite.T(), err)
-
-		var output string
-		output, err = outputPre.Text()
-		require.NoError(suite.T(), err)
-		time.Sleep(time.Second * 20)
-
-		fmt.Printf("%s", strings.Replace(output, "\n\n", "\n", -1))
+		time.Sleep(time.Millisecond * 100)
 	}
+
+	// Wait for the program to finish running and get the output.
+	outputPre, err := outputDiv.FindElement(selenium.ByCSSSelector, "span.stdout")
+	require.NoError(suite.T(), err)
+
+	var output string
+	output, err = outputPre.Text()
+	require.NoError(suite.T(), err)
+	time.Sleep(time.Second * 20)
+
+	fmt.Printf("%s", strings.Replace(output, "\n\n", "\n", -1))
+
 	// Example Output:
 	// Hello WebDriver!
 	//

@@ -50,8 +50,8 @@ spec:
       defaultVersion: "124.0-selenoid"
       defaultPath: "/"
       versions:
-        "123.0-selenium":
-          image: selenium/standalone-chrome:123.0
+        "124.0-selenium":
+          image: selenium/standalone-chrome:124.0
           port: "4444"
           provider: k8s
         "124.0-selenoid":

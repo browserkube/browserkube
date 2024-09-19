@@ -37,7 +37,7 @@ func provideMux() chi.Router {
 	mux.Use(middleware.Heartbeat("/health"))
 	mux.Use(func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
-			if (r.Method == "GET") && strings.EqualFold(r.URL.Path, "/info") {
+			if (r.Method == http.MethodGet) && strings.EqualFold(r.URL.Path, "/info") {
 				_ = WriteJSON(w, http.StatusOK, buildinfo.GetBuildInfo())
 				return
 			}

@@ -70,7 +70,6 @@ linters:
     - contextcheck
     - canonicalheader
     - intrange
-    - usestdlibvars
 
 run:
   concurrency: 1

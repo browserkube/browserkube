@@ -183,8 +183,8 @@ func (wd *WebDriver) executeCommand(ctx context.Context, method, command string,
 func BadGatewayError(w http.ResponseWriter, err error) {
 	logger := zap.S()
 	logger.Errorf("Bad Gateway Error: %+v", err)
-	w.WriteHeader(http.StatusBadGateway)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadGateway)
 	if encErr := json.NewEncoder(w).Encode(&Response{
 		Value: Error{
 			Error:   err.Error(),

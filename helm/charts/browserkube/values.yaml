@@ -15,7 +15,7 @@ blob:
     accessKeyID:
     accessKeySecret:
   archive:
-    url: "s3://browserkube-archive?endpoint=minio.browserkube.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=us-east-1"
+    url: "s3://browserkube-archive?endpoint=minio.browserkube.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=us-east-1&awssdk=v1"
 healthcheck:
   enabled: true
   port: 4444

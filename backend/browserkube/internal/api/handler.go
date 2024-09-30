@@ -9,7 +9,6 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
-	"path"
 	"path/filepath"
 	"slices"
 	"sort"
@@ -840,14 +839,14 @@ func (h *handler) toSessionResult(sess *sessionresult.Result) (*SessionResult, e
 			Image:            sess.Spec.BrowserImage,
 			VncOn:            sess.Spec.Browser.EnableVNC,
 			LogsOn:           true,
-			LogsRefAddr:      path.Join(sess.Name, sessionresult.BrowserLogFileName),
+			LogsRefAddr:      sessionresult.BrowserLogFileName,
 			CreatedAt:        Timestamp(sess.Spec.StartedAt.Time),
 			Type:             caps.BrowserKubeOpts.Type,
 		},
 	}
 
 	if caps.BrowserKubeOpts.EnableVideo {
-		sr.Session.VideoRefAddr = path.Join(sess.Name, sessionresult.VideoFileName)
+		sr.Session.VideoRefAddr = sessionresult.VideoFileName
 	}
 
 	return sr, nil

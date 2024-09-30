@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1-experimental
 
 ## This one is based on Debian
-FROM golang:1.22.0-alpine3.19 AS builder
+FROM golang:1.23.1-alpine3.20 AS builder
 WORKDIR /app
 
 # install dependencies

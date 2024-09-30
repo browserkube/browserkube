@@ -1,4 +1,4 @@
-FROM golang:1.22.0 as builder
+FROM golang:1.23.1 as builder
 
 RUN apt update && apt install --no-install-recommends
 

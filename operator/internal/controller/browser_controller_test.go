@@ -10,7 +10,6 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/samber/lo"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -229,13 +228,13 @@ var _ = Describe("Browser controller", Ordered, func() {
 			podName := fmt.Sprintf("%s-%s", containerNameBrowser, browserName)
 			By("Browser image has appropriate env variables", func() {
 				p := waitForBrowserPod(b.Namespace, podName)
-				container, found := lo.Find(p.Spec.Containers, func(item v1.Container) bool {
+				container, found := find(p.Spec.Containers, func(item v1.Container) bool {
 					return item.Name == containerNameBrowser
 				})
 
 				Expect(found).Should(BeTrue(), "browser container isn't found")
 
-				vncEnabled, envFound := lo.Find(container.Env, func(item v1.EnvVar) bool {
+				vncEnabled, envFound := find(container.Env, func(item v1.EnvVar) bool {
 					return item.Name == "ENABLE_VNC"
 				})
 				Expect(envFound).Should(BeTrue(), "ENABLE_VNC isn't found")
@@ -478,6 +477,17 @@ func setBrowserPodContainerStatuses(p *v1.Pod, phase v1.PodPhase) {
 		},
 	}
 	Expect(helper.Patch(ctx, p)).Should(Succeed(), "phase ok")
+}
+
+func find[T any](collection []T, predicate func(item T) bool) (T, bool) {
+	for _, item := range collection {
+		if predicate(item) {
+			return item, true
+		}
+	}
+
+	var result T
+	return result, false
 }
 
 func TestNewBrowserReconciler(t *testing.T) {

@@ -28,7 +28,7 @@ const (
 func defaultCaps() selenium.Capabilities {
 	return selenium.Capabilities{
 		"browserName":    "chrome",
-		"browserVersion": fmt.Sprintf("%s-selenium", chromeVersion),
+		"browserVersion": fmt.Sprintf("%s-selenoid", chromeVersion),
 		"browserkube:options": map[string]interface{}{
 			"enableVNC": true,
 		},
@@ -115,7 +115,7 @@ func (suite *WebDriverTestsSuite) TestBasicWithVideo() {
 
 	bkOpts := caps["browserkube:options"].(map[string]interface{})
 	bkOpts["enableVideo"] = true
-	bkOpts["name"] = fmt.Sprintf("Lots commands %s", caps["browserVersion"])
+	bkOpts["name"] = fmt.Sprintf("Test with Video %s", caps["browserVersion"])
 
 	sessionID := suite.testBasic(caps)
 	baseURL, err := url.Parse(suite.wdURL)

@@ -1,4 +1,4 @@
-FROM golang:1.22.0
+FROM golang:1.23.1
 
 ARG UID=65532
 ARG GID=65532

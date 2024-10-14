@@ -7,8 +7,8 @@ toolchain go1.23.1
 require (
 	github.com/browserkube/browserkube/operator v0.0.0
 	github.com/browserkube/browserkube/storage v0.0.0
-	github.com/urfave/cli/v2 v2.27.4
-	gocloud.dev v0.39.0
+	github.com/urfave/cli/v2 v2.27.5
+	gocloud.dev v0.40.0
 	k8s.io/apimachinery v0.29.3
 	k8s.io/client-go v0.29.3
 	k8s.io/utils v0.0.0-20240310230437-4693a0247e57

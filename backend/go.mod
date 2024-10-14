@@ -32,7 +32,7 @@ require (
 	go.uber.org/atomic v1.11.0
 	go.uber.org/fx v1.22.2
 	go.uber.org/zap v1.27.0
-	gocloud.dev v0.39.0
+	gocloud.dev v0.40.0
 	golang.org/x/net v0.29.0
 	golang.org/x/time v0.6.0
 	k8s.io/api v0.29.3

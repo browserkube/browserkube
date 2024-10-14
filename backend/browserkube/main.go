@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/browserkube/browserkube/browserkube/internal/screenshot"
 	"net/http"
 	"os"
 	"time"
@@ -67,7 +68,7 @@ func main() {
 		reportportal.Module,
 		reportlog.Module,
 		// TODO: cases need to be improved when automatic screenshots are required
-		// screenshot.Module,
+		screenshot.Module,
 		reportvideo.Module,
 		reportcommand.Module,
 

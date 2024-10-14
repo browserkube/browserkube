@@ -228,6 +228,9 @@ func (suite *WebDriverTestsSuite) testBasic(seleniumCaps selenium.Capabilities) 
 	err = wd.Get("https://go.dev/play/?simple=1")
 	require.NoError(suite.T(), err)
 
+	_, err = wd.Screenshot()
+	require.NoError(suite.T(), err)
+
 	// Get a reference to the text box containing code.
 	elem, err := wd.FindElement(selenium.ByCSSSelector, "#code")
 	require.NoError(suite.T(), err)
@@ -243,6 +246,9 @@ func (suite *WebDriverTestsSuite) testBasic(seleniumCaps selenium.Capabilities) 
 			fmt.Println("Hello WebDriver!\n")
 		}
 	`)
+	require.NoError(suite.T(), err)
+
+	_, err = wd.Screenshot()
 	require.NoError(suite.T(), err)
 
 	// Click the run button.
@@ -264,6 +270,9 @@ func (suite *WebDriverTestsSuite) testBasic(seleniumCaps selenium.Capabilities) 
 		}
 		time.Sleep(time.Millisecond * 100)
 	}
+
+	_, err = wd.Screenshot()
+	require.NoError(suite.T(), err)
 
 	// Wait for the program to finish running and get the output.
 	outputPre, err := outputDiv.FindElement(selenium.ByCSSSelector, "span.stdout")

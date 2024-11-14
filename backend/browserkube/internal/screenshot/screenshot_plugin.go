@@ -2,12 +2,12 @@ package screenshot
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"net/http"
 	"time"
 
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 
 	"github.com/browserkube/browserkube/browserkube/internal/api"
@@ -57,7 +57,9 @@ func screenshotCapture(store storage.BlobSessionStorage) func(next wd.OnAfterCom
 			}
 
 			rsPayload := &bytes.Buffer{}
-			if _, err := io.Copy(rsPayload, rs.Body); err != nil {
+			base64Decoder := base64.NewDecoder(base64.StdEncoding, rs.Body)
+
+			if _, err := io.Copy(rsPayload, base64Decoder); err != nil {
 				log.Errorf("failed to copy into rsPayload: %v", err)
 				return next(ctx, rs, sess, command)
 			}

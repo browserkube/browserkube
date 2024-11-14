@@ -19,27 +19,27 @@ spec:
   {{- end }}
   webdriver:
     edge:
-      defaultVersion: "120.0"
+      defaultVersion: "124.0"
       defaultPath: "/wd/hub"
       versions:
-        "120.0":
-          image: browsers/edge:120.0
+        "124.0":
+          image: browsers/edge:124.0
           port: "4444"
           provider: k8s
     firefox:
-      defaultVersion: "122.0-vnc"
+      defaultVersion: "125.0-vnc"
       defaultPath: "/wd/hub"
       versions:
-        "122.0-standalone":
-          image: selenium/standalone-firefox:122.0
+        "125.0-standalone":
+          image: selenium/standalone-firefox:125.0
           port: "4444"
           provider: k8s
-        "122.0-selenoid-vnc":
-          image: selenoid/vnc_firefox:122.0
+        "125.0-selenoid-vnc":
+          image: selenoid/vnc_firefox:125.0
           port: "4444"
           provider: k8s
-        "122.0":
-          image: selenoid/firefox:122.0
+        "125.0":
+          image: selenoid/firefox:125.0
           port: "4444"
           provider: k8s
         "125.0-moon":
@@ -47,19 +47,19 @@ spec:
           port: "4444"
           provider: k8s
     chrome:
-      defaultVersion: "124.0-selenoid"
+      defaultVersion: "128.0-selenoid"
       defaultPath: "/"
       versions:
-        "124.0-selenium":
-          image: selenium/standalone-chrome:124.0
+        "128.0-selenium":
+          image: selenium/standalone-chrome:128.0
           port: "4444"
           provider: k8s
-        "124.0-selenoid":
-          image: selenoid/chrome:124.0
+        "128.0-selenoid":
+          image: selenoid/chrome:128.0
           port: "4444"
           provider: k8s
-        "124.0-moon":
-          image: quay.io/browser/google-chrome-stable:124.0
+        "128.0-moon":
+          image: quay.io/browser/google-chrome-stable:128.0
           port: "4444"
           provider: k8s
   playwright:

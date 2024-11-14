@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
+	"math/rand/v2"
 	"net/http"
 	"net/url"
 	"os"
@@ -22,7 +23,7 @@ import (
 // Chrome Store Extension ID for "metamask" addon
 const (
 	extensionID   = "nkbihfbeogaeaoehlefnkodbefgpgknn"
-	chromeVersion = "124.0"
+	chromeVersion = "128.0"
 )
 
 func defaultCaps() selenium.Capabilities {
@@ -104,7 +105,7 @@ func (suite *WebDriverTestsSuite) TestBasicSelenium() {
 func (suite *WebDriverTestsSuite) TestBasicSelenoid() {
 	caps := defaultCaps()
 	caps["browserVersion"] = fmt.Sprintf("%s-selenoid", chromeVersion)
-	caps["browserkube:options"].(map[string]interface{})["name"] = fmt.Sprintf("test selenoid %s", caps["browserVersion"])
+	caps["browserkube:options"].(map[string]interface{})["name"] = fmt.Sprintf("test selenoid %d", rand.Int())
 
 	suite.testBasic(caps)
 }

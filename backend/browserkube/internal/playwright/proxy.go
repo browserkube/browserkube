@@ -23,8 +23,8 @@ import (
 
 	browserkubev1 "github.com/browserkube/browserkube/operator/api/v1"
 	"github.com/browserkube/browserkube/pkg/sessionresult"
+	"github.com/browserkube/browserkube/pkg/storage"
 	"github.com/browserkube/browserkube/pkg/websocketproxy"
-	"github.com/browserkube/browserkube/storage"
 )
 
 const (

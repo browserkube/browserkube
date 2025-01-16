@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/browserkube/browserkube/browser-updater/internal/mocks"
-	"github.com/browserkube/browserkube/browser-updater/internal/registry"
+	"github.com/browserkube/browserkube/cmd/browser-updater/internal/mocks"
+	"github.com/browserkube/browserkube/cmd/browser-updater/internal/registry"
 	v1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 

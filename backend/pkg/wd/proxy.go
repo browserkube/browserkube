@@ -13,11 +13,10 @@ import (
 	"path"
 	"strings"
 
+	"dario.cat/mergo"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
-
-	"dario.cat/mergo"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"

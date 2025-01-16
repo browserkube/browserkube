@@ -33,10 +33,10 @@ import (
 	"github.com/browserkube/browserkube/pkg/opentelemetry"
 	"github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/sessionresult"
+	"github.com/browserkube/browserkube/pkg/storage"
 	browserkubeutil "github.com/browserkube/browserkube/pkg/util"
 	"github.com/browserkube/browserkube/pkg/util/broadcast"
 	"github.com/browserkube/browserkube/pkg/wd/wdproto"
-	"github.com/browserkube/browserkube/storage"
 )
 
 const (

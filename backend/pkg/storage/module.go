@@ -5,8 +5,6 @@ import (
 
 	"go.uber.org/fx"
 	"k8s.io/utils/env"
-
-	"github.com/browserkube/browserkube/storage"
 )
 
 var Module = fx.Options(
@@ -16,12 +14,12 @@ var Module = fx.Options(
 	),
 )
 
-func provideSessionRecordStorage() (storage.BlobSessionStorage, error) {
+func provideSessionRecordStorage() (BlobSessionStorage, error) {
 	blobURL := env.GetString("BLOB_URL", "")
-	return storage.New(context.Background(), blobURL)
+	return New(context.Background(), blobURL)
 }
 
-func provideSessionArchiveStorage() (storage.BlobSessionArchiveStorage, error) {
+func provideSessionArchiveStorage() (BlobSessionArchiveStorage, error) {
 	blobURL := env.GetString("BLOB_URL_ARCHIVE", "")
-	return storage.New(context.Background(), blobURL)
+	return New(context.Background(), blobURL)
 }

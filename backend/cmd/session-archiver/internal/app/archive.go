@@ -10,13 +10,13 @@ import (
 	"path/filepath"
 	"time"
 
-	clientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
-	"github.com/browserkube/browserkube/storage"
-
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/gcsblob"
 	_ "gocloud.dev/blob/s3blob"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	clientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
+	"github.com/browserkube/browserkube/pkg/storage"
 )
 
 type SessionResultArchiver struct {

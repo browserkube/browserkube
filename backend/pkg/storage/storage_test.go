@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/browserkube/browserkube/storage/mocks"
-
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/driver"
 	gcerr "gocloud.dev/gcerrors"
+
+	"github.com/browserkube/browserkube/pkg/storage/mocks"
 )
 
 //go:generate mockery --name Bucket --replace-type gocloud.dev/internal/gcerr=gocloud.dev/gcerrors --dir $GOPATH/pkg/mod/gocloud.dev@v0.36.0/blob/driver --output mocks

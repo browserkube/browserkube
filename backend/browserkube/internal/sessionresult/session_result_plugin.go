@@ -11,8 +11,8 @@ import (
 	browserkubev1 "github.com/browserkube/browserkube/operator/api/v1"
 	"github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/sessionresult"
+	"github.com/browserkube/browserkube/pkg/storage"
 	"github.com/browserkube/browserkube/pkg/wd"
-	"github.com/browserkube/browserkube/storage"
 )
 
 var Module = fx.Options(

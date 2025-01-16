@@ -1,16 +1,18 @@
 package main
 
 import (
-	"github.com/browserkube/browserkube/browser-updater/internal"
-	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
+	"log"
+	"os"
+
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"log"
-	"os"
+
+	"github.com/browserkube/browserkube/cmd/browser-updater/internal"
+	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
 )
 
 //nolint:gosec // not a credentials

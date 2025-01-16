@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/distribution/reference"
-	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
+
+	"github.com/distribution/reference"
+	"github.com/pkg/errors"
 )
 
-type v2Registry struct {
-}
+type v2Registry struct{}
 
 func NewV2Registry() RegistryClient {
 	return &v2Registry{}

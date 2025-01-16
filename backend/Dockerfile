@@ -11,7 +11,7 @@ RUN apk add --no-cache build-base tzdata
 # copy deps files
 COPY backend/Makefile backend/go.mod backend/go.sum ./
 COPY operator/go.mod operator/go.sum /operator/
-COPY common/storage/go.mod common/storage/go.sum /common/storage/
+
 # cache dependencies
 RUN go mod download
 
@@ -20,7 +20,6 @@ ARG COMPONENT
 COPY backend/pkg ./pkg
 COPY backend/$COMPONENT ./$COMPONENT
 COPY operator /operator
-COPY common/storage /common/storage
 
 # build an application
 RUN --mount=type=cache,target=/root/.cache/go-build \

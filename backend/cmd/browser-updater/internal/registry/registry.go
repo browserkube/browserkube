@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+
 	"github.com/distribution/reference"
 )
 
@@ -37,8 +38,7 @@ var tagsBlacklist = []string{
 	"latest",
 }
 
-type registryManager struct {
-}
+type registryManager struct{}
 
 type RegistryClient interface {
 	Tags(ctx context.Context, ref reference.Named) (*RegistryImageListResp, error)

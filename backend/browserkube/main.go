@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/browserkube/browserkube/browserkube/internal/screenshot"
 	"net/http"
 	"os"
 	"time"
@@ -20,6 +19,7 @@ import (
 	"github.com/browserkube/browserkube/browserkube/internal/reportlog"
 	"github.com/browserkube/browserkube/browserkube/internal/reportportal"
 	"github.com/browserkube/browserkube/browserkube/internal/reportvideo"
+	"github.com/browserkube/browserkube/browserkube/internal/screenshot"
 	"github.com/browserkube/browserkube/browserkube/internal/sessionresult"
 	"github.com/browserkube/browserkube/browserkube/internal/wd"
 	browserkubeapp "github.com/browserkube/browserkube/pkg/app"

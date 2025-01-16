@@ -6,15 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/distribution/reference"
 	"net/http"
 	"time"
 
-	"github.com/browserkube/browserkube/browser-updater/utils"
+	"github.com/distribution/reference"
+
+	"github.com/browserkube/browserkube/cmd/browser-updater/utils"
 )
 
-type dockerRegistry struct {
-}
+type dockerRegistry struct{}
 
 func NewDockerRegistryClient() RegistryClient {
 	registry := &dockerRegistry{}

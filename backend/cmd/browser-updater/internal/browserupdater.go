@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	"log/slog"
 
-	"github.com/browserkube/browserkube/browser-updater/internal/registry"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+
+	"github.com/browserkube/browserkube/cmd/browser-updater/internal/registry"
+	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
 )
 
 func UpdateBrowserImages(ctx context.Context, clientset *kubernetes.Clientset, bkClient browserkubeclientv1.Interface, ns string) error {

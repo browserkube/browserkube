@@ -59,7 +59,7 @@ spec:
           port: "4444"
           provider: k8s
         "128.0-moon":
-          image: quay.io/browser/google-chrome-stable:128.0
+          image: quay.io/browser/google-chrome-stable:132.0
           port: "4444"
           provider: k8s
   playwright:

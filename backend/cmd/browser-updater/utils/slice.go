@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func SliceContains[T comparable](s []T, e T, comp func(o1 T, o2 T) bool) bool {
+func SliceContains[T comparable](s []T, e T, comp func(o1, o2 T) bool) bool {
 	for _, v := range s {
 		if comp(v, e) {
 			return true

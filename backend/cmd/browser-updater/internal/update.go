@@ -3,12 +3,14 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/browserkube/browserkube/browser-updater/internal/registry"
-	"github.com/browserkube/browserkube/browser-updater/utils"
+	"log/slog"
+
+	"github.com/distribution/reference"
+
+	"github.com/browserkube/browserkube/cmd/browser-updater/internal/registry"
+	"github.com/browserkube/browserkube/cmd/browser-updater/utils"
 	apiv1 "github.com/browserkube/browserkube/operator/api/v1"
 	clientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
-	"github.com/distribution/reference"
-	"log/slog"
 )
 
 type BrowserImageUpdater struct {
@@ -97,7 +99,7 @@ func (b *BrowserImageUpdater) getImagesToUpdate(spec map[string]apiv1.BrowsersCo
 			}
 
 			// check image name only, ignore tags
-			if utils.SliceContains(uniqueImages[browserName], imgRef, func(o1 reference.Named, o2 reference.Named) bool {
+			if utils.SliceContains(uniqueImages[browserName], imgRef, func(o1, o2 reference.Named) bool {
 				return o1.Name() == o2.Name()
 			}) {
 				continue

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"gocloud.dev/gcerrors"
 	"io"
 	"path/filepath"
 	"strings"
@@ -15,6 +14,7 @@ import (
 	_ "gocloud.dev/blob/fileblob" // gocloud.dev api's imports
 	_ "gocloud.dev/blob/gcsblob"  // gocloud.dev api's imports
 	_ "gocloud.dev/blob/s3blob"   // gocloud.dev api's imports
+	"gocloud.dev/gcerrors"
 )
 
 type Storage interface {
@@ -30,8 +30,10 @@ type Storage interface {
 	Close() error
 }
 
-type BlobSessionStorage Storage
-type BlobSessionArchiveStorage Storage
+type (
+	BlobSessionStorage        Storage
+	BlobSessionArchiveStorage Storage
+)
 
 type blobStorage struct {
 	bucket *blob.Bucket

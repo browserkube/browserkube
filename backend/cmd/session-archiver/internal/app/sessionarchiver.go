@@ -2,19 +2,18 @@ package app
 
 import (
 	"context"
-	"k8s.io/utils/env"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/urfave/cli/v2"
-
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	"k8s.io/utils/env"
 
 	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
-	"github.com/browserkube/browserkube/storage"
+	"github.com/browserkube/browserkube/pkg/storage"
 )
 
 //nolint:gosec // not a credentials

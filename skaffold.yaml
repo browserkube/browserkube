@@ -18,7 +18,7 @@ build:
       docker:
         dockerfile: backend/Dockerfile
         buildArgs:
-          COMPONENT: sidecar
+          COMPONENT: cmd/sidecar
     - image: ui
       context: ./frontend
       sync:
@@ -41,19 +41,24 @@ build:
     - image: recorder
       sync:
         auto: false
-      context: ./cmds/recorder
       docker:
-        dockerfile: Dockerfile
+        dockerfile: backend/Dockerfile
+        buildArgs:
+          COMPONENT: cmd/recorder
     - image: browser-updater
       sync:
         auto: false
       docker:
-        dockerfile: jobs/browser-updater/Dockerfile
+        dockerfile: backend/Dockerfile
+        buildArgs:
+          COMPONENT: cmd/browser-updater
     - image: session-archiver
       sync:
         auto: false
       docker:
-        dockerfile: jobs/session-archiver/Dockerfile
+        dockerfile: backend/Dockerfile
+        buildArgs:
+          COMPONENT: cmd/session-archiver
     - image: x-server
       sync:
         auto: false

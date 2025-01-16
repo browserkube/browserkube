@@ -1,16 +1,16 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG USER_NAME=user
 ARG USER_HOME=/home/user
 ARG USER_UID=4096
 ENV TZ "UTC"
 
-RUN apt update && \
-    apt -y install apt-transport-https ca-certificates tzdata locales && \
+RUN apt-get update && \
+    apt-get -y install apt-transport-https ca-certificates tzdata locales && \
     DEBIAN_FRONTEND=noninteractive apt upgrade -y && \
     ## install ms fonts
     echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
-    apt install -y xvfb openbox ttf-mscorefonts-installer \
+    apt-get install -y xvfb openbox ttf-mscorefonts-installer \
         fontconfig fontconfig-config fonts-dejavu-core \
         fonts-liberation fonts-ubuntu-console fonts-wqy-zenhei \
         fonts-thai-tlwg-ttf fonts-ipafont-mincho fonts-sahadeva \
@@ -24,7 +24,7 @@ RUN apt update && \
     locale-gen && update-locale && \
     ## clean font caches
     fc-cache -f -v && \
-    apt clean && \
+    apt-get clean && \
     rm -Rf /tmp/* && rm -Rf /var/lib/apt/lists/*
 
 RUN adduser --system \

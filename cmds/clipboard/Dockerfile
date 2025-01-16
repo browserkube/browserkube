@@ -12,7 +12,7 @@ COPY /backend /app/backend/
 
 RUN --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o clipboard main.go
 
-FROM ubuntu:23.10
+FROM ubuntu:24.04
 
 RUN apt-get update && \
     apt-get install -y xsel && \

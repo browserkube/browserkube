@@ -6,10 +6,6 @@ use (
 	./backend
 	./cmds/clipboard
 	./cmds/extension-installer
-	./cmds/recorder
-	./common/storage
 	./example/webdriver-go
-	./jobs/browser-updater
-	./jobs/session-archiver
 	./operator
 )

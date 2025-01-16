@@ -99,7 +99,7 @@ func (b *BrowserImageUpdater) getImagesToUpdate(spec map[string]apiv1.BrowsersCo
 			}
 
 			// check image name only, ignore tags
-			if utils.SliceContains(uniqueImages[browserName], imgRef, func(o1, o2 reference.Named) bool {
+			if utils.SliceContainsComp(uniqueImages[browserName], imgRef, func(o1, o2 reference.Named) bool {
 				return o1.Name() == o2.Name()
 			}) {
 				continue

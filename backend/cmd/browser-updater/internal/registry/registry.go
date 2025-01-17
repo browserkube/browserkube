@@ -40,6 +40,7 @@ var tagsBlacklist = []string{
 
 type registryManager struct{}
 
+//go:generate mockery --name RegistryClient --output ./../mocks
 type RegistryClient interface {
 	Tags(ctx context.Context, ref reference.Named) (*RegistryImageListResp, error)
 }

@@ -14,6 +14,7 @@ func SliceContainsComp[T comparable](s []T, e T, comp func(o1, o2 T) bool) bool 
 	}
 	return false
 }
+
 func SliceContains[T comparable](s []T, e T) bool {
 	for _, v := range s {
 		if v == e {

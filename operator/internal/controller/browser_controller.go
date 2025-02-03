@@ -19,6 +19,9 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/browserkube/browserkube/operator/internal/controller/utils"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net"
 	"net/url"
 	"strconv"
@@ -41,7 +44,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
-	"github.com/browserkube/browserkube/operator/internal/controller/utils"
 )
 
 const (
@@ -64,9 +66,17 @@ const (
 // selenium constants
 const sidecarSeleniumPath = "/wd/hub"
 
-// recorder constants
+// paths constants
 const (
+	browserHomeDir             = "/home/user"
 	recorderVideosRelativePath = "/videos"
+)
+
+// display constants
+const (
+	xDisplayNum    = "0"
+	xDisplay       = ":0"
+	xRemoteDisplay = "127.0.0.1:0"
 )
 
 var ports = browserkubeapiv1.PortConfig{
@@ -213,22 +223,16 @@ func (r *BrowserReconciler) createBrowser(
 
 	logger.Info("Starting browser pod", "image", browserConfig.Image)
 
-	readinessProbe, err := r.getReadinessProbe(ctx, browser.Namespace, browser.Spec.Type, browserConfig.Path, browserConfig.Port)
-	if err != nil {
-		logger.Error(err, fmt.Sprintf("error while getting readiness probe: %s", err))
-	}
+	//readinessProbe, err := r.getReadinessProbe(ctx, browser.Namespace, browser.Spec.Type, browserConfig.Path, browserConfig.Port)
+	//if err != nil {
+	//	logger.Error(err, fmt.Sprintf("error while getting readiness probe: %s", err))
+	//}
 
-	browserPodBuilder, imgType, err := NewPodBuilder(browserConfig)
-	if err != nil {
-		logger.Error(err, "error while creating browser pod builder", "error", err.Error())
-		return err
-	}
-
-	browserPod, err := browserPodBuilder.Build(ctx, browser, r.opts, readinessProbe)
-	if err != nil {
-		logger.Error(err, "error while creating browser pod", "error", err.Error())
-		return err
-	}
+	browserPod := r.buildPod(ctx, browser, browserConfig, r.opts)
+	//if err != nil {
+	//	logger.Error(err, "error while creating browser pod", "error", err.Error())
+	//	return err
+	//}
 
 	if err = controllerutil.SetControllerReference(browser, browserPod, r.Scheme); err != nil {
 		logger.Error(err, "error while setting controller reference")
@@ -245,7 +249,7 @@ func (r *BrowserReconciler) createBrowser(
 	browser.Status.Phase = browserkubeapiv1.PhasePending
 	browser.Status.Image = browserConfig.Image
 	browser.Status.PodName = browserPod.Name
-	browser.Status.VncPass = imgType.VncPass()
+	browser.Status.VncPass = "browserkube"
 	logger.Info("updating browser resource", "resource", fmt.Sprintf("%+v", browser))
 
 	if err := r.Status().Update(ctx, browser); err != nil {
@@ -531,6 +535,102 @@ func (r *BrowserReconciler) getReadinessProbeAction(browserType, path, port stri
 		}
 	}
 	return nil
+}
+
+func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Browser, browserConfig *browserkubeapiv1.BrowserConfig, opts *BrowserCtrlOpts) *apiv1.Pod {
+	volumeMounts := buildVolumeMounts()
+
+	spec := &apiv1.PodSpec{
+		Hostname:      b.Name,
+		RestartPolicy: apiv1.RestartPolicyNever,
+		Containers: []apiv1.Container{
+			{
+				Name:  containerNameSidecar,
+				Image: opts.sidecarImage,
+				Ports: []apiv1.ContainerPort{
+					buildContainerPort("sidecar", opts.sidecarPort),
+				},
+				Env:          buildSidecarEnvVar(opts.sidecarPort, browserConfig.Port, browserConfig.Path),
+				VolumeMounts: volumeMounts,
+				Resources:    buildResources(200, memory128Mi, 100, memory128Mi),
+			},
+			{
+				Name:  containerNameBrowser,
+				Image: browserConfig.Image,
+				Ports: []apiv1.ContainerPort{
+					buildContainerPort("browser", browserConfig.Port),
+					buildContainerPort("vnc", ports.VNC),
+				},
+				Env:          buildBrowserEnvVar(b.Spec, browserConfig),
+				VolumeMounts: volumeMounts,
+				// ReadinessProbe: readinessProbe,
+				Resources: buildResources(1000, size2Gi, 500, size2Gi),
+			},
+			{
+				Name:         containerNameClipboard,
+				Image:        opts.clipboardImage,
+				VolumeMounts: volumeMounts,
+				Ports: []apiv1.ContainerPort{
+					buildContainerPort("p", ports.Clipboard),
+				},
+				Env:   []apiv1.EnvVar{{Name: "DISPLAY", Value: xRemoteDisplay}},
+				Stdin: true,
+				TTY:   true,
+			},
+		},
+		Volumes: buildVolumes(opts),
+	}
+
+	if b.Spec.EnableVNC {
+		spec.Containers = append(spec.Containers,
+			apiv1.Container{
+				Name:         "x-server",
+				Image:        opts.xServerImage,
+				VolumeMounts: volumeMounts,
+				Ports: []apiv1.ContainerPort{
+					buildContainerPort("p", "6000"),
+				},
+				Env: []apiv1.EnvVar{
+					{Name: "SCREEN_RESOLUTION", Value: GetResolution(b.Spec.ScreenResolution)},
+					{Name: "DISPLAY", Value: xDisplay},
+				},
+			},
+			apiv1.Container{
+				Name:         "vnc-server",
+				Image:        opts.vncServerImage,
+				VolumeMounts: volumeMounts,
+				Ports: []apiv1.ContainerPort{
+					buildContainerPort("p", "5900"),
+				},
+			},
+		)
+	}
+	if browserConfig.EnableVideo {
+		addContainerRecorder(opts, spec, xDisplayNum, volumeMounts)
+	}
+
+	logger := log.FromContext(ctx)
+
+	if b.Spec.Extensions != nil || len(b.Spec.Extensions) != 0 {
+		logger.Info("Browser Extension Capabilities: ", "Capabilities", fmt.Sprintf("%+v", b.Spec.Extensions))
+		installPlugins(spec,
+			b.Spec.BrowserName,
+			b.Spec.Extensions,
+			opts.extensionInstallerImage,
+			opts.browserExtensionConfig,
+		)
+	}
+
+	browserPod := &apiv1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      getBrowserPodName(b.Name),
+			Labels:    getBrowserPodLabels(b.Name),
+			Namespace: b.Namespace,
+		},
+		Spec: *spec,
+	}
+	copySpec(browserPod, browserConfig.Spec)
+	return browserPod
 }
 
 // SetupWithManager sets up the controller with the Manager.

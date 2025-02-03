@@ -222,7 +222,7 @@ var _ = Describe("Browser controller", Ordered, func() {
 				waitForBrowserStatus(b.Namespace, b.Name, browserkubeapiv1.PhaseRunning)
 			})
 		})
-		It("adds VNC to selenoid images if enabled", func() {
+		It("adds VNC to images if enabled", func() {
 			browserName := fmt.Sprintf("%s-%d", browserNamePrefix, rnd.Intn(1000))
 			b := createBrowser(browserName)
 			podName := fmt.Sprintf("%s-%s", containerNameBrowser, browserName)

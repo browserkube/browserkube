@@ -13,7 +13,6 @@ import (
 	"k8s.io/utils/ptr"
 
 	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
-	"github.com/browserkube/browserkube/operator/internal/controller/browserimage"
 )
 
 func buildContainerPort(name, port string) apiv1.ContainerPort {
@@ -26,14 +25,14 @@ func buildContainerPort(name, port string) apiv1.ContainerPort {
 	}
 }
 
-func buildVolumeMounts(imageType browserimage.ImageType) []apiv1.VolumeMount {
+func buildVolumeMounts() []apiv1.VolumeMount {
 	mounts := []apiv1.VolumeMount{
 		{Name: "dshm", MountPath: "/dev/shm"},
 		{Name: "usergroup", MountPath: "/etc/passwd", SubPath: "passwd"},
 		{Name: "usergroup", MountPath: "/etc/group", SubPath: "group"},
-		{Name: "videos", MountPath: filepath.Join(imageType.Homedir(), recorderVideosRelativePath)},
+		{Name: "videos", MountPath: filepath.Join(browserHomeDir, recorderVideosRelativePath)},
 		{Name: "tmp", MountPath: "/tmp"},
-		{Name: "userhome", MountPath: imageType.Homedir()}, // used by selenoid images
+		{Name: "userhome", MountPath: browserHomeDir},
 	}
 
 	return mounts
@@ -118,7 +117,19 @@ func buildResources(
 	}
 }
 
-func buildSidecarEnvVar(sidecarPort string, imageType browserimage.ImageType, browserConfigPort, browserConfigPath string) []apiv1.EnvVar {
+func buildBrowserEnvVar(browser browserkubeapiv1.BrowserSpec, browserConfig *browserkubeapiv1.BrowserConfig) []apiv1.EnvVar {
+	vars := []apiv1.EnvVar{
+		{Name: "TZ", Value: browserConfig.Timezone},
+	}
+
+	if browser.EnableVNC {
+		vars = append(vars, apiv1.EnvVar{Name: "DISPLAY", Value: xDisplay})
+	}
+
+	return vars
+}
+
+func buildSidecarEnvVar(sidecarPort string, browserConfigPort, browserConfigPath string) []apiv1.EnvVar {
 	proxyURL := url.URL{
 		Scheme: "http",
 		Host:   net.JoinHostPort("localhost", browserConfigPort),
@@ -128,7 +139,7 @@ func buildSidecarEnvVar(sidecarPort string, imageType browserimage.ImageType, br
 	return []apiv1.EnvVar{
 		{Name: "PORT", Value: sidecarPort},
 		{Name: "PROXY_URL", Value: proxyURL.String()},
-		{Name: "BROWSER_HOME_DIR", Value: imageType.Homedir()},
+		{Name: "BROWSER_HOME_DIR", Value: browserHomeDir},
 	}
 }
 
@@ -146,7 +157,6 @@ func GetResolution(res string) string {
 func addContainerRecorder(
 	opts *BrowserCtrlOpts,
 	spec *apiv1.PodSpec,
-	imageType browserimage.ImageType,
 	displayNum string,
 	volumeMounts []apiv1.VolumeMount,
 ) {
@@ -174,7 +184,7 @@ func addContainerRecorder(
 				"--frame-rate=12",
 				"--display-num=" + displayNum,
 				"--codec=libx264",
-				"--file-path=" + filepath.Join(imageType.Homedir(), "/videos"),
+				"--file-path=" + filepath.Join(browserHomeDir, "/videos"),
 			},
 			VolumeMounts: volumeMounts, // re-use volume mounts
 		})
@@ -195,12 +205,11 @@ func getBrowserPodLabels(sessionID string) map[string]string {
 func installPlugins(
 	spec *apiv1.PodSpec,
 	browserName string,
-	imageType browserimage.ImageType,
 	extensions []browserkubeapiv1.BrowserExtension,
 	extensionInstallerImage,
 	browserExtensionConfig string,
 ) {
-	extMounts := buildExtensionMounts(imageType)[browserName]
+	extMounts := buildExtensionMounts()[browserName]
 
 	for i, c := range spec.Containers {
 		if c.Name == containerNameBrowser {
@@ -240,10 +249,10 @@ func installPlugins(
 	}
 }
 
-func buildExtensionMounts(imageType browserimage.ImageType) map[string][]apiv1.VolumeMount {
+func buildExtensionMounts() map[string][]apiv1.VolumeMount {
 	return map[string][]apiv1.VolumeMount{
 		"firefox": {
-			{Name: "plugins", MountPath: filepath.Join(imageType.Homedir(), "/.mozilla/extensions")},
+			{Name: "plugins", MountPath: filepath.Join(browserHomeDir, "/.mozilla/extensions")},
 			{Name: "plugins", MountPath: "/opt/firefox"},
 		},
 		"chrome": {

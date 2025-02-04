@@ -46,12 +46,8 @@ export const createCapabilities = (browser: string, version: string) => {
         browserVersion: version,
         'browserkube:options': {
           enableVideo: true,
-        },
-        'selenoid:options': {
           enableVNC: true,
           sessionTimeout: '60m',
-          saveVideoEndpoint: 'file:///home/seluser/videos',
-          labels: { manual: 'true' },
           screenResolution: '1920x1080x24',
         },
         ...extOptions,

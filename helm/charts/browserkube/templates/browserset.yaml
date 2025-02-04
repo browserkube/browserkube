@@ -30,35 +30,15 @@ spec:
       defaultVersion: "125.0-vnc"
       defaultPath: "/wd/hub"
       versions:
-        "125.0-standalone":
-          image: selenium/standalone-firefox:125.0
-          port: "4444"
-          provider: k8s
-        "125.0-selenoid-vnc":
-          image: selenoid/vnc_firefox:125.0
-          port: "4444"
-          provider: k8s
-        "125.0":
-          image: selenoid/firefox:125.0
-          port: "4444"
-          provider: k8s
         "125.0-moon":
           image: quay.io/browser/firefox-mozilla-build:125.0
           port: "4444"
           provider: k8s
     chrome:
-      defaultVersion: "128.0-selenoid"
+      defaultVersion: "132.0"
       defaultPath: "/"
       versions:
-        "128.0-selenium":
-          image: selenium/standalone-chrome:128.0
-          port: "4444"
-          provider: k8s
-        "128.0-selenoid":
-          image: selenoid/chrome:128.0
-          port: "4444"
-          provider: k8s
-        "128.0-moon":
+        "132.0":
           image: quay.io/browser/google-chrome-stable:132.0
           port: "4444"
           provider: k8s
@@ -67,10 +47,6 @@ spec:
       defaultVersion: "playwright-1.39.0"
       defaultPath: "/"
       versions:
-        "playwright-1.36.2":
-          image: mcr.microsoft.com/playwright:v1.36.0-jammy
-          port: "4444"
-          provider: k8s
         "playwright-1.39.0":
           image: quay.io/browser/playwright-firefox:playwright-1.39.0
           port: "4444"

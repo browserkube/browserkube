@@ -25,15 +25,6 @@ const capabilities = JSON.stringify({
 			"browserkube:options": {
 				"enableVideo": true
 			},
-			"selenoid:options": {
-				"enableVNC": true,
-				"sessionTimeout": "60m",
-				"saveVideoEndpoint": "file:///home/seluser/videos",
-				"labels": {
-					"manual": "true"
-				},
-				"screenResolution": "1920x1080x24"
-			},
 			"goog:chromeOptions": {
 				"args": [
 					"start-maximized"

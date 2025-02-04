@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
-	"math/rand/v2"
 	"net/http"
 	"net/url"
 	"os"
@@ -29,7 +28,7 @@ const (
 func defaultCaps() selenium.Capabilities {
 	return selenium.Capabilities{
 		"browserName":    "chrome",
-		"browserVersion": fmt.Sprintf("%s-selenoid", chromeVersion),
+		"browserVersion": chromeVersion,
 		"browserkube:options": map[string]interface{}{
 			"enableVNC": true,
 		},
@@ -94,25 +93,15 @@ func (suite *WebDriverTestsSuite) SetupTest() {
 	}
 }
 
-func (suite *WebDriverTestsSuite) TestBasicSelenium() {
+func (suite *WebDriverTestsSuite) TestBasic() {
 	caps := defaultCaps()
-	caps["browserVersion"] = fmt.Sprintf("%s-selenium", chromeVersion)
 	caps["browserkube:options"].(map[string]interface{})["name"] = fmt.Sprintf("test selenium %s", caps["browserVersion"])
-
-	suite.testBasic(caps)
-}
-
-func (suite *WebDriverTestsSuite) TestBasicSelenoid() {
-	caps := defaultCaps()
-	caps["browserVersion"] = fmt.Sprintf("%s-selenoid", chromeVersion)
-	caps["browserkube:options"].(map[string]interface{})["name"] = fmt.Sprintf("test selenoid %d", rand.Int())
 
 	suite.testBasic(caps)
 }
 
 func (suite *WebDriverTestsSuite) TestBasicWithVideo() {
 	caps := defaultCaps()
-	caps["browserVersion"] = fmt.Sprintf("%s-selenoid", chromeVersion)
 
 	bkOpts := caps["browserkube:options"].(map[string]interface{})
 	bkOpts["enableVideo"] = true

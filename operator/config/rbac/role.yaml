@@ -6,9 +6,28 @@ metadata:
   namespace: browserkube
 rules:
 - apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/status
+  verbs:
+  - get
+- apiGroups:
   - api.browserkube.io
   resources:
   - browsers
+  - sessionresults
   verbs:
   - create
   - delete
@@ -39,33 +58,3 @@ rules:
   - get
   - list
   - watch
-- apiGroups:
-  - api.browserkube.io
-  resources:
-  - sessionresults
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - pods/status
-  verbs:
-  - get

@@ -493,7 +493,7 @@ func adjustCapabilities(rq *wdproto.NewSessionRQ) error {
 				}
 			}
 		}
-		if err := mergo.Merge(&rq.Capabilities, &validCaps); err != nil {
+		if err := mergo.Merge(&rq.Capabilities, &validCaps, mergo.WithOverride); err != nil {
 			return errors.WithStack(err)
 		}
 	}

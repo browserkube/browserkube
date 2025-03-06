@@ -95,7 +95,7 @@ func (suite *WebDriverTestsSuite) SetupTest() {
 
 func (suite *WebDriverTestsSuite) TestBasic() {
 	caps := defaultCaps()
-	caps["browserkube:options"].(map[string]interface{})["name"] = fmt.Sprintf("test selenium %s", caps["browserVersion"])
+	//caps["browserkube:options"].(map[string]interface{})["name"] = fmt.Sprintf("test selenium %s", caps["browserVersion"])
 
 	suite.testBasic(caps)
 }

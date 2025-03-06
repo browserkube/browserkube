@@ -102,6 +102,7 @@ func (p *wdProxy) StartSessionHandler(w http.ResponseWriter, rq *http.Request) {
 		},
 		ModifyResponse: func(rs *http.Response) error {
 			if rs.StatusCode != http.StatusOK {
+				p.logger.Errorw("Session creation failed", "status_code", rs.StatusCode)
 				return nil
 			}
 			payload := &bytes.Buffer{}

@@ -27,10 +27,10 @@ spec:
           port: "4444"
           provider: k8s
     firefox:
-      defaultVersion: "125.0-vnc"
-      defaultPath: "/wd/hub"
+      defaultVersion: "125.0"
+      defaultPath: "/"
       versions:
-        "125.0-moon":
+        "125.0":
           image: quay.io/browser/firefox-mozilla-build:125.0
           port: "4444"
           provider: k8s

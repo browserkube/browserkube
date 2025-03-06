@@ -2,6 +2,7 @@ package browserkubeutil
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"path"
@@ -36,7 +37,7 @@ func SeleniumUP(ctx context.Context, u string) error {
 			}()
 
 			if rs.StatusCode != http.StatusOK {
-				return nil, errors.New("incorrect http status")
+				return nil, fmt.Errorf("selenium [%s] is not up. Status code: %s", uri.String(), rs.Status)
 			}
 			return http.NoBody, nil
 		}); err != nil {

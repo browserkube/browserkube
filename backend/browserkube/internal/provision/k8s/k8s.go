@@ -35,7 +35,7 @@ const (
 	browserContainerName = "browser"
 )
 
-type CreationErr struct {
+type CreationError struct {
 	error
 }
 
@@ -192,7 +192,7 @@ func (kp *k8sWebDriverProvisioner) waitForBrowser(ctx context.Context, browser *
 				continue
 			case browserkubev1.PhaseFailed:
 				if p.Status.Reason != "" {
-					return nil, &CreationErr{error: errors.New(string(p.Status.Reason))}
+					return nil, &CreationError{error: errors.New(string(p.Status.Reason))}
 				}
 				return nil, fmt.Errorf("browser can't be created [%s][%s]", p.Status.Phase, p.Status.Reason)
 			case browserkubev1.PhaseTerminated:

@@ -59,10 +59,7 @@ func NewApp() *cli.App {
 }
 
 func Record(ctx *cli.Context) error {
-	cfg, err := getConfig(ctx)
-	if err != nil {
-		return fmt.Errorf("unable to parse config: %w", err)
-	}
+	cfg := getConfig(ctx)
 
 	if err := waitForDisplay(); err != nil {
 		return fmt.Errorf("unable to wait for display: %w", err)

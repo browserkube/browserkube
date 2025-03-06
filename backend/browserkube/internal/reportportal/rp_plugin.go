@@ -33,8 +33,8 @@ func provideReportPortalPlugin(sr settingsRepo) wd.PluginOpts {
 		Weight: 250,
 		Opts: []wd.PluginOpt{
 			wd.WithBeforeSessionCreated(beforeSessionCreated(sr)),
-			wd.WithAfterCommand(afterCommandHandler(sr)), //nolint:bodyclose
-			wd.WithAfterCommand(findElementHandler(sr)),  //nolint:bodyclose
+			wd.WithAfterCommand(afterCommandHandler(sr)),
+			wd.WithAfterCommand(findElementHandler(sr)),
 			wd.WithQuitSession(onQuitSession(sr)),
 		},
 	}

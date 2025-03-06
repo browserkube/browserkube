@@ -2,13 +2,14 @@ package internal
 
 import (
 	"context"
-	"github.com/distribution/reference"
 	"testing"
+
+	"github.com/distribution/reference"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/browserkube/browserkube/cmd/browser-updater/internal/mocks"
 	"github.com/browserkube/browserkube/cmd/browser-updater/internal/registry"
 	v1 "github.com/browserkube/browserkube/operator/api/v1"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdater(t *testing.T) {

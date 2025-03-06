@@ -21,26 +21,23 @@ func (r *v2Registry) Tags(ctx context.Context, ref reference.Named) (*RegistryIm
 	domain := reference.Domain(ref)
 	path := reference.Path(ref)
 
-	registryUrl := fmt.Sprintf("https://%s", domain)
-	imgUrl, _ := url.JoinPath(registryUrl, "/v2", path, "/tags/list")
+	registryURL := fmt.Sprintf("https://%s", domain)
+	imgURL, _ := url.JoinPath(registryURL, "/v2", path, "/tags/list")
 	// Ping the registry to ensure that is supports docker registry api v2
-	if err := r.ping(registryUrl); err != nil {
+	if err := r.ping(registryURL); err != nil {
 		return nil, fmt.Errorf("error while pinging registry %s: %w", ref.Name(), err)
 	}
 
-	fmt.Printf("Image URL for Image %s: %s\n", ref.String(), imgUrl)
+	fmt.Printf("Image URL for Image %s: %s\n", ref.String(), imgURL)
 
 	imageList := &RegistryImageListResp{}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, imgUrl, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, imgURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating request: %w", err)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error while sending request: %w", err)
-	}
-	if err != nil {
-		return nil, errors.WithStack(err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New("bad request")
@@ -54,13 +51,13 @@ func (r *v2Registry) Tags(ctx context.Context, ref reference.Named) (*RegistryIm
 	return imageList, nil
 }
 
-func (r *v2Registry) ping(baseUrl string) error {
-	pingUrl, err := url.JoinPath(baseUrl, "/v2/_catalog")
+func (r *v2Registry) ping(baseURL string) error {
+	pingURL, err := url.JoinPath(baseURL, "/v2/_catalog")
 	if err != nil {
 		return err
 	}
-	fmt.Printf("registry.ping url=%s\n", pingUrl)
-	resp, err := http.Get(pingUrl)
+	fmt.Printf("registry.ping url=%s\n", pingURL)
+	resp, err := http.Get(pingURL)
 	if err != nil {
 		return err
 	}

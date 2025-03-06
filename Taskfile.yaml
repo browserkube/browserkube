@@ -8,9 +8,6 @@ includes:
   example-playwright:
     taskfile: ./example/playwright/Taskfile.yaml
     dir: ./example/playwright
-  recorder:
-    taskfile: ./.taskfiles/go.yaml
-    dir: ./cmds/recorder
   clipboard:
     taskfile: ./.taskfiles/go.yaml
     dir: ./cmds/clipboard
@@ -23,7 +20,7 @@ includes:
     dir: ./operator
 
 vars:
-  GO_PROJECTS: recorder clipboard extension-installer operator
+  GO_PROJECTS: clipboard extension-installer operator
 tasks:
   all:fmt:
     cmds:

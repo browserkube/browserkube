@@ -33,7 +33,7 @@ func provideReportCommandPlugin(store storage.BlobSessionStorage) wd.PluginOpts 
 	return wd.PluginOpts{
 		Weight: 250,
 		Opts: []wd.PluginOpt{
-			wd.WithAfterCommand(fetchCommands(store)), //nolint:bodyclose
+			wd.WithAfterCommand(fetchCommands(store)),
 		},
 	}
 }

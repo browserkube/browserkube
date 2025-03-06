@@ -42,7 +42,7 @@ func UpdateBrowserImages(ctx context.Context, clientset *kubernetes.Clientset, b
 
 	b, err := json.Marshal(bsi.Items[0])
 	if err != nil {
-		return fmt.Errorf("error while marshalling json: %s", err.Error())
+		return fmt.Errorf("error while marshaling json: %s", err.Error())
 	}
 
 	if err = browserSets.Patch(ctx, bsi.Items[0].Name, b, v1.PatchOptions{}); err != nil {

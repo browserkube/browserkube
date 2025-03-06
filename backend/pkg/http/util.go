@@ -28,13 +28,13 @@ func WritePlainText(w http.ResponseWriter, statusCode int, text string) error {
 	return err
 }
 
-type HTTPErr struct {
+type HTTPError struct {
 	error
 	StatusCode int
 }
 
-func NewHTTPErr(statusCode int, err error) *HTTPErr {
-	return &HTTPErr{error: err, StatusCode: statusCode}
+func NewHTTPErr(statusCode int, err error) *HTTPError {
+	return &HTTPError{error: err, StatusCode: statusCode}
 }
 
 func Handler(f func(w http.ResponseWriter, rq *http.Request) error) http.HandlerFunc {
@@ -44,7 +44,7 @@ func Handler(f func(w http.ResponseWriter, rq *http.Request) error) http.Handler
 			logger.Error(err)
 
 			var statusCode int
-			var httpErr *HTTPErr
+			var httpErr *HTTPError
 			if errors.As(err, &httpErr) {
 				statusCode = httpErr.StatusCode
 			} else {

@@ -41,7 +41,7 @@ type Config struct {
 	FilePath          string
 }
 
-func getConfig(ctx *cli.Context) (*Config, error) {
+func getConfig(ctx *cli.Context) *Config {
 	return &Config{
 		VideoSize:  ctx.String(flagVideoSize),
 		FrameRate:  ctx.String(flagFrameRate),
@@ -49,7 +49,7 @@ func getConfig(ctx *cli.Context) (*Config, error) {
 		Codec:      ctx.String(flagCodec),
 		FileName:   "video.mp4",
 		FilePath:   ctx.String(flagFilePath),
-	}, nil
+	}
 }
 
 func buildArgs(cfg *Config) []string {

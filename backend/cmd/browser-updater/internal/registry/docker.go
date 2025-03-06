@@ -36,7 +36,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 	// Perform Auth if any secrets are given
 	var token string
 	if uname != "" && password != "" {
-		tokenUri := fmt.Sprintf("%s/v2/users/login", dockerHubURI)
+		tokenURI := fmt.Sprintf("%s/v2/users/login", dockerHubURI)
 		authVals := &dockerHubAuthReq{
 			Username: uname,
 			Password: password,
@@ -45,7 +45,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 		if err != nil {
 			return nil, err
 		}
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, tokenUri, bytes.NewBuffer(m))
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, tokenURI, bytes.NewBuffer(m))
 		if err != nil {
 			return nil, err
 		}
@@ -53,6 +53,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 		if err != nil {
 			return nil, err
 		}
+		defer resp.Body.Close()
 		tokenResp := &dockerHubAuthResp{}
 		err = json.NewDecoder(resp.Body).Decode(tokenResp)
 		if err != nil {
@@ -116,9 +117,9 @@ func (r *dockerRegistry) dockerV2Auth(authGuide, uname, password string) (string
 		return "", err
 	}
 	fmt.Printf("Authenticating for %s\n", headers[authGuideRealm])
-	authUrl := fmt.Sprintf("%s?service=%s&scope=%s", headers[authGuideRealm], headers[authGuideService], headers[authGuideScope])
+	authURL := fmt.Sprintf("%s?service=%s&scope=%s", headers[authGuideRealm], headers[authGuideService], headers[authGuideScope])
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, authUrl, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, authURL, nil)
 	if err != nil {
 		return "", fmt.Errorf("error while creating request: %w", err)
 	}
@@ -167,7 +168,7 @@ func (r *dockerRegistry) filterTags(tags *RegistryImageListResp) {
 		if len(v) <= filterCharlength &&
 			!utils.StringSliceContains(tagsBlacklist, v) {
 			selected = append(selected, v)
-			if tags.Digests != nil && len(tags.Digests) > 0 {
+			if len(tags.Digests) > 0 {
 				selectedDigest = append(selectedDigest, tags.Digests[i])
 			}
 		}
@@ -186,8 +187,8 @@ func (r *dockerRegistry) dockerV2SortTags(url, token string, tags *RegistryImage
 	manifestDates := make(map[string]time.Time, len(tags.Tags))
 	for _, tag := range tags.Tags {
 		fmt.Printf("Processing repo: %s for tag: %s\n", tags.Name, tag)
-		manifestUrl := fmt.Sprintf("%s/v2/%s/manifests/%s", url, tags.Name, tag)
-		manifestReq, err := http.NewRequestWithContext(ctx, http.MethodGet, manifestUrl, nil)
+		manifestURL := fmt.Sprintf("%s/v2/%s/manifests/%s", url, tags.Name, tag)
+		manifestReq, err := http.NewRequestWithContext(ctx, http.MethodGet, manifestURL, nil)
 		if err != nil {
 			return fmt.Errorf("error while preparing manifest req for %s: %w", tag, err)
 		}

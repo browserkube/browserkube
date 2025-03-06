@@ -47,7 +47,7 @@ func Test_adjustCapabilities(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "chrome", rq.Capabilities.BrowserName)
-	//require.Equal(t, "108.0", rq.Capabilities.BrowserVersion)
+	// require.Equal(t, "108.0", rq.Capabilities.BrowserVersion)
 	adjusted, _ := json.Marshal(rq)
 	fmt.Println(string(adjusted))
 }

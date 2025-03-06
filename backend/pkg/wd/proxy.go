@@ -76,7 +76,7 @@ func WithBeforeSessionCreated(f func(hook OnBeforeSessionStart) OnBeforeSessionS
 
 func WithAfterSessionCreated(f func(OnAfterSessionStart) OnAfterSessionStart) PluginOpt {
 	return func(p *ProxyBuilder) {
-		p.afterSessionHooks = append(p.afterSessionHooks, f) //nolint:bodyclose
+		p.afterSessionHooks = append(p.afterSessionHooks, f)
 	}
 }
 
@@ -100,7 +100,7 @@ func WithBeforeCommand(f func(OnBeforeCommand) OnBeforeCommand) PluginOpt {
 
 func WithAfterCommand(f func(OnAfterCommand) OnAfterCommand) PluginOpt {
 	return func(p *ProxyBuilder) {
-		p.afterCommandHooks = append(p.afterCommandHooks, f) //nolint:bodyclose
+		p.afterCommandHooks = append(p.afterCommandHooks, f)
 	}
 }
 
@@ -132,9 +132,9 @@ func (pb *ProxyBuilder) Build(sessionRepo session.Repository) *ProxyManager {
 	return &ProxyManager{
 		sessionRepo:       sessionRepo,
 		beforeSessionHook: chain[OnBeforeSessionStart](pb.beforeSessionHooks, dummyOnBeforeSession),
-		afterSessionHook:  chain[OnAfterSessionStart](pb.afterSessionHooks, dummyOnAfterSession), //nolint:bodyclose
+		afterSessionHook:  chain[OnAfterSessionStart](pb.afterSessionHooks, dummyOnAfterSession),
 		beforeCommandHook: chain[OnBeforeCommand](pb.beforeCommandHooks, dummyOnBeforeCommand),
-		afterCommandHook:  chain[OnAfterCommand](pb.afterCommandHooks, dummyOnAfterCommand), //nolint:bodyclose
+		afterCommandHook:  chain[OnAfterCommand](pb.afterCommandHooks, dummyOnAfterCommand),
 		quitSessionHook:   chain[OnSessionQuit](pb.quitSessionHooks, dummyOnQuitCommand),
 		log:               zap.S(),
 	}

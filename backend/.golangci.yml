@@ -48,8 +48,7 @@ linters:
     - wsl
     - funlen
     - unused
-    - gomnd
-    - goerr113
+    - err113
     - godot
     - nestif
     - nlreturn

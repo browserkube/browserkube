@@ -51,7 +51,8 @@ func (_m *RegistryClient) Tags(ctx context.Context, ref reference.Named) (*regis
 func NewRegistryClient(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *RegistryClient {
+},
+) *RegistryClient {
 	mock := &RegistryClient{}
 	mock.Mock.Test(t)
 

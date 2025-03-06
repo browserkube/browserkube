@@ -2,7 +2,7 @@ module github.com/browserkube/browserkube/extension-installer
 
 go 1.20
 
-require github.com/urfave/cli/v2 v2.27.5
+require github.com/urfave/cli/v2 v2.27.6
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.6 // indirect

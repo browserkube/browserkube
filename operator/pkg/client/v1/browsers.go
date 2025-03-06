@@ -2,8 +2,8 @@ package v1
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/watch"
@@ -93,7 +93,7 @@ func (c *browserClient) WatchByName(ctx context.Context, name string) (watch.Int
 		FieldSelector: fields.OneTermEqualSelector("metadata.name", name).String(),
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "Unable to find selenium pod to pWatch: %v", err)
+		return nil, fmt.Errorf("unable to find selenium pod to pWatch: %w", err)
 	}
 	return pWatch, nil
 }

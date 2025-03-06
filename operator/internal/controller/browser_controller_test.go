@@ -338,7 +338,7 @@ func createBrowserSet(ns, name string) {
 					DefaultVersion: "version",
 					Versions: map[string]browserkubeapiv1.BrowserConfig{
 						"version": {
-							Image:    "selenoid/vnc_chrome:103.0",
+							Image:    "quay.io/browser/firefox-mozilla-build:125.0",
 							Provider: "k8s",
 							Port:     "4444",
 						},

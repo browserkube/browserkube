@@ -30,7 +30,7 @@ import (
 
 	"dario.cat/mergo"
 
-	errors2 "github.com/pkg/errors"
+	sdkerrors "errors"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -171,7 +171,7 @@ func (r *BrowserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			// create the browser
 			if cErr := r.createBrowser(ctx, instance); cErr != nil {
 				var bErr *browserErr
-				if errors2.As(cErr, &bErr) {
+				if sdkerrors.As(cErr, &bErr) {
 					instance.Status.Reason = bErr.reason
 				} else {
 					instance.Status.Reason = browserkubeapiv1.ReasonUnknown
@@ -331,7 +331,7 @@ func (r *BrowserReconciler) findBrowserConfig(ctx context.Context, browser *brow
 	// TODO validate
 	browserName := strings.ToLower(browser.Spec.BrowserName)
 	if browserName == "" {
-		return nil, errors2.New("browser is not provided")
+		return nil, sdkerrors.New("browser is not provided")
 	}
 	browserType := browser.Spec.Type
 	if browserType == "" {

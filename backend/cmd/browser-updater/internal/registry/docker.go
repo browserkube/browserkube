@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	browserkubeutil "github.com/browserkube/browserkube/pkg/util"
 	"net/http"
 	"time"
 
@@ -53,7 +54,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Body.Close()
+		defer browserkubeutil.CloseQuietly(resp.Body)
 		tokenResp := &dockerHubAuthResp{}
 		err = json.NewDecoder(resp.Body).Decode(tokenResp)
 		if err != nil {
@@ -74,7 +75,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer browserkubeutil.CloseQuietly(resp.Body)
 
 	tags := &DockerTagsResponse{}
 	err = json.NewDecoder(resp.Body).Decode(tags)
@@ -199,9 +200,7 @@ func (r *dockerRegistry) dockerV2SortTags(url, token string, tags *RegistryImage
 		if err != nil {
 			return fmt.Errorf("error while sending manifest req for %s: %w", tag, err)
 		}
-		if resp != nil {
-			defer resp.Body.Close()
-		}
+		defer browserkubeutil.CloseQuietly(resp.Body)
 		manifest := &manifestResp{}
 		if err := json.NewDecoder(resp.Body).Decode(manifest); err != nil {
 			return fmt.Errorf("error while decoding manifest for %s: %w", tag, err)

@@ -44,7 +44,7 @@ type BrowserKubeOpts struct {
 	ScreenResolution string            `json:"screenResolution,omitempty" schema:"screenResolution"`
 
 	// timeouts
-	SessionTimeout     time.Duration `json:"sessionTimeout,omitempty" schema:"sessionTimeout"`
+	SessionTimeout     time.Duration `json:"sessionTimeout,omitempty"     schema:"sessionTimeout"`
 	SessionIdleTimeout time.Duration `json:"sessionIdleTimeout,omitempty" schema:"screenResolution"`
 
 	//nolint: tagliatelle

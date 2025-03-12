@@ -129,18 +129,27 @@ func buildBrowserEnvVar(browser browserkubeapiv1.BrowserSpec, browserConfig *bro
 	return vars
 }
 
-func buildSidecarEnvVar(sidecarPort string, browserConfigPort, browserConfigPath string) []apiv1.EnvVar {
+func buildSidecarEnvVar(browser browserkubeapiv1.BrowserSpec,
+	browserConfig *browserkubeapiv1.BrowserConfig,
+	sidecarPort string) []apiv1.EnvVar {
 	proxyURL := url.URL{
 		Scheme: "http",
-		Host:   net.JoinHostPort("localhost", browserConfigPort),
-		Path:   browserConfigPath,
+		Host:   net.JoinHostPort("localhost", browserConfig.Port),
+		Path:   browserConfig.Path,
 	}
 
-	return []apiv1.EnvVar{
+	env := []apiv1.EnvVar{
 		{Name: "PORT", Value: sidecarPort},
 		{Name: "PROXY_URL", Value: proxyURL.String()},
 		{Name: "BROWSER_HOME_DIR", Value: browserHomeDir},
 	}
+	if browser.SessionTimeout != nil {
+		env = append(env, apiv1.EnvVar{Name: "SESSION_TIMEOUT", Value: browser.SessionTimeout.String()})
+	}
+	if browser.SessionIdleTimeout != nil {
+		env = append(env, apiv1.EnvVar{Name: "IDLE_TIMEOUT", Value: browser.SessionIdleTimeout.String()})
+	}
+	return env
 }
 
 func GetResolution(res string) string {

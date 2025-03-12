@@ -53,7 +53,7 @@ func provideConfig() (*conf, error) {
 
 	browserHomeDir := browserkubeutil.FirstNonEmpty(os.Getenv("BROWSER_HOME_DIR"), "/home/user")
 
-	iTimeout, err := time.ParseDuration(browserkubeutil.FirstNonEmpty(os.Getenv("IDLE_TIMEOUT"), "10m"))
+	iTimeout, err := time.ParseDuration(browserkubeutil.FirstNonEmpty(os.Getenv("IDLE_TIMEOUT"), "1m"))
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

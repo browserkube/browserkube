@@ -37,9 +37,15 @@ type BrowserSpec struct {
 	// nolint: tagliatelle
 	EnableVNC bool `json:"enableVNC,omitempty"`
 	// video recording options
-	EnableVideo      bool               `json:"enableVideo,omitempty"`
-	ScreenResolution string             `json:"screenResolution,omitempty"`
-	Extensions       []BrowserExtension `json:"extensions,omitempty"`
+	EnableVideo      bool   `json:"enableVideo,omitempty"`
+	ScreenResolution string `json:"screenResolution,omitempty"`
+
+	Extensions []BrowserExtension `json:"extensions,omitempty"`
+
+	// timeouts
+	// +optional
+	SessionTimeout     *metav1.Duration `json:"sessionTimeout,omitempty"`
+	SessionIdleTimeout *metav1.Duration `json:"sessionIdleTimeout,omitempty"`
 
 	// +optional
 	Caps []byte `json:"caps,omitempty"`
@@ -58,8 +64,6 @@ const (
 
 // BrowserStatus defines the observed state of Browser
 type BrowserStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
 	Phase       Phase      `json:"phase"`
 	Reason      Reason     `json:"reason,omitempty"`
 	Message     string     `json:"message,omitempty"`

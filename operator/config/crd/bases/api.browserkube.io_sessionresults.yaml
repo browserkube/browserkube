@@ -70,6 +70,11 @@ spec:
                     type: string
                   screenResolution:
                     type: string
+                  sessionIdleTimeout:
+                    type: string
+                  sessionTimeout:
+                    description: timeouts
+                    type: string
                   timeZone:
                     type: string
                   type:

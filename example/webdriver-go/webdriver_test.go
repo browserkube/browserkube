@@ -22,7 +22,7 @@ import (
 // Chrome Store Extension ID for "metamask" addon
 const (
 	extensionID   = "nkbihfbeogaeaoehlefnkodbefgpgknn"
-	chromeVersion = "128.0"
+	chromeVersion = "132.0"
 )
 
 func defaultCaps() selenium.Capabilities {

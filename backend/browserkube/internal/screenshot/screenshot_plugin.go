@@ -20,14 +20,14 @@ import (
 
 var Module = fx.Options(
 	fx.Provide(
-		fx.Annotate(
-			provideScreenshotCapturePlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
-		fx.Annotate(
-			provideScreenshotOnNotFoundPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
+	//fx.Annotate(
+	//	provideScreenshotCapturePlugin,
+	//	fx.ResultTags(`group:"wd-extensions"`),
+	//),
+	//fx.Annotate(
+	//	provideScreenshotOnNotFoundPlugin,
+	//	fx.ResultTags(`group:"wd-extensions"`),
+	//),
 	),
 )
 
@@ -35,7 +35,7 @@ func provideScreenshotCapturePlugin(store storage.BlobSessionStorage) wd.PluginO
 	return wd.PluginOpts{
 		Weight: 250,
 		Opts: []wd.PluginOpt{
-			wd.WithAfterCommand(screenshotCapture(store)), //nolint:bodyclose
+			wd.WithAfterCommand(screenshotCapture(store)),
 		},
 	}
 }
@@ -44,7 +44,7 @@ func provideScreenshotOnNotFoundPlugin(store storage.BlobSessionStorage) wd.Plug
 	return wd.PluginOpts{
 		Weight: 250,
 		Opts: []wd.PluginOpt{
-			wd.WithAfterCommand(screenshotIfNotFound(store)), //nolint:bodyclose
+			wd.WithAfterCommand(screenshotIfNotFound(store)),
 		},
 	}
 }

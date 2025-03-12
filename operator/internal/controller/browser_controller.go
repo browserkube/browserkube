@@ -550,7 +550,7 @@ func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Br
 				Ports: []apiv1.ContainerPort{
 					buildContainerPort("sidecar", opts.sidecarPort),
 				},
-				Env:          buildSidecarEnvVar(opts.sidecarPort, browserConfig.Port, browserConfig.Path),
+				Env:          buildSidecarEnvVar(b.Spec, browserConfig, opts.sidecarPort),
 				VolumeMounts: volumeMounts,
 				Resources:    buildResources(200, memory128Mi, 100, memory128Mi),
 			},

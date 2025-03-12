@@ -90,6 +90,12 @@ func (kp *k8sWebDriverProvisioner) Provision(
 	tracingContext := propagation.MapCarrier{}
 	otel.GetTextMapPropagator().Inject(ctx, tracingContext)
 
+	durationOrNil := func(d time.Duration) *metav1.Duration {
+		if d == 0 {
+			return nil
+		}
+		return &metav1.Duration{Duration: d}
+	}
 	browser := &browserkubev1.Browser{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      id,
@@ -107,9 +113,11 @@ func (kp *k8sWebDriverProvisioner) Provision(
 			Type:           opts.BrowserKubeOpts.Type,
 			Caps:           json.RawMessage(capsRaw),
 
-			EnableVNC:   opts.BrowserKubeOpts.EnableVNC,
-			EnableVideo: opts.BrowserKubeOpts.EnableVideo,
-			Extensions:  opts.BrowserKubeOpts.Extensions,
+			EnableVNC:          opts.BrowserKubeOpts.EnableVNC,
+			EnableVideo:        opts.BrowserKubeOpts.EnableVideo,
+			Extensions:         opts.BrowserKubeOpts.Extensions,
+			SessionTimeout:     durationOrNil(opts.BrowserKubeOpts.SessionTimeout),
+			SessionIdleTimeout: durationOrNil(opts.BrowserKubeOpts.SessionIdleTimeout),
 		},
 	}
 

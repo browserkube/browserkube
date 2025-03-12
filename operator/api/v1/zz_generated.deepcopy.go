@@ -22,6 +22,7 @@ package v1
 
 import (
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -295,6 +296,16 @@ func (in *BrowserSpec) DeepCopyInto(out *BrowserSpec) {
 		in, out := &in.Extensions, &out.Extensions
 		*out = make([]BrowserExtension, len(*in))
 		copy(*out, *in)
+	}
+	if in.SessionTimeout != nil {
+		in, out := &in.SessionTimeout, &out.SessionTimeout
+		*out = new(metav1.Duration)
+		**out = **in
+	}
+	if in.SessionIdleTimeout != nil {
+		in, out := &in.SessionIdleTimeout, &out.SessionIdleTimeout
+		*out = new(metav1.Duration)
+		**out = **in
 	}
 	if in.Caps != nil {
 		in, out := &in.Caps, &out.Caps

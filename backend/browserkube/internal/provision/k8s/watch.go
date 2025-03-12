@@ -238,6 +238,8 @@ func asStatus(b *browserkubev1.Browser) string {
 		return "running"
 	case browserkubev1.PhaseTerminated:
 		return "terminated"
+	case browserkubev1.PhaseFailed:
+		return "failed"
 	default:
 		return "pending"
 	}

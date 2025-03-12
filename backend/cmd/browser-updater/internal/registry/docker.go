@@ -6,13 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	browserkubeutil "github.com/browserkube/browserkube/pkg/util"
 	"net/http"
 	"time"
 
 	"github.com/distribution/reference"
 
 	"github.com/browserkube/browserkube/cmd/browser-updater/utils"
+	browserkubeutil "github.com/browserkube/browserkube/pkg/util"
 )
 
 type dockerRegistry struct{}
@@ -50,7 +50,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 		if err != nil {
 			return nil, err
 		}
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := http.DefaultClient.Do(req) //nolint:bodyclose
 		if err != nil {
 			return nil, err
 		}

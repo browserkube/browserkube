@@ -131,9 +131,7 @@ func (r *dockerRegistry) dockerV2Auth(authGuide, uname, password string) (string
 	if err != nil {
 		return "", fmt.Errorf("error while requesting auth token: %w", err)
 	}
-	if resp != nil {
-		defer resp.Body.Close()
-	}
+	defer resp.Body.Close()
 	token := &registryAuthResp{}
 	if err = json.NewDecoder(resp.Body).Decode(token); err != nil {
 		return "", fmt.Errorf("error while decoding token response: %w", err)

@@ -2,7 +2,6 @@ package session
 
 import (
 	"encoding/json"
-	"time"
 
 	"github.com/mailru/easyjson"
 	"go.uber.org/zap"
@@ -44,8 +43,8 @@ type BrowserKubeOpts struct {
 	ScreenResolution string            `json:"screenResolution,omitempty" schema:"screenResolution"`
 
 	// timeouts
-	SessionTimeout     time.Duration `json:"sessionTimeout,omitempty"     schema:"sessionTimeout"`
-	SessionIdleTimeout time.Duration `json:"sessionIdleTimeout,omitempty" schema:"screenResolution"`
+	SessionTimeout     int `json:"sessionTimeout,omitempty"     schema:"sessionTimeout"`
+	SessionIdleTimeout int `json:"sessionIdleTimeout,omitempty" schema:"sessionIdleTimeout"`
 
 	//nolint: tagliatelle
 	EnableVNC  bool                             `json:"enableVNC,omitempty"  schema:"enableVNC"`

@@ -144,10 +144,10 @@ func buildSidecarEnvVar(browser browserkubeapiv1.BrowserSpec,
 		{Name: "BROWSER_HOME_DIR", Value: browserHomeDir},
 	}
 	if browser.SessionTimeout != nil {
-		env = append(env, apiv1.EnvVar{Name: "SESSION_TIMEOUT", Value: browser.SessionTimeout.String()})
+		env = append(env, apiv1.EnvVar{Name: "SESSION_TIMEOUT", Value: browser.SessionTimeout.Duration.String()})
 	}
 	if browser.SessionIdleTimeout != nil {
-		env = append(env, apiv1.EnvVar{Name: "IDLE_TIMEOUT", Value: browser.SessionIdleTimeout.String()})
+		env = append(env, apiv1.EnvVar{Name: "IDLE_TIMEOUT", Value: browser.SessionIdleTimeout.Duration.String()})
 	}
 	return env
 }

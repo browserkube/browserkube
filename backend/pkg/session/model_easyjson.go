@@ -4,7 +4,6 @@ package session
 
 import (
 	json "encoding/json"
-	time "time"
 
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
@@ -185,9 +184,9 @@ func easyjsonC80ae7adDecodeGithubComBrowserkubeBrowserkubePkgSession1(in *jlexer
 		case "screenResolution":
 			out.ScreenResolution = string(in.String())
 		case "sessionTimeout":
-			out.SessionTimeout = time.Duration(in.Int64())
+			out.SessionTimeout = int(in.Int())
 		case "sessionIdleTimeout":
-			out.SessionIdleTimeout = time.Duration(in.Int64())
+			out.SessionIdleTimeout = int(in.Int())
 		case "enableVNC":
 			out.EnableVNC = bool(in.Bool())
 		case "extensions":
@@ -322,7 +321,7 @@ func easyjsonC80ae7adEncodeGithubComBrowserkubeBrowserkubePkgSession1(out *jwrit
 		} else {
 			out.RawString(prefix)
 		}
-		out.Int64(int64(in.SessionTimeout))
+		out.Int(int(in.SessionTimeout))
 	}
 	if in.SessionIdleTimeout != 0 {
 		const prefix string = ",\"sessionIdleTimeout\":"
@@ -332,7 +331,7 @@ func easyjsonC80ae7adEncodeGithubComBrowserkubeBrowserkubePkgSession1(out *jwrit
 		} else {
 			out.RawString(prefix)
 		}
-		out.Int64(int64(in.SessionIdleTimeout))
+		out.Int(int(in.SessionIdleTimeout))
 	}
 	if in.EnableVNC {
 		const prefix string = ",\"enableVNC\":"

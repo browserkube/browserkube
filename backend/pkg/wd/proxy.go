@@ -243,25 +243,25 @@ func (p *ProxyManager) StartSessionHandler(w http.ResponseWriter, rq *http.Reque
 	// we use modified uuid version here
 	// so the objects are sorted in Kubernetes/etcd in descending order
 	sessionID := uuid.Must(revuuid.NewV7Reverse()).String()
+	payload := &bytes.Buffer{}
+	pReader := io.TeeReader(rq.Body, payload)
+	var startSessionRQ wdproto.NewSessionRQ
+	if err := json.NewDecoder(pReader).Decode(&startSessionRQ); err != nil {
+		wdproto.BadGatewayError(w, err)
+		return
+	}
+	rq.Body = io.NopCloser(payload)
+	p.log.Info("capabilities", payload.String())
+
+	rq.Header.Set("sessionID", sessionID)
+
+	if err := adjustCapabilities(&startSessionRQ); err != nil {
+		wdproto.BadGatewayError(w, err)
+		return
+	}
+
 	(&httputil.ReverseProxy{
 		Rewrite: func(prq *httputil.ProxyRequest) {
-			payload := &bytes.Buffer{}
-			pReader := io.TeeReader(prq.In.Body, payload)
-			var startSessionRQ wdproto.NewSessionRQ
-			if err := json.NewDecoder(pReader).Decode(&startSessionRQ); err != nil {
-				wdproto.BadGatewayError(w, err)
-				return
-			}
-			prq.Out.Body = io.NopCloser(payload)
-			p.log.Info("capabilities", payload.String())
-
-			prq.Out.Header.Set("sessionID", sessionID)
-
-			if err := adjustCapabilities(&startSessionRQ); err != nil {
-				wdproto.BadGatewayError(w, err)
-				return
-			}
-
 			if err := p.beforeSessionHook(ctx, prq, &startSessionRQ, sessionID); err != nil {
 				wdproto.BadGatewayError(w, err)
 				return

@@ -7,7 +7,7 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   schedule: "@daily"
-  successfulJobsHistoryLimit: 0
+  successfulJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
@@ -19,7 +19,7 @@ spec:
               image: "{{ .Values.sessionArchiver.image }}"
               imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
               env:
-                - name: CONTEXT_TIMEOUT
+                - name: EXECUTION_TIMEOUT
                   value: "{{ .Values.cronJobContext.contextTimeout }}"
                 - name: BLOB_URL
                   value: {{ .Values.blob.url }}

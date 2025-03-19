@@ -1022,6 +1022,17 @@ const docTemplate = `{
                 "screenResolution": {
                     "type": "string"
                 },
+                "sessionIdleTimeout": {
+                    "$ref": "#/definitions/v1.Duration"
+                },
+                "sessionTimeout": {
+                    "description": "timeouts\n+optional",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/v1.Duration"
+                        }
+                    ]
+                },
                 "timeZone": {
                     "type": "string"
                 },
@@ -1043,7 +1054,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phase": {
-                    "description": "INSERT ADDITIONAL STATUS FIELD - define observed state of cluster\nImportant: Run \"make\" to regenerate code after modifying this file",
                     "type": "string"
                 },
                 "podName": {
@@ -1060,6 +1070,34 @@ const docTemplate = `{
                 },
                 "vncPass": {
                     "type": "string"
+                }
+            }
+        },
+        "v1.Duration": {
+            "type": "object",
+            "properties": {
+                "time.Duration": {
+                    "type": "integer",
+                    "enum": [
+                        -9223372036854775808,
+                        9223372036854775807,
+                        1,
+                        1000,
+                        1000000,
+                        1000000000,
+                        60000000000,
+                        3600000000000
+                    ],
+                    "x-enum-varnames": [
+                        "minDuration",
+                        "maxDuration",
+                        "Nanosecond",
+                        "Microsecond",
+                        "Millisecond",
+                        "Second",
+                        "Minute",
+                        "Hour"
+                    ]
                 }
             }
         },
@@ -1141,7 +1179,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "finalizers": {
-                    "description": "Must be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.\nFinalizers may be processed and removed in any order.  Order is NOT enforced\nbecause it introduces significant risk of stuck finalizers.\nfinalizers is a shared field, any actor with permission can reorder it.\nIf the finalizer list is processed in order, then this can lead to a situation\nin which the component responsible for the first finalizer in the list is\nwaiting for a signal (field value, external system, or other) produced by a\ncomponent responsible for a finalizer later in the list, resulting in a deadlock.\nWithout enforced ordering finalizers are free to order amongst themselves and\nare not vulnerable to ordering changes in the list.\n+optional\n+patchStrategy=merge",
+                    "description": "Must be empty before the object is deleted from the registry. Each entry\nis an identifier for the responsible component that will remove the entry\nfrom the list. If the deletionTimestamp of the object is non-nil, entries\nin this list can only be removed.\nFinalizers may be processed and removed in any order.  Order is NOT enforced\nbecause it introduces significant risk of stuck finalizers.\nfinalizers is a shared field, any actor with permission can reorder it.\nIf the finalizer list is processed in order, then this can lead to a situation\nin which the component responsible for the first finalizer in the list is\nwaiting for a signal (field value, external system, or other) produced by a\ncomponent responsible for a finalizer later in the list, resulting in a deadlock.\nWithout enforced ordering finalizers are free to order amongst themselves and\nare not vulnerable to ordering changes in the list.\n+optional\n+patchStrategy=merge\n+listType=set",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -1163,7 +1201,7 @@ const docTemplate = `{
                     }
                 },
                 "managedFields": {
-                    "description": "ManagedFields maps workflow-id and version to the set of fields\nthat are managed by that workflow. This is mostly for internal\nhousekeeping, and users typically shouldn't need to set or\nunderstand this field. A workflow can be the user's name, a\ncontroller's name, or the name of a specific apply path like\n\"ci-cd\". The set of fields is always in the version that the\nworkflow used when modifying the object.\n\n+optional",
+                    "description": "ManagedFields maps workflow-id and version to the set of fields\nthat are managed by that workflow. This is mostly for internal\nhousekeeping, and users typically shouldn't need to set or\nunderstand this field. A workflow can be the user's name, a\ncontroller's name, or the name of a specific apply path like\n\"ci-cd\". The set of fields is always in the version that the\nworkflow used when modifying the object.\n\n+optional\n+listType=atomic",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/v1.ManagedFieldsEntry"
@@ -1178,7 +1216,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "ownerReferences": {
-                    "description": "List of objects depended by this object. If ALL objects in the list have\nbeen deleted, this object will be garbage collected. If this object is managed by a controller,\nthen an entry in this list will point to this controller, with the controller field set to true.\nThere cannot be more than one managing controller.\n+optional\n+patchMergeKey=uid\n+patchStrategy=merge",
+                    "description": "List of objects depended by this object. If ALL objects in the list have\nbeen deleted, this object will be garbage collected. If this object is managed by a controller,\nthen an entry in this list will point to this controller, with the controller field set to true.\nThere cannot be more than one managing controller.\n+optional\n+patchMergeKey=uid\n+patchStrategy=merge\n+listType=map\n+listMapKey=uid",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/v1.OwnerReference"

@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,7 +11,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-	"k8s.io/utils/env"
 
 	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
 	"github.com/browserkube/browserkube/pkg/storage"
@@ -27,16 +27,35 @@ func New() *cli.App {
 		Writer:    os.Stdout,
 		ErrWriter: os.Stderr,
 		Action:    Archive,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "timeout",
+				EnvVars:     []string{"EXECUTION_TIMEOUT"},
+				Required:    false,
+				DefaultText: "1m",
+			},
+			&cli.StringFlag{
+				Name:     "blob-url",
+				EnvVars:  []string{"BLOB_URL"},
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "blob-url-archive",
+				EnvVars:  []string{"BLOB_URL_ARCHIVE"},
+				Required: true,
+			},
+		},
 	}
 }
 
 func Archive(c *cli.Context) error {
-	contextTimeout, err := time.ParseDuration(env.GetString("CONTEXT_TIMEOUT", ""))
+	contextTimeout, err := time.ParseDuration(c.String("timeout"))
 	if err != nil {
 		return err
 	}
 
 	ctx, cancel := context.WithTimeout(c.Context, contextTimeout)
+	c.Context = ctx
 	go handleSignals(cancel)
 
 	ns, err := getCurrentNamespace()
@@ -44,7 +63,7 @@ func Archive(c *cli.Context) error {
 		return err
 	}
 
-	return archiveSessionResults(ctx, ns)
+	return archiveSessionResults(c, ns)
 }
 
 func getCurrentNamespace() (string, error) {
@@ -55,30 +74,29 @@ func getCurrentNamespace() (string, error) {
 	return string(ns), nil
 }
 
-func archiveSessionResults(ctx context.Context, ns string) error {
+func archiveSessionResults(ctx *cli.Context, ns string) error {
 	client, err := provideClient()
 	if err != nil {
 		return err
 	}
 
-	blobSessionStorage, err := storage.New(context.Background(), env.GetString("BLOB_URL", ""))
+	blobSessionStorage, err := storage.New(ctx.Context, ctx.String("blob-url"))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open blob storage: %w", err)
 	}
 
-	blobSessionArchiveStorage, err := storage.New(context.Background(), env.GetString("BLOB_URL_ARCHIVE", ""))
+	blobSessionArchiveStorage, err := storage.New(ctx.Context, ctx.String("blob-url-archive"))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open blob archive storage: %w", err)
 	}
 
 	archiver := &SessionResultArchiver{
 		SessionResults:            client.SessionResults(ns),
 		BlobSessionStorage:        blobSessionStorage,
 		BlobSessionArchiveStorage: blobSessionArchiveStorage,
-		ctx:                       ctx,
 	}
 
-	err = archiver.Archive()
+	err = archiver.Archive(ctx.Context)
 	if err != nil {
 		return err
 	}

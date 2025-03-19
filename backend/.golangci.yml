@@ -69,6 +69,7 @@ linters:
     - contextcheck
     - canonicalheader
     - intrange
+    - recvcheck
 
 run:
   concurrency: 1

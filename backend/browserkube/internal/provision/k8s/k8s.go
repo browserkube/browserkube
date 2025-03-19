@@ -90,11 +90,11 @@ func (kp *k8sWebDriverProvisioner) Provision(
 	tracingContext := propagation.MapCarrier{}
 	otel.GetTextMapPropagator().Inject(ctx, tracingContext)
 
-	durationOrNil := func(d time.Duration) *metav1.Duration {
-		if d == 0 {
+	durationOrNil := func(seconds int) *metav1.Duration {
+		if seconds == 0 {
 			return nil
 		}
-		return &metav1.Duration{Duration: d}
+		return &metav1.Duration{Duration: time.Duration(seconds) * time.Second}
 	}
 	browser := &browserkubev1.Browser{
 		ObjectMeta: metav1.ObjectMeta{

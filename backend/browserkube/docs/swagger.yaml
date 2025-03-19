@@ -278,6 +278,14 @@ definitions:
         type: string
       screenResolution:
         type: string
+      sessionIdleTimeout:
+        $ref: '#/definitions/v1.Duration'
+      sessionTimeout:
+        allOf:
+        - $ref: '#/definitions/v1.Duration'
+        description: |-
+          timeouts
+          +optional
       timeZone:
         type: string
       type:
@@ -292,9 +300,6 @@ definitions:
       message:
         type: string
       phase:
-        description: |-
-          INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-          Important: Run "make" to regenerate code after modifying this file
         type: string
       podName:
         type: string
@@ -306,6 +311,29 @@ definitions:
         type: string
       vncPass:
         type: string
+    type: object
+  v1.Duration:
+    properties:
+      time.Duration:
+        enum:
+        - -9223372036854775808
+        - 9223372036854775807
+        - 1
+        - 1000
+        - 1000000
+        - 1000000000
+        - 60000000000
+        - 3600000000000
+        type: integer
+        x-enum-varnames:
+        - minDuration
+        - maxDuration
+        - Nanosecond
+        - Microsecond
+        - Millisecond
+        - Second
+        - Minute
+        - Hour
     type: object
   v1.FieldsV1:
     type: object
@@ -437,6 +465,7 @@ definitions:
           are not vulnerable to ordering changes in the list.
           +optional
           +patchStrategy=merge
+          +listType=set
         items:
           type: string
         type: array
@@ -483,6 +512,7 @@ definitions:
           workflow used when modifying the object.
 
           +optional
+          +listType=atomic
         items:
           $ref: '#/definitions/v1.ManagedFieldsEntry'
         type: array
@@ -517,6 +547,8 @@ definitions:
           +optional
           +patchMergeKey=uid
           +patchStrategy=merge
+          +listType=map
+          +listMapKey=uid
         items:
           $ref: '#/definitions/v1.OwnerReference'
         type: array

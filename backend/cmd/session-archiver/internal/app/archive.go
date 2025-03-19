@@ -23,11 +23,10 @@ type SessionResultArchiver struct {
 	SessionResults            clientv1.SessionResultsInterface
 	BlobSessionStorage        storage.Storage
 	BlobSessionArchiveStorage storage.Storage
-	ctx                       context.Context
 }
 
-func (a *SessionResultArchiver) Archive() error {
-	res, err := a.SessionResults.List(a.ctx, metav1.ListOptions{})
+func (a *SessionResultArchiver) Archive(ctx context.Context) error {
+	res, err := a.SessionResults.List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
@@ -52,13 +51,13 @@ func (a *SessionResultArchiver) Archive() error {
 			return err
 		}
 
-		files, err := a.BlobSessionStorage.ListFileNames(a.ctx, res.Items[i].Name, "")
+		files, err := a.BlobSessionStorage.ListFileNames(ctx, res.Items[i].Name, "")
 		if err != nil {
 			return err
 		}
 
 		for _, name := range files {
-			file, err := a.BlobSessionStorage.GetFile(a.ctx, res.Items[i].Name, name)
+			file, err := a.BlobSessionStorage.GetFile(ctx, res.Items[i].Name, name)
 			if err != nil {
 				return err
 			}
@@ -83,7 +82,7 @@ func (a *SessionResultArchiver) Archive() error {
 	}
 
 	currentTime := time.Now()
-	err = a.BlobSessionArchiveStorage.SaveFile(a.ctx, "", "", &storage.BlobFile{
+	err = a.BlobSessionArchiveStorage.SaveFile(ctx, "", "", &storage.BlobFile{
 		FileName:    filepath.Join("archive-" + currentTime.Format("2006-01-02")),
 		ContentType: "application/zip",
 		Content:     writer,
@@ -94,13 +93,13 @@ func (a *SessionResultArchiver) Archive() error {
 
 	for sessionName, files := range filesToDelete {
 		for _, fileName := range files {
-			err = a.BlobSessionStorage.DeleteFile(a.ctx, sessionName, fileName)
+			err = a.BlobSessionStorage.DeleteFile(ctx, sessionName, fileName)
 			if err != nil {
 				return err
 			}
 		}
 
-		err = a.SessionResults.Delete(a.ctx, sessionName, metav1.DeleteOptions{})
+		err = a.SessionResults.Delete(ctx, sessionName, metav1.DeleteOptions{})
 		if err != nil {
 			return err
 		}

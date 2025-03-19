@@ -93,5 +93,8 @@ tasks:
         --env MINIO_SERVER_ROOT_USER={{.ROOT_USER}} \
         --env MINIO_SERVER_ROOT_PASSWORD={{.ROOT_PASSWORD}} \
         --env MINIO_SERVER_HOST=minio \
-        --image docker.io/bitnami/minio-client:2024.5.9 -- /opt/bitnami/scripts/minio-client/run.sh mb minio/browserkube
+        --image docker.io/bitnami/minio-client:2024.5.9 -- bash -c "
+            /opt/bitnami/scripts/minio-client/run.sh mb minio/browserkube-archive
+            /opt/bitnami/scripts/minio-client/run.sh mb minio/browserkube
+        "
 

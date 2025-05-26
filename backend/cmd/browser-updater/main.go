@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -19,7 +20,7 @@ import (
 const nsSecret = "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
 
 func main() {
-	app := &cli.App{
+	app := &cli.Command{
 		Name:      "browser-updater",
 		Usage:     "Checks remote registries for new versions of browser images and updates accordingly",
 		Reader:    os.Stdin,
@@ -39,25 +40,25 @@ func main() {
 		},
 		Action: runUpdate,
 	}
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func runUpdate(ctx *cli.Context) error {
+func runUpdate(ctx context.Context, cmd *cli.Command) error {
 	var ns string
 	var err error
-	if ns = ctx.String("namespace"); ns == "" {
+	if ns = cmd.String("namespace"); ns == "" {
 		ns, err = getCurrentNamespace()
 		if err != nil {
 			return errors.WithStack(err)
 		}
 	}
-	clientSet, bkClient, err := buildClientSet(ctx)
+	clientSet, bkClient, err := buildClientSet(ctx, cmd)
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	err = internal.UpdateBrowserImages(ctx.Context, clientSet, bkClient, ns)
+	err = internal.UpdateBrowserImages(ctx, clientSet, bkClient, ns)
 	return err
 }
 
@@ -69,12 +70,12 @@ func getCurrentNamespace() (string, error) {
 	return string(ns), nil
 }
 
-func buildClientSet(ctx *cli.Context) (*kubernetes.Clientset, browserkubeclientv1.Interface, error) {
+func buildClientSet(ctx context.Context, cmd *cli.Command) (*kubernetes.Clientset, browserkubeclientv1.Interface, error) {
 	var clientset *kubernetes.Clientset
 	var err error
 
 	var config *rest.Config
-	if kubeconfig := ctx.String("kubeconfig"); kubeconfig != "" {
+	if kubeconfig := cmd.String("kubeconfig"); kubeconfig != "" {
 		// use the current context in kubeconfig
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 	} else {

@@ -1,5 +1,4 @@
-# syntax = docker/dockerfile:1-experimental
-FROM golang:1.23.1 as builder
+FROM golang:1.24.3 as builder
 
 RUN apt update && apt install --no-install-recommends -y ffmpeg x11-xserver-utils
 
@@ -7,7 +6,7 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
-COPY cmd cmd/
+COPY "cmd" "cmd/"
 COPY internal internal/
 
 RUN --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o recorder cmd/recorder/recorder.go

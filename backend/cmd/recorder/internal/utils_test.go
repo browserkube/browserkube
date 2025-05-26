@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
 )

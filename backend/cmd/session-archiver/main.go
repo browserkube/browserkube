@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	archiver := app.New()
-	if err := archiver.Run(os.Args); err != nil {
+	if err := archiver.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }

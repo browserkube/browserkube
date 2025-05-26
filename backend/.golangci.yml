@@ -77,6 +77,6 @@ run:
   skip-dirs:
     - tests
     - mocks
-  go: '1.23'
+  go: '1.24'
 service:
   golangci-lint-version: 1.50.1

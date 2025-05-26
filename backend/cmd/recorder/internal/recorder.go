@@ -1,11 +1,12 @@
 package internal
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"syscall"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 const (
@@ -16,8 +17,8 @@ const (
 	flagFilePath   = "file-path"
 )
 
-func NewApp() *cli.App {
-	return &cli.App{
+func NewApp() *cli.Command {
+	return &cli.Command{
 		Name:      "recorder",
 		Usage:     "record x11 screen",
 		Action:    Record,
@@ -58,20 +59,20 @@ func NewApp() *cli.App {
 	}
 }
 
-func Record(ctx *cli.Context) error {
-	cfg := getConfig(ctx)
+func Record(ctx context.Context, cmd *cli.Command) error {
+	cfg := getConfig(cmd)
 
 	if err := waitForDisplay(); err != nil {
 		return fmt.Errorf("unable to wait for display: %w", err)
 	}
 
-	cmd, err := shellAsync(ffmpegCmd, buildArgs(cfg)...)
+	shellCmd, err := shellAsync(ffmpegCmd, buildArgs(cfg)...)
 	if err != nil {
 		return fmt.Errorf("unable to run ffmpeg: %w", err)
 	}
 
 	// create a child of our command which is ffmpeg
-	child, err := sysGetPgid(cmd.Process.Pid)
+	child, err := sysGetPgid(shellCmd.Process.Pid)
 	if err != nil {
 		return fmt.Errorf("unable to get pgid: %w", err)
 	}

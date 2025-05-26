@@ -229,10 +229,6 @@ func (r *BrowserReconciler) createBrowser(
 	//}
 
 	browserPod := r.buildPod(ctx, browser, browserConfig, r.opts)
-	//if err != nil {
-	//	logger.Error(err, "error while creating browser pod", "error", err.Error())
-	//	return err
-	//}
 
 	if err = controllerutil.SetControllerReference(browser, browserPod, r.Scheme); err != nil {
 		logger.Error(err, "error while setting controller reference")
@@ -365,7 +361,6 @@ func (r *BrowserReconciler) findBrowserConfig(ctx context.Context, browser *brow
 		// video options
 		browserConfig.EnableVideo = browser.Spec.EnableVideo
 
-		// TODO write some unit tests
 		if podSpec := instance.Spec.PodSpec; podSpec != nil {
 			if browserConfig.Spec == nil {
 				browserConfig.Spec = podSpec

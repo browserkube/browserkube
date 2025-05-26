@@ -27,7 +27,7 @@ func main() {
 		}
 	}()
 
-	if err := rcrd.RunContext(ctx, os.Args); err != nil {
+	if err := rcrd.Run(ctx, os.Args); err != nil {
 		log.Fatal(err)
 	}
 	wait <- struct{}{}

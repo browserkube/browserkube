@@ -184,6 +184,7 @@ func addContainerRecorder(
 			SecurityContext: &apiv1.SecurityContext{
 				AllowPrivilegeEscalation: ptr.To(false),
 				RunAsNonRoot:             ptr.To(true),
+				RunAsUser:                ptr.To[int64](65532),
 			},
 			Ports: []apiv1.ContainerPort{
 				buildContainerPort("http", "5555"),

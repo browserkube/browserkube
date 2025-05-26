@@ -11,7 +11,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/gcsblob"
 	_ "gocloud.dev/blob/s3blob"
@@ -41,14 +41,14 @@ type Config struct {
 	FilePath          string
 }
 
-func getConfig(ctx *cli.Context) *Config {
+func getConfig(cmd *cli.Command) *Config {
 	return &Config{
-		VideoSize:  ctx.String(flagVideoSize),
-		FrameRate:  ctx.String(flagFrameRate),
-		DisplayNum: ctx.String(flagDisplayNum),
-		Codec:      ctx.String(flagCodec),
+		VideoSize:  cmd.String(flagVideoSize),
+		FrameRate:  cmd.String(flagFrameRate),
+		DisplayNum: cmd.String(flagDisplayNum),
+		Codec:      cmd.String(flagCodec),
 		FileName:   "video.mp4",
-		FilePath:   ctx.String(flagFilePath),
+		FilePath:   cmd.String(flagFilePath),
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/reportportal/goRP/v5/pkg/gorp"
+	"github.com/reportportal/goRP/v5/pkg/openapi"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 
@@ -59,13 +60,11 @@ func onQuitSession(sr settingsRepo) func(next wd.OnSessionQuit) wd.OnSessionQuit
 					log.Errorf("ReportPortal isn't properly configured: %s", err)
 					return next(ctx, s)
 				}
-				rp := gorp.NewClient(settings.Host, project, settings.AuthToken)
+				rp := gorp.NewReportingClient(settings.Host, project, settings.AuthToken)
 
-				_, err = rp.FinishTest(itemID, &gorp.FinishTestRQ{
-					LaunchUUID: launchID,
-					FinishExecutionRQ: gorp.FinishExecutionRQ{
-						Status: gorp.Statuses.Passed,
-					},
+				_, err = rp.FinishTest(itemID, &openapi.FinishTestItemRQ{
+					LaunchUuid: launchID,
+					Status:     openapi.PtrString(string(gorp.Statuses.Passed)),
 				})
 				if err != nil {
 					log.Errorf("Unable to finish test in ReportPortal: %s", err)
@@ -99,51 +98,47 @@ func beforeSessionCreated(sr settingsRepo) func(next wd.OnBeforeSessionStart) wd
 				return next(ctx, prq, sessionRQ, sID)
 			}
 
-			rp := gorp.NewClient(settings.Host, project, settings.AuthToken)
+			rp := gorp.NewReportingClient(settings.Host, project, settings.AuthToken)
 			if launchID == "" {
 				u := uuid.New()
-				newLaunch, err := rp.StartLaunch(&gorp.StartLaunchRQ{
-					StartRQ: gorp.StartRQ{
-						Name:        "Browserkube",
-						Description: "Browser session: " + sID,
-						UUID:        &u,
-						StartTime:   gorp.NewTimestamp(time.Now()),
-						Attributes:  []*gorp.Attribute{{Parameter: gorp.Parameter{Key: "session", Value: sID}}},
-					},
-					Mode: gorp.LaunchModes.Default,
+				newLaunch, err := rp.StartLaunch(&openapi.StartLaunchRQ{
+					Name:        "Browserkube",
+					Description: openapi.PtrString("Browser session: " + sID),
+					Uuid:        u.String(),
+					StartTime:   time.Now(),
+					Attributes:  []openapi.ItemAttributesRQ{{Key: openapi.PtrString("session"), Value: sID}},
+					Mode:        openapi.PtrString(string(gorp.LaunchModes.Default)),
 				})
 				if err != nil {
 					log.Errorf("Unable to start launch in ReportPortal: %s", err)
 					// do not stop plugins execution chain
 					return next(ctx, prq, sessionRQ, sID)
 				}
-				launchID = newLaunch.ID
-				sessionRQ.Capabilities.BrowserKubeOpts.RP.LaunchID = newLaunch.ID
-				log.Infow("ReportPortal launch has been created", "launchId", newLaunch.ID)
+				launchID = *newLaunch.Id
+				sessionRQ.Capabilities.BrowserKubeOpts.RP.LaunchID = launchID
+				log.Infow("ReportPortal launch has been created", "launchId", launchID)
 			}
 
 			if itemID == "" {
-				newTest, err := rp.StartTest(&gorp.StartTestRQ{
-					Type:       gorp.TestItemTypes.Test,
-					UniqueID:   uuid.New().String(),
-					LaunchID:   launchID,
-					HasStats:   true,
-					Retry:      false,
-					TestCaseID: uuid.NewString(),
-					StartRQ: gorp.StartRQ{
-						Name:       fmt.Sprintf("WebDriver session: %s", sID),
-						Attributes: []*gorp.Attribute{{Parameter: gorp.Parameter{Key: "session", Value: sID}}},
-						StartTime:  gorp.NewTimestamp(time.Now()),
-					},
+				newTest, err := rp.StartTest(&openapi.StartTestItemRQ{
+					Type:       string(gorp.TestItemTypes.Test),
+					UniqueId:   openapi.PtrString(uuid.New().String()),
+					LaunchUuid: launchID,
+					HasStats:   openapi.PtrBool(true),
+					Retry:      openapi.PtrBool(false),
+					TestCaseId: openapi.PtrString(uuid.NewString()),
+					Name:       fmt.Sprintf("WebDriver session: %s", sID),
+					Attributes: []openapi.ItemAttributesRQ{{Key: openapi.PtrString("session"), Value: sID}},
+					StartTime:  time.Now(),
 				})
 				if err != nil {
 					log.Errorf("Unable to create new item in ReportPortal: %s", err)
 					// do not stop plugins execution chain
 					return next(ctx, prq, sessionRQ, sID)
 				}
-				sessionRQ.Capabilities.BrowserKubeOpts.RP.ItemID = newTest.ID
+				sessionRQ.Capabilities.BrowserKubeOpts.RP.ItemID = *newTest.Id
 				sessionRQ.Capabilities.BrowserKubeOpts.RP.FinishItem = true
-				log.Infow("ReportPortal item has been created", "launchId", launchID, "itemID", newTest.ID)
+				log.Infow("ReportPortal item has been created", "launchId", launchID, "itemID", *newTest.Id)
 			}
 
 			return next(ctx, prq, sessionRQ, sID)
@@ -178,14 +173,14 @@ func afterCommandHandler(sr settingsRepo) func(next wd.OnAfterCommand) wd.OnAfte
 				log.Errorf("ReportPortal isn't properly configured: %s", err)
 				return next(ctx, rs, sess, command)
 			}
-			rp := gorp.NewClient(settings.Host, project, settings.AuthToken)
+			rp := gorp.NewReportingClient(settings.Host, project, settings.AuthToken)
 
-			if _, err = rp.SaveLog(&gorp.SaveLogRQ{
-				ItemID:     itemID,
-				LaunchUUID: launchID,
-				Level:      gorp.LogLevelInfo,
-				LogTime:    gorp.NewTimestamp(time.Now()),
-				Message:    fmt.Sprintf("WebDriver command: %s %s", rs.Request.Method, command),
+			if _, err = rp.SaveLog(&openapi.SaveLogRQ{
+				ItemUuid:   openapi.PtrString(itemID),
+				LaunchUuid: launchID,
+				Level:      openapi.PtrString(gorp.LogLevelInfo),
+				Time:       time.Now(),
+				Message:    openapi.PtrString(fmt.Sprintf("WebDriver command: %s %s", rs.Request.Method, command)),
 			}); err != nil {
 				log.Errorf("Unable to send log to ReportPortal: %s", err)
 				return next(ctx, rs, sess, command)
@@ -228,18 +223,18 @@ func findElementHandler(sr settingsRepo) func(next wd.OnAfterCommand) wd.OnAfter
 			}
 
 			fileName := uuid.New().String() + ".png"
-			_, err = gorp.NewClient(settings.Host, project, settings.AuthToken).SaveLogMultipart(
-				[]*gorp.SaveLogRQ{
+			_, err = gorp.NewReportingClient(settings.Host, project, settings.AuthToken).SaveLogMultipart(
+				[]*openapi.SaveLogRQ{
 					{
-						LaunchUUID: launchID,
-						ItemID:     itemID,
-						Level:      gorp.LogLevelError,
-						LogTime:    gorp.NewTimestamp(time.Now()),
-						Message: fmt.Sprintf(
+						LaunchUuid: launchID,
+						ItemUuid:   openapi.PtrString(itemID),
+						Level:      openapi.PtrString(gorp.LogLevelError),
+						Time:       time.Now(),
+						Message: openapi.PtrString(fmt.Sprintf(
 							"Element not found for item '%s', command: %s %s",
 							itemID, rs.Request.Method, command,
-						),
-						Attachment: gorp.Attachment{Name: fileName},
+						)),
+						File: &openapi.File{Name: openapi.PtrString(fileName)},
 					},
 				},
 				[]gorp.Multipart{

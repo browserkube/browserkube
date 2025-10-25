@@ -39,12 +39,11 @@ build:
       docker:
         dockerfile: Dockerfile
     - image: recorder
+      context: ./cmds/recorder
       sync:
         auto: false
       docker:
-        dockerfile: backend/Dockerfile
-        buildArgs:
-          COMPONENT: cmd/recorder
+        dockerfile: Dockerfile
     - image: browser-updater
       sync:
         auto: false

@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"flag"
 	"fmt"
 	"testing"
 
@@ -20,22 +19,35 @@ const (
 	filePath   = "/home/videos"
 )
 
-func prepareTestCtx(t *testing.T) *cli.Context {
+func prepareTestCtx(t *testing.T) *cli.Command {
 	t.Helper()
 
-	set := flag.NewFlagSet("test", 0)
-	set.String(flagVideoSize, videoSize, "")
-	set.String(flagFrameRate, frameRate, "")
-	set.String(flagDisplayNum, displayNum, "")
-	set.String(flagCodec, codec, "")
-	set.String(flagFilePath, filePath, "")
+	cmd := &cli.Command{
+		Name: "test",
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: flagVideoSize, Value: videoSize},
+			&cli.StringFlag{Name: flagFrameRate, Value: frameRate},
+			&cli.StringFlag{Name: flagDisplayNum, Value: displayNum},
+			&cli.StringFlag{Name: flagCodec, Value: codec},
+			&cli.StringFlag{Name: flagFilePath, Value: filePath},
+		},
+	}
 
-	return cli.NewContext(nil, set, nil)
+	// Setting values to simulate flag usage
+	for _, flag := range cmd.Flags {
+		strFlag, ok := flag.(*cli.StringFlag)
+		if ok {
+			cmd.Set(strFlag.Name, strFlag.Value)
+		}
+	}
+
+	return cmd
 }
 
 func Test_SetConfig(t *testing.T) {
-	cfg, err := getConfig(prepareTestCtx(t))
-	assert.NoError(t, err)
+	cmd := prepareTestCtx(t)
+
+	cfg := getConfig(cmd)
 	args := buildArgs(cfg)
 
 	expected := []string{

@@ -9,13 +9,13 @@ blob:
   minio:
     enabled: true
     secretName: minio
-  url: "s3://browserkube?endpoint=minio.browserkube.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=us-east-1&awssdk=v1"
+  url: "s3://browserkube?hostname_immutable=true&endpoint=http://minio.browserkube.svc.cluster.local:9000&use_path_style=true&region=us-east-1&disable_https=true"
   aws:
     enabled: false
     accessKeyID:
     accessKeySecret:
   archive:
-    url: "s3://browserkube-archive?endpoint=minio.browserkube.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=us-east-1&awssdk=v1"
+    url: "s3://browserkube-archive?endpoint=http://minio.browserkube.svc.cluster.local:9000&use_path_style=true&region=us-east-1&disable_https=true"
 healthcheck:
   enabled: true
   port: 4444

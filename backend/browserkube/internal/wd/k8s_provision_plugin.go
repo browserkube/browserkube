@@ -21,7 +21,7 @@ func provideK8SProxyPlugin(serviceProvider provision.Provisioner) wd.PluginOpts 
 		Weight: 1,
 		Opts: []wd.PluginOpt{
 			wd.WithBeforeSessionCreated(provisionBrowserHandler(serviceProvider)),
-			// wd.WithAfterSessionCreated(maximizeWindowOnStart()), //nolint:bodyclose
+			wd.WithAfterSessionCreated(maximizeWindowOnStart()), //nolint:bodyclose
 			wd.WithQuitSession(quitSessionHandler(serviceProvider)),
 		},
 	}

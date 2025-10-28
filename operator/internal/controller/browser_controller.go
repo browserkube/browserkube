@@ -19,18 +19,21 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/browserkube/browserkube/operator/internal/controller/utils"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/browserkube/browserkube/operator/internal/controller/utils"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"dario.cat/mergo"
 
 	sdkerrors "errors"
+
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -494,6 +497,13 @@ func (r *BrowserReconciler) checkFinalizer(ctx context.Context, instance *browse
 				return &ctrl.Result{}, err
 			}
 			logger.Info("Pre-delete hook has been executed")
+
+			// Refetch the instance to get the latest resourceVersion after status update
+			if err := r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, instance); err != nil {
+				logger.Error(err, "Failed to refetch instance after status update")
+				return &ctrl.Result{}, err
+			}
+
 			// remove our finalizer from the list and update it.
 			controllerutil.RemoveFinalizer(instance, r.finalizerName)
 			if err := r.Update(ctx, instance); err != nil {
@@ -536,8 +546,9 @@ func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Br
 	volumeMounts := buildVolumeMounts()
 
 	spec := &apiv1.PodSpec{
-		Hostname:      b.Name,
-		RestartPolicy: apiv1.RestartPolicyNever,
+		Hostname:              b.Name,
+		RestartPolicy:         apiv1.RestartPolicyNever,
+		ShareProcessNamespace: ptr.To(true),
 		Containers: []apiv1.Container{
 			{
 				Name:  containerNameSidecar,

@@ -1,4 +1,4 @@
-import { test, expect , firefox} from '@playwright/test';
+import {test, expect, chromium} from '@playwright/test';
 import dotenv from "dotenv";
 
 test('homepage has Playwright in title and get started link linking to the intro page', async () => {

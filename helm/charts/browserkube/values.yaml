@@ -102,9 +102,6 @@ telemetry:
   prometheus_enabled: "\'true\'"
   version: v1.0.0
   providerEnabled: "\'false\'"
-  providerType: 
-    zipkin: zipkin
-    otlptracehttp: otlptracehttp
 
 grafana:
   enabled: false

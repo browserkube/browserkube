@@ -3,8 +3,8 @@ module github.com/browserkube/browserkube/clipboard
 go 1.24
 
 require (
-	github.com/go-chi/chi/v5 v5.2.2
-	github.com/ory/graceful v0.1.3
+	github.com/go-chi/chi/v5 v5.2.5
+	github.com/ory/graceful v0.2.0
 )
 
 require (

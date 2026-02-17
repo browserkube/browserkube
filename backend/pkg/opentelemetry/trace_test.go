@@ -17,27 +17,13 @@ func TestInitProvider(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "init provider: successful with zipkin exporter",
-			args: args{
-				serviceName: "api",
-				config: &config{
-					TelemetryEnabled:      true,
-					TelemetryProviderType: "zipkin",
-					TelemetryHost:         "localhost",
-					ZipkinPort:            "9411",
-				},
-			},
-			wantErr: false,
-		},
-		{
 			name: "init provider: successful with otlptracehttp exporter",
 			args: args{
 				serviceName: "api",
 				config: &config{
-					TelemetryEnabled:      true,
-					TelemetryProviderType: "otlptracehttp",
-					TelemetryHost:         "localhost",
-					OTLPPort:              "4318",
+					TelemetryEnabled: true,
+					TelemetryHost:    "localhost",
+					OTLPPort:         "4318",
 				},
 			},
 			wantErr: false,
@@ -55,7 +41,6 @@ func TestInitProvider(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.args.config != nil {
 				t.Setenv("TELEMETRY_PROVIDER_ENABLED", "true")
-				t.Setenv("TELEMETRY_PROVIDER_TYPE", tt.args.config.TelemetryProviderType)
 				t.Setenv("BROWSERKUBE_TEMPO_SERVICE_HOST", tt.args.config.TelemetryHost)
 				t.Setenv("BROWSERKUBE_TEMPO_SERVICE_PORT_TEMPO_OTLP_HTTP", tt.args.config.OTLPPort)
 				t.Setenv("BROWSERKUBE_TEMPO_SERVICE_PORT_TEMPO_ZIPKIN", tt.args.config.ZipkinPort)

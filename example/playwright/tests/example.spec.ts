@@ -6,7 +6,7 @@ test('homepage has Playwright in title and get started link linking to the intro
 
     dotenv.config();
     const wsUrl = process.env.HUB_URL
-    const browser = await firefox.connect({ timeout: 0, wsEndpoint: wsUrl });
+    const browser = await chromium.connect({ timeout: 0, wsEndpoint: wsUrl });
 
     // const browserServer = await chromium.launchServer();
     // const wsEndpoint = browserServer.wsEndpoint();

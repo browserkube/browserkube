@@ -1,12 +1,13 @@
 package extensioninstaller
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 const (
@@ -37,8 +38,8 @@ const (
 	whitelistFirefoxEnv = "BROWSERKUBE-BROWSER-EXTENSION-CONFIG-WHITELIST-FIREFOX"
 )
 
-func NewApp() *cli.App {
-	return &cli.App{
+func NewApp() *cli.Command {
+	return &cli.Command{
 		Name:      "extension-installer",
 		Usage:     "made for using as initContainer before deploying browser pods",
 		Action:    PreInstall,
@@ -68,10 +69,10 @@ func NewApp() *cli.App {
 	}
 }
 
-func PreInstall(ctx *cli.Context) error {
-	extensionID := ctx.StringSlice(flagExtensionID)
-	updateUrl := ctx.StringSlice(flagUpdateURL)
-	browserName := ctx.StringSlice(flagBrowserName)
+func PreInstall(ctx context.Context, cmd *cli.Command) error {
+	extensionID := cmd.StringSlice(flagExtensionID)
+	updateUrl := cmd.StringSlice(flagUpdateURL)
+	browserName := cmd.StringSlice(flagBrowserName)
 	log.Printf("Current Config : %s, %s, %s", extensionID, updateUrl, browserName)
 
 	if len(updateUrl) != len(browserName) ||

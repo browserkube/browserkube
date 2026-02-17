@@ -41,8 +41,6 @@ spec:
             {{- if .Values.telemetry.providerEnabled }}
             - name: TELEMETRY_PROVIDER_ENABLED
               value: {{ .Values.telemetry.providerEnabled }}
-            - name: TELEMETRY_PROVIDER_TYPE
-              value: {{ .Values.telemetry.providerType.zipkin }}
             {{- end }}
             {{- if .Values.blob.minio.enabled }}
             - name: AWS_ACCESS_KEY

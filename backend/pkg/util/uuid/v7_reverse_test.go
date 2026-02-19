@@ -1,17 +1,20 @@
 package revuuid
 
 import (
+	"math/rand/v2"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"math/rand/v2"
 )
 
 func TestNewV7Reverse(t *testing.T) {
 	u1 := uuid.Must(NewV7Reverse()).String()
+	time.Sleep(10 * time.Millisecond)
 	u2 := uuid.Must(NewV7Reverse()).String()
+	time.Sleep(10 * time.Millisecond)
 	u3 := uuid.Must(NewV7Reverse()).String()
 	u := []string{u1, u2, u3}
 

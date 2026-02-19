@@ -8,36 +8,25 @@ import (
 	"strings"
 	"time"
 
+	"github.com/browserkube/browserkube/browserkube/internal/provision"
 	"github.com/google/uuid"
 	"github.com/reportportal/goRP/v5/pkg/gorp"
 	"github.com/reportportal/goRP/v5/pkg/openapi"
-	"go.uber.org/fx"
 	"go.uber.org/zap"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/wd"
 	"github.com/browserkube/browserkube/pkg/wd/wdproto"
 )
 
-var Module = fx.Options(
-	fx.Provide(
-		newSettingsRepo,
-		fx.Annotate(
-			provideReportPortalPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
-	),
-)
-
-func provideReportPortalPlugin(sr settingsRepo) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 250,
-		Opts: []wd.PluginOpt{
-			wd.WithBeforeSessionCreated(beforeSessionCreated(sr)),
-			wd.WithAfterCommand(afterCommandHandler(sr)),
-			wd.WithAfterCommand(findElementHandler(sr)),
-			wd.WithQuitSession(onQuitSession(sr)),
-		},
+func NewReportPortalPlugins(clientset *kubernetes.Clientset, envConfig *provision.Config) wd.PluginOpts {
+	sr := newSettingsRepo(clientset, envConfig)
+	return []wd.PluginOpt{
+		wd.WithBeforeSessionCreated(beforeSessionCreated(sr)),
+		wd.WithAfterCommand(afterCommandHandler(sr)),
+		wd.WithAfterCommand(findElementHandler(sr)),
+		wd.WithQuitSession(onQuitSession(sr)),
 	}
 }
 

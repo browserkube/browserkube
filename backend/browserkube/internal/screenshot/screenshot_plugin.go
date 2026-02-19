@@ -31,22 +31,12 @@ var Module = fx.Options(
 	),
 )
 
-func provideScreenshotCapturePlugin(store storage.BlobSessionStorage) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 250,
-		Opts: []wd.PluginOpt{
-			wd.WithAfterCommand(screenshotCapture(store)),
-		},
-	}
+func NewScreenshotCapturePlugin(store storage.BlobSessionStorage) wd.PluginOpt {
+	return wd.WithAfterCommand(screenshotCapture(store)) //weight 250
 }
 
-func provideScreenshotOnNotFoundPlugin(store storage.BlobSessionStorage) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 250,
-		Opts: []wd.PluginOpt{
-			wd.WithAfterCommand(screenshotIfNotFound(store)),
-		},
-	}
+func NewScreenshotOnNotFoundPlugin(store storage.BlobSessionStorage) wd.PluginOpt {
+	return wd.WithAfterCommand(screenshotIfNotFound(store)) //weight 250
 }
 
 func screenshotCapture(store storage.BlobSessionStorage) func(next wd.OnAfterCommand) wd.OnAfterCommand {

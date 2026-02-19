@@ -1,6 +1,6 @@
 module github.com/browserkube/browserkube
 
-go 1.25.0
+go 1.26
 
 require (
 	github.com/browserkube/browserkube/operator v0.0.0

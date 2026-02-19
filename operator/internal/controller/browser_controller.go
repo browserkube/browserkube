@@ -173,8 +173,7 @@ func (r *BrowserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 
 			// create the browser
 			if cErr := r.createBrowser(ctx, instance); cErr != nil {
-				var bErr *browserErr
-				if sdkerrors.As(cErr, &bErr) {
+				if bErr, ok := sdkerrors.AsType[*browserErr](cErr); ok {
 					instance.Status.Reason = bErr.reason
 				} else {
 					instance.Status.Reason = browserkubeapiv1.ReasonUnknown
@@ -445,7 +444,6 @@ func (r *BrowserReconciler) checkSidecarRunning(ctx context.Context, instance *b
 	// sidecar container exited which signals that browser termination is requested
 	if browserkubePod.Status.Phase == apiv1.PodRunning {
 		logger := log.FromContext(ctx)
-		logger.Info("checking quit session:", "container status", browserkubePod.Status.ContainerStatuses)
 		for _, c := range browserkubePod.Status.ContainerStatuses {
 			if c.Name == containerNameSidecar && c.State.Terminated != nil {
 				logger.Info("Browser seems to be timed out. Deleting...")

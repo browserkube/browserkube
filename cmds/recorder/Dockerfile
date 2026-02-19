@@ -1,4 +1,4 @@
-FROM golang:1.24.3 AS builder
+FROM golang:1.26.0 AS builder
 
 RUN apt update && apt install --no-install-recommends -y ffmpeg x11-xserver-utils
 

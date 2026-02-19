@@ -16,14 +16,11 @@ import (
 	"github.com/browserkube/browserkube/pkg/wd/wdproto"
 )
 
-func provideK8SProxyPlugin(serviceProvider provision.Provisioner) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 1,
-		Opts: []wd.PluginOpt{
-			wd.WithBeforeSessionCreated(provisionBrowserHandler(serviceProvider)),
-			wd.WithAfterSessionCreated(maximizeWindowOnStart()), //nolint:bodyclose
-			wd.WithQuitSession(quitSessionHandler(serviceProvider)),
-		},
+func NewK8SProxyPlugins(serviceProvider provision.Provisioner) []wd.PluginOpt {
+	return []wd.PluginOpt{
+		wd.WithBeforeSessionCreated(provisionBrowserHandler(serviceProvider)),
+		wd.WithAfterSessionCreated(maximizeWindowOnStart()), //nolint:bodyclose
+		wd.WithQuitSession(quitSessionHandler(serviceProvider)),
 	}
 }
 

@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"path"
 
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 
 	"github.com/browserkube/browserkube/pkg/session"
@@ -15,22 +14,8 @@ import (
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 
-var Module = fx.Options(
-	fx.Provide(
-		fx.Annotate(
-			provideReportLogPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
-	),
-)
-
-func provideReportLogPlugin(client *http.Client, storage storage.BlobSessionStorage) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 251,
-		Opts: []wd.PluginOpt{
-			wd.WithQuitSession(fetchVideoHook(client, storage)),
-		},
-	}
+func NewReportLogPlugin(client *http.Client, storage storage.BlobSessionStorage) wd.PluginOpt {
+	return wd.WithQuitSession(fetchVideoHook(client, storage))
 }
 
 func stopVideo(ctx context.Context, baseURL string, httpClient *http.Client) error {

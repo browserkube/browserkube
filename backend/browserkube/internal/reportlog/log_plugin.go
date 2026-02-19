@@ -1,7 +1,6 @@
 package reportlog
 
 import (
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 
 	"github.com/browserkube/browserkube/browserkube/internal/provision"
@@ -11,22 +10,8 @@ import (
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 
-var Module = fx.Options(
-	fx.Provide(
-		fx.Annotate(
-			provideReportLogPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
-	),
-)
-
-func provideReportLogPlugin(serviceProvider provision.Provisioner, store storage.BlobSessionStorage) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 250,
-		Opts: []wd.PluginOpt{
-			wd.WithQuitSession(fetchLogsHook(serviceProvider, store)),
-		},
-	}
+func NewReportLogPlugin(serviceProvider provision.Provisioner, store storage.BlobSessionStorage) wd.PluginOpt {
+	return wd.WithQuitSession(fetchLogsHook(serviceProvider, store))
 }
 
 func fetchLogsHook(serviceProvider provision.Provisioner, store storage.BlobSessionStorage) func(next wd.OnSessionQuit) wd.OnSessionQuit {

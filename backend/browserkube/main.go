@@ -15,12 +15,7 @@ import (
 	"github.com/browserkube/browserkube/browserkube/internal/playwright"
 	"github.com/browserkube/browserkube/browserkube/internal/provision"
 	provisionk8s "github.com/browserkube/browserkube/browserkube/internal/provision/k8s"
-	"github.com/browserkube/browserkube/browserkube/internal/reportcommand"
-	"github.com/browserkube/browserkube/browserkube/internal/reportlog"
-	"github.com/browserkube/browserkube/browserkube/internal/reportportal"
-	"github.com/browserkube/browserkube/browserkube/internal/reportvideo"
 	"github.com/browserkube/browserkube/browserkube/internal/screenshot"
-	"github.com/browserkube/browserkube/browserkube/internal/sessionresult"
 	"github.com/browserkube/browserkube/browserkube/internal/wd"
 	browserkubeapp "github.com/browserkube/browserkube/pkg/app"
 	browserkubehttp "github.com/browserkube/browserkube/pkg/http"
@@ -65,15 +60,8 @@ func main() {
 		// proxy modules
 		wd.Module,
 		playwright.Module,
-		reportportal.Module,
-		reportlog.Module,
 		// TODO: cases need to be improved when automatic screenshots are required
 		screenshot.Module,
-		reportvideo.Module,
-		reportcommand.Module,
-
-		sessionresult.Module,
-
 		// main ui module
 		api.Module,
 	)

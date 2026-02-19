@@ -4,7 +4,6 @@ import (
 	"context"
 	"path"
 
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -15,22 +14,8 @@ import (
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 
-var Module = fx.Options(
-	fx.Provide(
-		fx.Annotate(
-			provideSessionResultPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
-	),
-)
-
-func provideSessionResultPlugin(sessionResultsRepo sessionresult.Repository, store storage.BlobSessionStorage) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 1,
-		Opts: []wd.PluginOpt{
-			wd.WithQuitSession(quitSessionHandler(sessionResultsRepo, store)),
-		},
-	}
+func NewSessionResultPlugin(sessionResultsRepo sessionresult.Repository, store storage.BlobSessionStorage) wd.PluginOpt {
+	return wd.WithQuitSession(quitSessionHandler(sessionResultsRepo, store))
 }
 
 func sessionFileExists(storage storage.BlobSessionStorage, fileName, sessionID string) bool {

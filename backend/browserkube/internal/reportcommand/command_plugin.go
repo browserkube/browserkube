@@ -11,7 +11,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 
 	"github.com/browserkube/browserkube/browserkube/internal/api"
@@ -20,22 +19,8 @@ import (
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 
-var Module = fx.Options(
-	fx.Provide(
-		fx.Annotate(
-			provideReportCommandPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
-	),
-)
-
-func provideReportCommandPlugin(store storage.BlobSessionStorage) wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 250,
-		Opts: []wd.PluginOpt{
-			wd.WithAfterCommand(fetchCommands(store)),
-		},
-	}
+func NewReportCommandPlugin(store storage.BlobSessionStorage) wd.PluginOpt {
+	return wd.WithAfterCommand(fetchCommands(store))
 }
 
 func fetchCommands(store storage.BlobSessionStorage) func(next wd.OnAfterCommand) wd.OnAfterCommand {

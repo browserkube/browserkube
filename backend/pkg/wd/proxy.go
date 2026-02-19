@@ -51,13 +51,7 @@ func (c *Context) WithValue(key, val any) *Context {
 
 type (
 	PluginOpt  func(*ProxyBuilder)
-	PluginOpts struct {
-		// Weight is a plugin initialization priority parameter.
-		// Higher weight means earlier initialization. Valid range is from 0 to 255
-		// Note: two plugins with equal weight may be in uncertain order.
-		Weight uint8
-		Opts   []PluginOpt
-	}
+	PluginOpts []PluginOpt
 )
 
 type (

@@ -1,24 +1,50 @@
 package wd
 
 import (
-	"sort"
+	"net/http"
 
+	"github.com/browserkube/browserkube/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/browserkube/internal/reportcommand"
+	"github.com/browserkube/browserkube/browserkube/internal/reportlog"
+	"github.com/browserkube/browserkube/browserkube/internal/reportportal"
+	"github.com/browserkube/browserkube/browserkube/internal/reportvideo"
+	"github.com/browserkube/browserkube/browserkube/internal/sessionresult"
+	"github.com/browserkube/browserkube/pkg/storage"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
+	"k8s.io/client-go/kubernetes"
 
 	browserkubehttp "github.com/browserkube/browserkube/pkg/http"
 	"github.com/browserkube/browserkube/pkg/opentelemetry"
 	"github.com/browserkube/browserkube/pkg/session"
+	pkgsessionresult "github.com/browserkube/browserkube/pkg/sessionresult"
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 
 var Module = fx.Options(
-	fx.Provide(
-		fx.Annotate(
-			provideK8SProxyPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
+	fx.Provide(func(
+		serviceProvider provision.Provisioner,
+		sessionResultsRepo pkgsessionresult.Repository,
+		store storage.BlobSessionStorage,
+		client *http.Client,
+		clientset *kubernetes.Clientset,
+		envConfig *provision.Config,
+	) wd.PluginOpts {
+		var plugins []wd.PluginOpt
+		plugins = append(plugins, NewK8SProxyPlugins(serviceProvider)...) // weight 1
+		plugins = append(plugins,
+			opentelemetry.NewMetricsProxyPlugin(),                           // weight 1
+			sessionresult.NewSessionResultPlugin(sessionResultsRepo, store), // weight 1
+			reportlog.NewReportLogPlugin(serviceProvider, store),            // weight 250
+			reportcommand.NewReportCommandPlugin(store),                     // weight 250
+
+		)
+		plugins = append(plugins, reportportal.NewReportPortalPlugins(clientset, envConfig)...) // weight 250
+		plugins = append(plugins, reportvideo.NewReportLogPlugin(client, store))                // weight 251
+
+		return plugins
+	},
 	),
 	fx.Invoke(initRoutes),
 )
@@ -29,16 +55,7 @@ func initRoutes(params inputParams) {
 		zap.S().Error("failed to initialize provider, error: ", err)
 	}
 
-	var opts []wd.PluginOpt
-
-	// Sort PluginOpts by their weight. Plugin with the highest weight applies first.
-	sort.Slice(params.PluginOpts, func(i, j int) bool {
-		return params.PluginOpts[i].Weight > params.PluginOpts[j].Weight
-	})
-	for _, opt := range params.PluginOpts {
-		opts = append(opts, opt.Opts...)
-	}
-	proxy := wd.NewProxyBuilder(opts...).Build(params.SessionRepo)
+	proxy := wd.NewProxyBuilder(params.PluginOpts...).Build(params.SessionRepo)
 	params.Mux.Group(func(r chi.Router) {
 		if provider != nil {
 			r.Use(opentelemetry.HTTPMiddleware(provider))
@@ -72,5 +89,5 @@ type inputParams struct {
 	fx.In
 	Mux         chi.Router
 	SessionRepo session.Repository
-	PluginOpts  []wd.PluginOpts `group:"wd-extensions"`
+	PluginOpts  wd.PluginOpts
 }

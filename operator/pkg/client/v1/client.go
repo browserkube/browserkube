@@ -1,10 +1,9 @@
 package v1
 
 import (
+	browserkubev1 "github.com/browserkube/browserkube/operator/api/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-
-	browserkubev1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 
 type Interface interface {

@@ -18,24 +18,20 @@ package controller
 
 import (
 	"context"
+	sdkerrors "errors"
 	"fmt"
-
 	"net"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/browserkube/browserkube/operator/internal/controller/utils"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"dario.cat/mergo"
-
-	sdkerrors "errors"
-
+	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
+	"github.com/browserkube/browserkube/operator/internal/controller/utils"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -45,8 +41,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 
 const (

@@ -8,11 +8,10 @@ import (
 	"strconv"
 	"strings"
 
+	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/utils/ptr"
-
-	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 
 func buildContainerPort(name, port string) apiv1.ContainerPort {
@@ -131,7 +130,8 @@ func buildBrowserEnvVar(browser browserkubeapiv1.BrowserSpec, browserConfig *bro
 
 func buildSidecarEnvVar(browser browserkubeapiv1.BrowserSpec,
 	browserConfig *browserkubeapiv1.BrowserConfig,
-	sidecarPort string) []apiv1.EnvVar {
+	sidecarPort string,
+) []apiv1.EnvVar {
 	proxyURL := url.URL{
 		Scheme: "http",
 		Host:   net.JoinHostPort("localhost", browserConfig.Port),

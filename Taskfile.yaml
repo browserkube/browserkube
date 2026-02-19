@@ -16,7 +16,7 @@ includes:
     dir: ./cmds/extension-installer
 
   operator:
-    taskfile: ./operator/Taskfile.yaml
+    taskfile: ./.taskfiles/go.yaml
     dir: ./operator
 
 vars:

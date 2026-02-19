@@ -3,12 +3,11 @@ package v1
 import (
 	"context"
 
+	v1 "github.com/browserkube/browserkube/operator/api/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-
-	v1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 
 type SessionResultsInterface interface {

@@ -43,7 +43,7 @@ tasks:
     cmds:
       - gofumpt -extra -l -w .
       - goimports -local {{.MODULE}} -w .
-      - tagalign -fix .
+      - tagalign -fix ./...
       - gci write --skip-generated -s standard -s default --section "prefix({{.MODULE}})" .
 
   download-deps:

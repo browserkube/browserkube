@@ -105,11 +105,11 @@ func (wd *WebDriver) Quit(ctx context.Context) error {
 		return errors.WithStack(err)
 	}
 
-	rq, err := http.NewRequest(http.MethodDelete, u, nil)
+	rq, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, nil)
 	if err != nil {
 		return errors.Wrap(err, "Unable to build quit session request")
 	}
-	resp, err := wd.client.Do(rq.WithContext(ctx)) //nolint:bodyclose
+	resp, err := wd.client.Do(rq) //nolint:bodyclose
 	if resp != nil {
 		defer browserkubeutil.CloseQuietly(resp.Body)
 	}

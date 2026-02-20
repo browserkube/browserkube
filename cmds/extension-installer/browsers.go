@@ -23,7 +23,7 @@ func installChromeExtension(extensionID string) error {
 	updateUrl := map[string]string{"extension_update_url": chromeStoreUpdateURL}
 	b, err := json.Marshal(updateUrl)
 	if err != nil {
-		return fmt.Errorf("error while marshalling json:%w", err)
+		return fmt.Errorf("error while marshaling json:%w", err)
 	}
 
 	if err := os.WriteFile(

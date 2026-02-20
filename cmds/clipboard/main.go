@@ -1,3 +1,5 @@
+// Package main provides a lightweight HTTP clipboard service
+// that reads from and writes to the system clipboard via xsel.
 package main
 
 import (
@@ -19,6 +21,8 @@ func main() {
 	mux.Post("/", cPaste)
 
 	log.Println("main: Starting the server")
+
+	//nolint:gosec // defaults are set
 	server := graceful.WithDefaults(&http.Server{
 		Addr:    ":9191",
 		Handler: mux,
@@ -30,7 +34,8 @@ func main() {
 }
 
 func cCopy(w http.ResponseWriter, r *http.Request) {
-	cmd := exec.Command("xsel", "-b", "-o")
+	//nolint:gosec //  G702: Command injection via taint analysis (gosec) due to request context
+	cmd := exec.CommandContext(r.Context(), "xsel", "-b", "-o")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -48,14 +53,15 @@ func cCopy(w http.ResponseWriter, r *http.Request) {
 }
 
 func cPaste(w http.ResponseWriter, r *http.Request) {
-	cmd := exec.Command("xsel", "-b", "-i")
+	//nolint:gosec //  G702: Command injection via taint analysis (gosec) due to request context
+	cmd := exec.CommandContext(r.Context(), "xsel", "-b", "-i")
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-
 	}
+
 	go func() {
 		defer func() {
 			_ = stdin.Close()

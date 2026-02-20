@@ -50,7 +50,7 @@ func provideSessionRepository(lc fx.Lifecycle,
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			sw.Start(watchCtx)
-			return nil
+			return sw.waitForCacheSync(ctx)
 		},
 		OnStop: func(ctx context.Context) error {
 			cancelFunc()

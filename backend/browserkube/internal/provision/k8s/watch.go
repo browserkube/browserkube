@@ -133,6 +133,16 @@ func (ac *sessionWatch) Start(ctx context.Context) {
 	}
 }
 
+// waitForCacheSync blocks until both informer caches have completed their initial LIST from the
+// API server. ctx carries the fx OnStart deadline so startup fails fast if the cluster is
+// unreachable instead of silently serving stale (empty) data.
+func (ac *sessionWatch) waitForCacheSync(ctx context.Context) error {
+	if !cache.WaitForCacheSync(ctx.Done(), ac.quotaInformer.HasSynced, ac.browsersInformer.HasSynced) {
+		return errors.New("timed out waiting for informer cache sync")
+	}
+	return nil
+}
+
 func (ac *sessionWatch) Watch(ctx context.Context) <-chan *session.Session {
 	sCh := make(chan *session.Session)
 	ac.broadcast.Register(sCh)
@@ -200,15 +210,6 @@ func (ac *sessionWatch) GetQuotas() (resource.Quantity, resource.Quantity) {
 	}
 
 	return resource.Quantity{}, resource.Quantity{}
-}
-
-// IsNewSessionAllowed returns TRUE if creation is allowed
-func (ac *sessionWatch) IsNewSessionAllowed() bool {
-	used, hard := ac.GetQuotas()
-	if hard.IsZero() {
-		return true
-	}
-	return hard.Cmp(used) > 0
 }
 
 func asSession(browser *browserkubev1.Browser) (*session.Session, error) {

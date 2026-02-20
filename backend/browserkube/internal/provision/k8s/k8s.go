@@ -12,6 +12,7 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.uber.org/zap"
 	apiv1 "k8s.io/api/core/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
@@ -123,6 +124,9 @@ func (kp *k8sWebDriverProvisioner) Provision(
 
 	browser, err = kp.browsersClient.Create(ctx, browser)
 	if err != nil {
+		if k8serrors.IsForbidden(err) {
+			return nil, &CreationError{error: errors.New("session quota exceeded")}
+		}
 		return nil, errors.WithStack(err)
 	}
 	if browser, err = kp.waitForBrowser(ctx, browser, browserUPTimeout); err != nil {

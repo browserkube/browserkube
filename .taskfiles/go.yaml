@@ -35,12 +35,12 @@ tasks:
   lint:
     desc: "Executes GolangCI linter"
     deps: [install-lint]
-    cmd: "{{.LINTER}} run ./..."
+    cmd: "{{.LINTER}} run --config {{.ROOT_DIR}}/.golangci.yml ./..."
 
   fmt:
     desc: "Formats the code using golangci-lint formatters (gofumpt, goimports, gci) and fixes tags (tagalign)"
     deps: [install-lint]
-    cmd: "{{.LINTER}} fmt ./..."
+    cmd: "{{.LINTER}} fmt --config {{.ROOT_DIR}}/.golangci.yml ./..."
 
   download-deps:
     desc: "Downloads go module dependencies"

@@ -22,9 +22,10 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/browserkube/browserkube/operator/test/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/browserkube/browserkube/operator/test/utils"
 )
 
 var (

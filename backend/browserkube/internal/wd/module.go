@@ -3,22 +3,22 @@ package wd
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
+	"k8s.io/client-go/kubernetes"
+
 	"github.com/browserkube/browserkube/browserkube/internal/provision"
 	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportcommand"
 	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportlog"
 	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportportal"
 	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportvideo"
 	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/sessionresult"
-	"github.com/browserkube/browserkube/pkg/storage"
-	"github.com/go-chi/chi/v5"
-	"go.uber.org/fx"
-	"go.uber.org/zap"
-	"k8s.io/client-go/kubernetes"
-
 	browserkubehttp "github.com/browserkube/browserkube/pkg/http"
 	"github.com/browserkube/browserkube/pkg/opentelemetry"
 	"github.com/browserkube/browserkube/pkg/session"
 	pkgsessionresult "github.com/browserkube/browserkube/pkg/sessionresult"
+	"github.com/browserkube/browserkube/pkg/storage"
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 

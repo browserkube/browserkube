@@ -6,13 +6,15 @@ env:
 
 vars:
   MODULE:
-    sh: go list
+    sh: go list -m
   GOFILES_NOVENDOR:
     sh: find . -type f -name '*.go' -not -path "./vendor/*"
   COMMIT_HASH:
     sh: git rev-parse --short HEAD 2>/dev/null
   BUILD_DATE:
     sh: date +%FT%T%z
+  LINTER:
+    sh: which golangci-lint > /dev/null 2>&1 && echo "golangci-lint" || echo "bin/golangci-lint"
   BUILD_INFO_LDFLAGS: -ldflags "-w -extldflags '"-static"' -X main.buildDate={{.BUILD_DATE}} -X main.version={{.COMMIT_HASH}}"
 
 
@@ -21,7 +23,8 @@ tasks:
     desc: "Installs GolangCI linter into ./bin folder. Version can be overridden via $GOLANGCI_LINT_VERSION env variable"
     cmds:
       - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s {{.GOLANGCI_LINT_VERSION}}
-    status: ["test -f bin/golangci-lint"]
+    status:
+      - which golangci-lint > /dev/null 2>&1 || test -f bin/golangci-lint
 
   install-gotestsum:
     desc: "Installs GolangCI linter into ./bin folder. Version can be overridden via $GOLANGCI_LINT_VERSION env variable"
@@ -32,19 +35,12 @@ tasks:
   lint:
     desc: "Executes GolangCI linter"
     deps: [install-lint]
-    cmds: ["bin/golangci-lint run ./..."]
+    cmd: "{{.LINTER}} run ./..."
 
   fmt:
-    desc: "Formats the code. Uses gofumpt,goimports,tagalign,gci"
-    preconditions:
-      - gofumpt -version
-      - gci -v
-      - tagalign -V=full
-    cmds:
-      - gofumpt -extra -l -w .
-      - goimports -local {{.MODULE}} -w .
-      - tagalign -fix ./...
-      - gci write --skip-generated -s standard -s default --section "prefix({{.MODULE}})" .
+    desc: "Formats the code using golangci-lint formatters (gofumpt, goimports, gci) and fixes tags (tagalign)"
+    deps: [install-lint]
+    cmd: "{{.LINTER}} fmt ./..."
 
   download-deps:
     desc: "Downloads go module dependencies"

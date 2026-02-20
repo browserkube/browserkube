@@ -18,11 +18,11 @@ import (
 )
 
 func NewScreenshotCapturePlugin(store storage.BlobSessionStorage) wd.PluginOpt {
-	return wd.WithAfterCommand(screenshotCapture(store)) //weight 250
+	return wd.WithAfterCommand(screenshotCapture(store)) // weight 250
 }
 
 func NewScreenshotOnNotFoundPlugin(store storage.BlobSessionStorage) wd.PluginOpt {
-	return wd.WithAfterCommand(screenshotIfNotFound(store)) //weight 250
+	return wd.WithAfterCommand(screenshotIfNotFound(store)) // weight 250
 }
 
 func screenshotCapture(store storage.BlobSessionStorage) func(next wd.OnAfterCommand) wd.OnAfterCommand {

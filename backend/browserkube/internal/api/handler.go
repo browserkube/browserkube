@@ -846,7 +846,7 @@ func (h *handler) toSessionResult(sess *sessionresult.Result) (*SessionResult, e
 	}
 
 	if caps.BrowserKubeOpts.EnableVideo {
-		sr.Session.VideoRefAddr = sessionresult.VideoFileName
+		sr.VideoRefAddr = sessionresult.VideoFileName
 	}
 
 	return sr, nil

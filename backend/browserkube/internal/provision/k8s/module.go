@@ -17,14 +17,14 @@ import (
 )
 
 //
-//go:generate mockery --name Indexer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/tools/cache --output mocks
-//go:generate mockery --name SharedIndexInformer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/tools/cache --output mocks
-//go:generate mockery --name Store --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/tools/cache --output mocks
-//go:generate mockery --name PodInterface --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/kubernetes/typed/core/v1 --output mocks
-//go:generate mockery --name ResourceQuotaNamespaceLister --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/listers/core/v1 --output mocks
-//go:generate mockery --name CoreV1Interface --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/kubernetes/typed/core/v1 --output mocks
+//go:generate mockery --name Indexer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/tools/cache --output mocks
+//go:generate mockery --name SharedIndexInformer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/tools/cache --output mocks
+//go:generate mockery --name Store --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/tools/cache --output mocks
+//go:generate mockery --name PodInterface --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/kubernetes/typed/core/v1 --output mocks
+//go:generate mockery --name ResourceQuotaNamespaceLister --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/listers/core/v1 --output mocks
+//go:generate mockery --name CoreV1Interface --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/kubernetes/typed/core/v1 --output mocks
 //go:generate mockery --all --dir ../../../../../operator/pkg/client/v1 --output mocks
-//go:generate mockery --name Interface --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/rest --output mocks --filename RestMock.go --structname RestMock
+//go:generate mockery --name Interface --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/rest --output mocks --filename RestMock.go --structname RestMock
 var resyncPeriod = 1 * time.Minute
 
 var Module = fx.Options(

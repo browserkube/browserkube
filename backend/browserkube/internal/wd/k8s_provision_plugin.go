@@ -19,7 +19,7 @@ import (
 func NewK8SProxyPlugins(serviceProvider provision.Provisioner) []wd.PluginOpt {
 	return []wd.PluginOpt{
 		wd.WithBeforeSessionCreated(provisionBrowserHandler(serviceProvider)),
-		wd.WithAfterSessionCreated(maximizeWindowOnStart()), //nolint:bodyclose
+		wd.WithAfterSessionCreated(maximizeWindowOnStart()),
 		wd.WithQuitSession(quitSessionHandler(serviceProvider)),
 	}
 }

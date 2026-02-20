@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
@@ -18,6 +17,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/cluster-api/util/patch"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 
 const (

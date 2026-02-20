@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"strings"
 
-	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/utils/ptr"
+
+	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 
 func buildContainerPort(name, port string) apiv1.ContainerPort {

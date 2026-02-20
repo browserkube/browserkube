@@ -46,7 +46,7 @@ func quitSessionHandler(sessionResultsRepo sessionresult.Repository, store stora
 				},
 			}
 			if s.Browser.DeletionTimestamp != nil {
-				sr.SessionResult.Spec.FinishedAt = *s.Browser.DeletionTimestamp
+				sr.Spec.FinishedAt = *s.Browser.DeletionTimestamp
 			}
 
 			if s.Browser.Spec.EnableVideo && sessionFileExists(store, sessionresult.VideoFileName, s.ID) {

@@ -275,7 +275,7 @@ func (pp *Proxy) SaveSessionResult(
 	}
 
 	if browser.DeletionTimestamp != nil {
-		sr.SessionResult.Spec.FinishedAt = *browser.DeletionTimestamp
+		sr.Spec.FinishedAt = *browser.DeletionTimestamp
 	}
 	if sessionFileExists(ctx, pp.SessionRecorder, sessionresult.BrowserLogFileName, sessionID) {
 		sr.Spec.Files.BrowserLog = path.Join(sessionID, sessionresult.BrowserLogFileName)

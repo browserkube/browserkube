@@ -53,4 +53,4 @@ swagger:
 	swag init --parseDependency --parseInternal --generalInfo browserkube/main.go --output browserkube/docs/
 
 generate-mocks:
-	mockery --name Indexer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/tools/cache --output internal/provision/k8s/mocks
+	mockery --name Indexer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/tools/cache --output internal/provision/k8s/mocks

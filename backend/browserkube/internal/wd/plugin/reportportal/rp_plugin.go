@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
 	"github.com/google/uuid"
 	"github.com/reportportal/goRP/v5/pkg/gorp"
 	"github.com/reportportal/goRP/v5/pkg/openapi"
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/browserkube/browserkube/browserkube/internal/provision"
 	"github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/wd"
 	"github.com/browserkube/browserkube/pkg/wd/wdproto"
@@ -186,7 +186,7 @@ func afterCommandHandler(sr settingsRepo) func(next wd.OnAfterCommand) wd.OnAfte
 func findElementHandler(sr settingsRepo) func(next wd.OnAfterCommand) wd.OnAfterCommand {
 	return func(next wd.OnAfterCommand) wd.OnAfterCommand {
 		return func(ctx *wd.Context, rs *http.Response, sess *session.Session, command string) error {
-			if !(strings.HasSuffix(command, "/element") || strings.HasSuffix(command, "/elements")) {
+			if !strings.HasSuffix(command, "/element") && !strings.HasSuffix(command, "/elements") {
 				return next(ctx, rs, sess, command)
 			}
 			if rs.StatusCode != http.StatusNotFound {

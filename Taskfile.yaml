@@ -22,7 +22,7 @@ includes:
     dir: ./operator
 
 vars:
-  GO_PROJECTS: clipboard extension-installer backend
+  GO_PROJECTS: clipboard extension-installer operator backend
 tasks:
   all:fmt:
     cmds:

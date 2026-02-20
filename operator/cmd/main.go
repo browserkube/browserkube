@@ -22,9 +22,6 @@ import (
 	"os"
 	"path/filepath"
 
-	apiv1 "github.com/browserkube/browserkube/operator/api/v1"
-	browserkubeiov1 "github.com/browserkube/browserkube/operator/api/v1"
-	"github.com/browserkube/browserkube/operator/internal/controller"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -39,6 +36,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	apiv1 "github.com/browserkube/browserkube/operator/api/v1"
+	browserkubeiov1 "github.com/browserkube/browserkube/operator/api/v1"
+	"github.com/browserkube/browserkube/operator/internal/controller"
 )
 
 var (

@@ -1,6 +1,20 @@
+version: '2'
+
 run:
-  deadline: 5m
-  allow-parallel-runners: true
+  timeout: 5m
+  go: '1.26'
+
+formatters:
+  settings:
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes: github.com/browserkube/browserkube/operator
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/browserkube/browserkube/operator)
 
 issues:
   # don't skip warning about doc comments
@@ -17,16 +31,12 @@ issues:
         - dupl
         - lll
 linters:
-  disable-all: true
   enable:
     - dupl
     - errcheck
     - copyloopvar
     - goconst
     - gocyclo
-    - gofmt
-    - goimports
-    - gosimple
     - govet
     - ineffassign
     - lll
@@ -34,7 +44,7 @@ linters:
     - nakedret
     - prealloc
     - staticcheck
-    - typecheck
+    - tagalign
     - unconvert
     - unparam
     - unused

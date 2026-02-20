@@ -15,7 +15,6 @@ import (
 	"github.com/browserkube/browserkube/browserkube/internal/playwright"
 	"github.com/browserkube/browserkube/browserkube/internal/provision"
 	provisionk8s "github.com/browserkube/browserkube/browserkube/internal/provision/k8s"
-	"github.com/browserkube/browserkube/browserkube/internal/screenshot"
 	"github.com/browserkube/browserkube/browserkube/internal/wd"
 	browserkubeapp "github.com/browserkube/browserkube/pkg/app"
 	browserkubehttp "github.com/browserkube/browserkube/pkg/http"
@@ -50,18 +49,13 @@ func main() {
 
 		// provision modules
 		provisionk8s.Module,
-		fx.Provide(
-			provideProvisionConfig,
-		),
-		fx.Provide(
-			provideHTTPClient,
-		),
+		fx.Provide(provideProvisionConfig),
+		fx.Provide(provideHTTPClient),
 
 		// proxy modules
 		wd.Module,
 		playwright.Module,
-		// TODO: cases need to be improved when automatic screenshots are required
-		screenshot.Module,
+
 		// main ui module
 		api.Module,
 	)

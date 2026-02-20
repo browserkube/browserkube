@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 
 	"github.com/browserkube/browserkube/browserkube/internal/api"
@@ -16,19 +15,6 @@ import (
 	"github.com/browserkube/browserkube/pkg/storage"
 	"github.com/browserkube/browserkube/pkg/wd"
 	"github.com/browserkube/browserkube/pkg/wd/wdproto"
-)
-
-var Module = fx.Options(
-	fx.Provide(
-	//fx.Annotate(
-	//	provideScreenshotCapturePlugin,
-	//	fx.ResultTags(`group:"wd-extensions"`),
-	//),
-	//fx.Annotate(
-	//	provideScreenshotOnNotFoundPlugin,
-	//	fx.ResultTags(`group:"wd-extensions"`),
-	//),
-	),
 )
 
 func NewScreenshotCapturePlugin(store storage.BlobSessionStorage) wd.PluginOpt {

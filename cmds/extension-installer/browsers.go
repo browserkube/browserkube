@@ -100,7 +100,7 @@ func unzip(source, destination string) error {
 		return err
 	}
 	defer archive.Close()
-	for _, file := range archive.Reader.File {
+	for _, file := range archive.File {
 		reader, err := file.Open()
 		if err != nil {
 			return err

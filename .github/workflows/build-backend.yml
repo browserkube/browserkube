@@ -28,7 +28,7 @@ jobs:
           version: v2.10.1
           only-new-issues: false
           working-directory: backend
-          args: --timeout=10m
+          args: --timeout=10m --config ../.golangci.yml
       # Run build backend of the application
       - name: Build Sidecar
         run: make build component=sidecar

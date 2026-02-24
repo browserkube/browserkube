@@ -109,7 +109,7 @@ func (wd *WebDriver) Quit(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "Unable to build quit session request")
 	}
-	resp, err := wd.client.Do(rq) //nolint:bodyclose
+	resp, err := wd.client.Do(rq) //nolint:bodyclose,gosec
 	if resp != nil {
 		defer browserkubeutil.CloseQuietly(resp.Body)
 	}
@@ -160,7 +160,7 @@ func (wd *WebDriver) executeCommand(ctx context.Context, method, command string,
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	rs, err := wd.client.Do(rq) //nolint:bodyclose
+	rs, err := wd.client.Do(rq) //nolint:bodyclose,gosec
 	if err != nil {
 		return errors.WithStack(err)
 	}

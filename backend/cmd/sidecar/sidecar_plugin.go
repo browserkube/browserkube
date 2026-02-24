@@ -143,7 +143,7 @@ func (p *wdProxy) StartSessionHandler(w http.ResponseWriter, rq *http.Request) {
 
 			return nil
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 }
 
 func (p *wdProxy) ProxySessionHandler(w http.ResponseWriter, rq *http.Request) {
@@ -180,7 +180,7 @@ func (p *wdProxy) ProxySessionHandler(w http.ResponseWriter, rq *http.Request) {
 			rs.Header.Set("commandID", strconv.FormatInt(int64(newCommand), 10))
 			return nil
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 }
 
 func (p *wdProxy) ProxyBidirectionalSession(w http.ResponseWriter, rq *http.Request) {

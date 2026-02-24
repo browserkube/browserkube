@@ -26,7 +26,7 @@ func SeleniumUP(ctx context.Context, u string) error {
 		seleniumUpTimeout, seleniumUPRetryTimeout, seleniumUPRetryTimeout,
 		func() (interface{}, error) {
 			rq, _ := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), http.NoBody)
-			rs, err := http.DefaultClient.Do(rq)
+			rs, err := http.DefaultClient.Do(rq) //nolint:gosec //trusted url
 			if err != nil {
 				return nil, errors.WithStack(err)
 			}

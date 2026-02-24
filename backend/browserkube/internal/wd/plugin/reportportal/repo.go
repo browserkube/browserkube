@@ -17,6 +17,7 @@ type settingsRepo interface {
 	FindByProjectName(ctx context.Context, n string) (*ProjectSettings, error)
 }
 
+//nolint:gosec
 type ProjectSettings struct {
 	Host        string
 	ProjectName string

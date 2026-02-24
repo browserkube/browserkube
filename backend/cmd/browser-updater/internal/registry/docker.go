@@ -50,7 +50,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 		if err != nil {
 			return nil, err
 		}
-		resp, err := http.DefaultClient.Do(req) //nolint:bodyclose
+		resp, err := http.DefaultClient.Do(req) //nolint:bodyclose,gosec
 		if err != nil {
 			return nil, err
 		}
@@ -71,7 +71,7 @@ func (r *dockerRegistry) getTags(ctx context.Context, ref reference.Named, uname
 	if token != "" {
 		req.Header.Add("Authorization", "Bearer "+token)
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req) //nolint:gosec,bodyclose
 	if err != nil {
 		return nil, err
 	}
@@ -127,11 +127,11 @@ func (r *dockerRegistry) dockerV2Auth(authGuide, uname, password string) (string
 	if uname != "" && password != "" {
 		req.Header.Add("Authorization", "Basic "+utils.BasicAuth(uname, password))
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req) //nolint:gosec // this is trusted request since url is from a trusted source
 	if err != nil {
 		return "", fmt.Errorf("error while requesting auth token: %w", err)
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 	token := &registryAuthResp{}
 	if err = json.NewDecoder(resp.Body).Decode(token); err != nil {
 		return "", fmt.Errorf("error while decoding token response: %w", err)
@@ -194,7 +194,7 @@ func (r *dockerRegistry) dockerV2SortTags(url, token string, tags *RegistryImage
 		if token != "" {
 			manifestReq.Header.Add("Authorization", "Bearer "+token)
 		}
-		resp, err := http.DefaultClient.Do(manifestReq)
+		resp, err := http.DefaultClient.Do(manifestReq) //nolint:gosec,bodyclose
 		if err != nil {
 			return fmt.Errorf("error while sending manifest req for %s: %w", tag, err)
 		}

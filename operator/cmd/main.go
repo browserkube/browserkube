@@ -37,7 +37,6 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	apiv1 "github.com/browserkube/browserkube/operator/api/v1"
 	browserkubeiov1 "github.com/browserkube/browserkube/operator/api/v1"
 	"github.com/browserkube/browserkube/operator/internal/controller"
 )
@@ -51,11 +50,10 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(browserkubeiov1.AddToScheme(scheme))
-	utilruntime.Must(apiv1.AddToScheme(scheme))
+	utilruntime.Must(browserkubeiov1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 
-// nolint:gocyclo
 func main() {
 	var metricsAddr string
 	var metricsCertPath, metricsCertName, metricsCertKey string

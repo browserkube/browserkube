@@ -281,7 +281,7 @@ func (p *ProxyManager) StartSessionHandler(w http.ResponseWriter, rq *http.Reque
 
 			return p.afterSessionHook(ctx, rs, originalSession)
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 }
 
 func (p *ProxyManager) ProxySessionHandler(w http.ResponseWriter, rq *http.Request) {
@@ -370,7 +370,7 @@ func (p *ProxyManager) ProxySessionHandler(w http.ResponseWriter, rq *http.Reque
 				}
 			}
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 }
 
 func (p *ProxyManager) ProxyBidirectionalSession(w http.ResponseWriter, rq *http.Request) {
@@ -457,7 +457,7 @@ func (p *ProxyManager) ProxyDownloads(w http.ResponseWriter, rq *http.Request) e
 			rq.URL = u
 			log.Info("Proxying request to ", rq.URL.String())
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 	return nil
 }
 

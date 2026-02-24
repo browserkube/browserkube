@@ -24,7 +24,11 @@ func fetchLogsHook(serviceProvider provision.Provisioner, store storage.BlobSess
 				log.Errorf("Unable to get pod logs: %v", err)
 				return next(ctx, s)
 			}
-			defer podLogs.Close()
+			defer func() {
+				if podLogs.Close() != nil {
+					log.Errorf("Unable to close pod logs: %v", err)
+				}
+			}()
 
 			if err := store.SaveFile(ctx, s.ID, "", &storage.BlobFile{
 				FileName:    sessionresult.BrowserLogFileName,

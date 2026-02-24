@@ -149,14 +149,14 @@ func (r *BrowserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return reconcile.Result{}, err
 	}
 
-	if res, err := r.checkFinalizer(ctx, instance); res != nil {
-		return *res, err
+	if res, fErr := r.checkFinalizer(ctx, instance); res != nil {
+		return *res, fErr
 	}
 
 	var browserkubePod apiv1.Pod
 	err = r.Get(context.TODO(), types.NamespacedName{
-		Namespace: req.NamespacedName.Namespace,
-		Name:      getBrowserPodName(req.NamespacedName.Name),
+		Namespace: req.Namespace,
+		Name:      getBrowserPodName(req.Name),
 	}, &browserkubePod)
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -294,9 +294,9 @@ func (r *BrowserReconciler) getReadinessProbe(ctx context.Context, namespace, br
 		ProbeHandler: apiv1.ProbeHandler{
 			HTTPGet: probeAction,
 		},
-		InitialDelaySeconds: int32(initialDelay),
-		TimeoutSeconds:      int32(timeoutSecond),
-		FailureThreshold:    int32(failureThreshold),
+		InitialDelaySeconds: int32(initialDelay),     //nolint:gosec //trusted configmap data
+		TimeoutSeconds:      int32(timeoutSecond),    //nolint:gosec //trusted configmap data
+		FailureThreshold:    int32(failureThreshold), //nolint:gosec //trusted configmap data
 	}, nil
 }
 
@@ -384,7 +384,7 @@ func (r *BrowserReconciler) deletePod(ctx context.Context, pod *apiv1.Pod) error
 	})
 }
 
-// nolint:unparam
+//nolint:unparam
 func (r *BrowserReconciler) checkTerminated(ctx context.Context, instance *browserkubeapiv1.Browser, browserkubePod *apiv1.Pod) (*ctrl.Result, error) {
 	if instance.Status.Phase == browserkubeapiv1.PhaseTerminated {
 		if err := r.deletePod(context.Background(), browserkubePod); err != nil {
@@ -535,7 +535,9 @@ func (r *BrowserReconciler) getReadinessProbeAction(browserType, path, port stri
 	return nil
 }
 
-func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Browser, browserConfig *browserkubeapiv1.BrowserConfig, opts *BrowserCtrlOpts) *apiv1.Pod {
+func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Browser,
+	browserConfig *browserkubeapiv1.BrowserConfig,
+	opts *BrowserCtrlOpts) *apiv1.Pod {
 	volumeMounts := buildVolumeMounts()
 
 	spec := &apiv1.PodSpec{

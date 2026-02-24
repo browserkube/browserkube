@@ -165,6 +165,7 @@ func (pp *Proxy) screenshotRecord(msg *websocketproxy.Message) error {
 					return websocketproxy.ErrDoNotSend
 				}
 
+				//nolint:gosec //should be accessible
 				if err = os.MkdirAll(pp.screenshoter.dirPath, 0o777); err != nil {
 					return websocketproxy.ErrDoNotSend
 				}
@@ -177,7 +178,11 @@ func (pp *Proxy) screenshotRecord(msg *websocketproxy.Message) error {
 				if err != nil {
 					return websocketproxy.ErrDoNotSend
 				}
-				defer f.Close()
+				defer func() {
+					if f.Close() != nil {
+						zap.S().Errorf("failed to close file: %v", err)
+					}
+				}()
 
 				if err = json.NewEncoder(f).Encode(imgBytes); err != nil {
 					return websocketproxy.ErrDoNotSend
@@ -204,7 +209,7 @@ func (pp *Proxy) SaveSessionRecord(ctx context.Context, sessionID string) error 
 }
 
 func (pp *Proxy) SaveScreenshotRecord(ctx context.Context, sessionID string) error {
-	if _, err := os.Stat(pp.screenshoter.dirPath); os.IsNotExist(err) {
+	if _, err := os.Stat(pp.screenshoter.dirPath); os.IsNotExist(err) { //nolint:gosec //should be accessible
 		return nil
 	}
 
@@ -219,7 +224,7 @@ func (pp *Proxy) SaveScreenshotRecord(ctx context.Context, sessionID string) err
 
 		zap.S().Info("screenshot file name: ", file.Name())
 
-		data, fErr := os.ReadFile(filePath)
+		data, fErr := os.ReadFile(filePath) //nolint:gosec //should be accessible
 		if fErr != nil {
 			return errors.WithStack(err)
 		}

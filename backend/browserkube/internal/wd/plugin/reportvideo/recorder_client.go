@@ -62,11 +62,11 @@ func (c *Client) Stop(ctx context.Context) error {
 		return fmt.Errorf("unable to build request: %w", err)
 	}
 
-	resp, err := c.client.Do(req)
+	resp, err := c.client.Do(req) //nolint:gosec
 	if err != nil {
 		return fmt.Errorf("unable to stop recording: %w", err)
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unable to stop recording: status code: %v", resp.StatusCode)

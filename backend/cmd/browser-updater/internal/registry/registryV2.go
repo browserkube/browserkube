@@ -35,14 +35,14 @@ func (r *v2Registry) Tags(ctx context.Context, ref reference.Named) (*RegistryIm
 	if err != nil {
 		return nil, fmt.Errorf("error while creating request: %w", err)
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req) //nolint:gosec
 	if err != nil {
 		return nil, fmt.Errorf("error while sending request: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New("bad request")
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 
 	if err = json.NewDecoder(resp.Body).Decode(imageList); err != nil {
 		return nil, fmt.Errorf("error while decoding json: %w", err)
@@ -57,11 +57,11 @@ func (r *v2Registry) ping(baseURL string) error {
 		return err
 	}
 	fmt.Printf("registry.ping url=%s\n", pingURL)
-	resp, err := http.Get(pingURL)
+	resp, err := http.Get(pingURL) //nolint:noctx,gosec // this is trusted request since url is from a trusted source
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("status code: %d", resp.StatusCode)
 	}

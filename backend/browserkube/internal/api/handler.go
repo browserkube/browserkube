@@ -797,7 +797,7 @@ func (h *handler) reverseProxy(portF func(s *session.Session) string) func(http.
 			ErrorHandler: func(w http.ResponseWriter, rq *http.Request, err error) {
 				w.WriteHeader(http.StatusBadGateway)
 			},
-		}).ServeHTTP(w, r)
+		}).ServeHTTP(w, r) //nolint:gosec //trusted url
 	}
 }
 

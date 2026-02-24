@@ -34,7 +34,7 @@ type BrowserSpec struct {
 	Type           string `json:"type"`
 	Timezone       string `json:"timeZone,omitempty"`
 
-	// nolint: tagliatelle
+	//nolint: tagliatelle
 	EnableVNC bool `json:"enableVNC,omitempty"`
 	// video recording options
 	EnableVideo      bool   `json:"enableVideo,omitempty"`

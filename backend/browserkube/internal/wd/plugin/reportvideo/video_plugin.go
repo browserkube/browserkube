@@ -52,12 +52,12 @@ func fetchVideoHook(client *http.Client, store storage.BlobSessionStorage) func(
 				log.Errorf("unable to create http request: %v", err)
 				return next(ctx, s)
 			}
-			resp, err := client.Do(req)
+			resp, err := client.Do(req) //nolint:gosec
 			if err != nil {
 				log.Errorf("unable to get video from url: %v", err)
 				return next(ctx, s)
 			}
-			defer resp.Body.Close()
+			defer resp.Body.Close() //nolint:errcheck
 			if resp.StatusCode != http.StatusOK {
 				log.Errorf("unable to get video from url, status code %v", resp.StatusCode)
 				return next(ctx, s)

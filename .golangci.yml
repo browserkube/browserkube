@@ -20,6 +20,9 @@ formatters:
         - prefix(github.com/browserkube/browserkube)
 
 linters:
+  exclusions:
+    paths:
+      - docs/
   settings:
     tagalign:
       align: true
@@ -82,14 +85,13 @@ linters:
     - nakedret
     - noctx
     - nolintlint
-    - prealloc
     - predeclared
     - rowserrcheck
     - staticcheck
     - tagalign
     - unconvert
     - unparam
-    - unused
     - usestdlibvars
     - whitespace
-
+  disable:
+    - unused

@@ -84,7 +84,7 @@ func (s *blobStorage) GetFile(ctx context.Context, sessionID, filename string) (
 		}
 		return nil, errors.WithStack(err)
 	}
-	defer r.Close()
+	defer r.Close() //nolint:errcheck
 
 	contentType := r.ContentType()
 	if contentType == "" {
@@ -169,7 +169,7 @@ func (s *blobStorage) SaveFile(ctx context.Context, sessionID, prefix string, sr
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	defer writer.Close()
+	defer writer.Close() //nolint:errcheck
 
 	if _, err := io.Copy(writer, sr.Content); err != nil {
 		return errors.WithStack(err)

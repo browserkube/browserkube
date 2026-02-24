@@ -9,6 +9,7 @@ type k8sRegistrySecret struct {
 	Auths map[string]registryServerCreds `json:"auths"`
 }
 
+//nolint:gosec // this struct is used for authentication to registry and it is not used for any untrusted input
 type registryServerCreds struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -43,6 +44,7 @@ type RegistryImageListResp struct {
 	Digests []string `json:"-"`
 }
 
+//nolint:gosec // this struct is used for authentication to registry and it is not used for any untrusted input
 type registryAuthResp struct {
 	Token       string    `json:"token"`
 	AccessToken string    `json:"access_token"`
@@ -50,6 +52,7 @@ type registryAuthResp struct {
 	IssuedAt    time.Time `json:"issued_at"`
 }
 
+//nolint:gosec // this struct is used for authentication to docker hub registry and it is not used for any untrusted input
 type dockerHubAuthReq struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

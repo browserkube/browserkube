@@ -14,7 +14,7 @@ BUILD_INFO_LDFLAGS=-ldflags "-w -extldflags '"-static"' -X buildInfo.buildDate=$
 .PHONY: build
 
 build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build ${BUILD_INFO_LDFLAGS} -o ${BINARY_DIR}/${component}/${BINARY_NAME} ./${component}
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build ${BUILD_INFO_LDFLAGS} -o ${BINARY_DIR}/${component}/${BINARY_NAME} ./cmd/${component}
 
 install-lint:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v2.10.1

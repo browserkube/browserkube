@@ -8,13 +8,11 @@ run:
 
 formatters:
   settings:
-    tagalign:
-      align-tags: true
-      sort-tags: true
     gofumpt:
       extra-rules: true
     goimports:
-      local-prefixes: github.com/browserkube/browserkube
+      local-prefixes:
+        - github.com/browserkube/browserkube
     gci:
       sections:
         - standard
@@ -23,6 +21,9 @@ formatters:
 
 linters:
   settings:
+    tagalign:
+      align: true
+      sort: true
     govet:
       enable:
         - shadow

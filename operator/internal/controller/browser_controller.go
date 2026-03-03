@@ -58,6 +58,8 @@ const (
 	containerNameSidecar            = "sidecar"
 	containerNameRecorder           = "recorder"
 	containerNameClipboard          = "clipboard"
+	containerNameXServer            = "x-server"
+	containerNameVNC                = "vnc-server"
 	extensionInstallerContainerName = "extension-installer"
 )
 
@@ -585,7 +587,7 @@ func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Br
 	if b.Spec.EnableVNC {
 		spec.Containers = append(spec.Containers,
 			apiv1.Container{
-				Name:         "x-server",
+				Name:         containerNameXServer,
 				Image:        opts.xServerImage,
 				VolumeMounts: volumeMounts,
 				Ports: []apiv1.ContainerPort{
@@ -597,7 +599,7 @@ func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Br
 				},
 			},
 			apiv1.Container{
-				Name:         "vnc-server",
+				Name:         containerNameVNC,
 				Image:        opts.vncServerImage,
 				VolumeMounts: volumeMounts,
 				Ports: []apiv1.ContainerPort{

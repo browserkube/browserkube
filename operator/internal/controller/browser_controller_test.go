@@ -228,17 +228,15 @@ var _ = Describe("Browser controller", Ordered, func() {
 			podName := fmt.Sprintf("%s-%s", containerNameBrowser, browserName)
 			By("Browser image has appropriate env variables", func() {
 				p := waitForBrowserPod(b.Namespace, podName)
-				container, found := find(p.Spec.Containers, func(item v1.Container) bool {
-					return item.Name == containerNameBrowser
+				_, vncFound := find(p.Spec.Containers, func(item v1.Container) bool {
+					return item.Name == containerNameVNC
 				})
+				Expect(vncFound).Should(BeTrue(), "VNC Container isn't found")
 
-				Expect(found).Should(BeTrue(), "browser container isn't found")
-
-				vncEnabled, envFound := find(container.Env, func(item v1.EnvVar) bool {
-					return item.Name == "ENABLE_VNC"
+				_, xServerFound := find(p.Spec.Containers, func(item v1.Container) bool {
+					return item.Name == containerNameXServer
 				})
-				Expect(envFound).Should(BeTrue(), "ENABLE_VNC isn't found")
-				Expect(vncEnabled.Value).Should(Equal("true"), "ENABLE_VNC isn't true")
+				Expect(xServerFound).Should(BeTrue(), "xServer Container isn't found")
 			})
 		})
 

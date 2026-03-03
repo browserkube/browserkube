@@ -18,7 +18,7 @@ includes:
     taskfile: ./.taskfiles/go.yaml
     dir: ./backend
   operator:
-    taskfile: ./.taskfiles/go.yaml
+    taskfile: ./operator/Taskfile.yaml
     dir: ./operator
 
 vars:

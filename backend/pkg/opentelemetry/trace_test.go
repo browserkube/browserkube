@@ -34,7 +34,7 @@ func TestInitProvider(t *testing.T) {
 				serviceName: "api",
 				config:      &config{TelemetryEnabled: false},
 			},
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {

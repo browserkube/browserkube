@@ -24,7 +24,7 @@ import (
 	"os/exec"
 	"strings"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:golint,revive
+	. "github.com/onsi/ginkgo/v2" //nolint:golint,revive,staticcheck
 )
 
 const (
@@ -63,7 +63,7 @@ func Run(cmd *exec.Cmd) (string, error) {
 // InstallPrometheusOperator installs the prometheus Operator to be used to export the enabled metrics.
 func InstallPrometheusOperator() error {
 	url := fmt.Sprintf(prometheusOperatorURL, prometheusOperatorVersion)
-	cmd := exec.Command("kubectl", "create", "-f", url)
+	cmd := exec.Command("kubectl", "create", "-f", url) //nolint:noctx,gosec //tests
 	_, err := Run(cmd)
 	return err
 }
@@ -71,7 +71,7 @@ func InstallPrometheusOperator() error {
 // UninstallPrometheusOperator uninstalls the prometheus
 func UninstallPrometheusOperator() {
 	url := fmt.Sprintf(prometheusOperatorURL, prometheusOperatorVersion)
-	cmd := exec.Command("kubectl", "delete", "-f", url)
+	cmd := exec.Command("kubectl", "delete", "-f", url) //nolint:noctx,gosec //tests
 	if _, err := Run(cmd); err != nil {
 		warnError(err)
 	}
@@ -87,7 +87,7 @@ func IsPrometheusCRDsInstalled() bool {
 		"prometheusagents.monitoring.coreos.com",
 	}
 
-	cmd := exec.Command("kubectl", "get", "crds", "-o", "custom-columns=NAME:.metadata.name")
+	cmd := exec.Command("kubectl", "get", "crds", "-o", "custom-columns=NAME:.metadata.name") //nolint:noctx //tests
 	output, err := Run(cmd)
 	if err != nil {
 		return false
@@ -107,7 +107,7 @@ func IsPrometheusCRDsInstalled() bool {
 // UninstallCertManager uninstalls the cert manager
 func UninstallCertManager() {
 	url := fmt.Sprintf(certmanagerURLTmpl, certmanagerVersion)
-	cmd := exec.Command("kubectl", "delete", "-f", url)
+	cmd := exec.Command("kubectl", "delete", "-f", url) //nolint:noctx,gosec //tests
 	if _, err := Run(cmd); err != nil {
 		warnError(err)
 	}
@@ -116,12 +116,13 @@ func UninstallCertManager() {
 // InstallCertManager installs the cert manager bundle.
 func InstallCertManager() error {
 	url := fmt.Sprintf(certmanagerURLTmpl, certmanagerVersion)
-	cmd := exec.Command("kubectl", "apply", "-f", url)
+	cmd := exec.Command("kubectl", "apply", "-f", url) //nolint:noctx,gosec //tests
 	if _, err := Run(cmd); err != nil {
 		return err
 	}
 	// Wait for cert-manager-webhook to be ready, which can take time if cert-manager
 	// was re-installed after uninstalling on a cluster.
+	//nolint:noctx //tests
 	cmd = exec.Command("kubectl", "wait", "deployment.apps/cert-manager-webhook",
 		"--for", "condition=Available",
 		"--namespace", "cert-manager",
@@ -146,7 +147,7 @@ func IsCertManagerCRDsInstalled() bool {
 	}
 
 	// Execute the kubectl command to get all CRDs
-	cmd := exec.Command("kubectl", "get", "crds")
+	cmd := exec.Command("kubectl", "get", "crds") //nolint:noctx //tests
 	output, err := Run(cmd)
 	if err != nil {
 		return false
@@ -172,7 +173,7 @@ func LoadImageToKindClusterWithName(name string) error {
 		cluster = v
 	}
 	kindOptions := []string{"load", "docker-image", name, "--name", cluster}
-	cmd := exec.Command("kind", kindOptions...)
+	cmd := exec.Command("kind", kindOptions...) //nolint:noctx,gosec //tests
 	_, err := Run(cmd)
 	return err
 }
@@ -197,7 +198,7 @@ func GetProjectDir() (string, error) {
 	if err != nil {
 		return wd, err
 	}
-	wd = strings.Replace(wd, "/test/e2e", "", -1)
+	wd = strings.ReplaceAll(wd, "/test/e2e", "")
 	return wd, nil
 }
 
@@ -205,7 +206,7 @@ func GetProjectDir() (string, error) {
 // of the target content. The target content may span multiple lines.
 func UncommentCode(filename, target, prefix string) error {
 	// false positive
-	// nolint:gosec
+	//nolint:gosec
 	content, err := os.ReadFile(filename)
 	if err != nil {
 		return err
@@ -228,16 +229,16 @@ func UncommentCode(filename, target, prefix string) error {
 		return nil
 	}
 	for {
-		_, err := out.WriteString(strings.TrimPrefix(scanner.Text(), prefix))
-		if err != nil {
-			return err
+		_, wErr := out.WriteString(strings.TrimPrefix(scanner.Text(), prefix))
+		if wErr != nil {
+			return wErr
 		}
 		// Avoid writing a newline in case the previous line was the last in target.
 		if !scanner.Scan() {
 			break
 		}
-		if _, err := out.WriteString("\n"); err != nil {
-			return err
+		if _, wsErr := out.WriteString("\n"); wsErr != nil {
+			return wsErr
 		}
 	}
 
@@ -246,6 +247,6 @@ func UncommentCode(filename, target, prefix string) error {
 		return err
 	}
 	// false positive
-	// nolint:gosec
-	return os.WriteFile(filename, out.Bytes(), 0644)
+	//nolint:gosec
+	return os.WriteFile(filename, out.Bytes(), 0o644)
 }

@@ -1,0 +1,97 @@
+version: '2'
+
+run:
+  timeout: 10m
+  tests: false
+  go: '1.26'
+
+
+formatters:
+  settings:
+    gofumpt:
+      extra-rules: true
+    goimports:
+      local-prefixes:
+        - github.com/browserkube/browserkube
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/browserkube/browserkube)
+
+linters:
+  exclusions:
+    paths:
+      - docs/
+  settings:
+    tagalign:
+      align: true
+      sort: true
+    govet:
+      enable:
+        - shadow
+    cyclop:
+      max-complexity: 14
+    dupl:
+      threshold: 500
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+    misspell:
+      locale: US
+    lll:
+      line-length: 160
+    depguard:
+      rules:
+        # deny for all go files
+        AllGoFiles:
+          files:
+            - $all
+          deny:
+            - pkg: go.opencensus.io
+              desc: "do not use OpenCensus; use OpenTelemetry instead"
+    gocritic:
+      enabled-tags:
+        - performance
+        - style
+        - experimental
+      disabled-checks:
+        - wrapperFunc
+        - commentFormatting
+        - yodaStyleExpr
+        - unnamedResult
+        - commentedOutCode
+        - assignOp
+        - docStub
+        - whyNoLint
+
+  enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - dupl
+    - durationcheck
+    - errcheck
+    - goconst
+    - gocyclo
+    - goprintffuncname
+    - gosec
+    - govet
+    - importas
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - noctx
+    - nolintlint
+    - predeclared
+    - rowserrcheck
+    - staticcheck
+    - tagalign
+    - unconvert
+    - unparam
+    - usestdlibvars
+    - whitespace
+  disable:
+    - unused

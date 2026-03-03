@@ -70,6 +70,7 @@ func getCurrentNamespace() (string, error) {
 	return string(ns), nil
 }
 
+//nolint:unparam
 func buildClientSet(ctx context.Context, cmd *cli.Command) (*kubernetes.Clientset, browserkubeclientv1.Interface, error) {
 	var clientset *kubernetes.Clientset
 	var err error

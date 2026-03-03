@@ -42,17 +42,17 @@ spec:
             - name: TELEMETRY_PROVIDER_ENABLED
               value: {{ .Values.telemetry.providerEnabled }}
             {{- end }}
-            {{- if .Values.blob.minio.enabled }}
+            {{- if .Values.blob.rustfs.enabled }}
             - name: AWS_ACCESS_KEY
               valueFrom:
                  secretKeyRef:
-                   name: {{ .Values.blob.minio.secretName }}
-                   key: root-user
+                   name: {{ .Values.blob.rustfs.secretName }}
+                   key: RUSTFS_ACCESS_KEY
             - name: AWS_SECRET_KEY
               valueFrom:
                  secretKeyRef:
-                   name: {{ .Values.blob.minio.secretName }}
-                   key: root-password
+                   name: {{ .Values.blob.rustfs.secretName }}
+                   key: RUSTFS_SECRET_KEY
             {{- end }}
             {{- if .Values.blob.aws.enabled }}
             - name: AWS_ACCESS_KEY

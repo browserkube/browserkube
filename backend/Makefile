@@ -14,14 +14,14 @@ BUILD_INFO_LDFLAGS=-ldflags "-w -extldflags '"-static"' -X buildInfo.buildDate=$
 .PHONY: build
 
 build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build ${BUILD_INFO_LDFLAGS} -o ${BINARY_DIR}/${component}/${BINARY_NAME} ./${component}
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build ${BUILD_INFO_LDFLAGS} -o ${BINARY_DIR}/${component}/${BINARY_NAME} ./cmd/${component}
 
 install-lint:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.64.6
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v2.10.1
 
 lint:
 	#docker run --rm -v $(CURR_DIR):/app -w /app golangci/golangci-lint:v1.32.2 golangci-lint run --enable-all --deadline 10m ./...
-	bin/golangci-lint run --timeout=10m -v ./...
+	bin/golangci-lint run --config ../.golangci.yml --timeout=10m -v ./...
 
 fmt:
 	gofumpt -extra -l -w ${GOFILES_NOVENDOR}
@@ -50,7 +50,7 @@ run:
 	air -c .air.toml
 
 swagger:
-	swag init --parseDependency --parseInternal --generalInfo browserkube/main.go --output browserkube/docs/
+	swag init --parseDependency --parseInternal --generalInfo cmd/browserkube/main.go --output cmd/browserkube/docs/
 
 generate-mocks:
-	mockery --name Indexer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.29.3/tools/cache --output internal/provision/k8s/mocks
+	mockery --name Indexer --dir $GOPATH/pkg/mod/k8s.io/client-go@v0.35.1/tools/cache --output internal/provision/k8s/mocks

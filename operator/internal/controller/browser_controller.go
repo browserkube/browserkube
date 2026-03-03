@@ -18,24 +18,18 @@ package controller
 
 import (
 	"context"
+	sdkerrors "errors"
 	"fmt"
-
 	"net"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/browserkube/browserkube/operator/internal/controller/utils"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"dario.cat/mergo"
-
-	sdkerrors "errors"
-
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -47,6 +41,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
+	"github.com/browserkube/browserkube/operator/internal/controller/utils"
 )
 
 const (
@@ -63,6 +58,8 @@ const (
 	containerNameSidecar            = "sidecar"
 	containerNameRecorder           = "recorder"
 	containerNameClipboard          = "clipboard"
+	containerNameXServer            = "x-server"
+	containerNameVNC                = "vnc-server"
 	extensionInstallerContainerName = "extension-installer"
 )
 
@@ -154,14 +151,14 @@ func (r *BrowserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return reconcile.Result{}, err
 	}
 
-	if res, err := r.checkFinalizer(ctx, instance); res != nil {
-		return *res, err
+	if res, fErr := r.checkFinalizer(ctx, instance); res != nil {
+		return *res, fErr
 	}
 
 	var browserkubePod apiv1.Pod
 	err = r.Get(context.TODO(), types.NamespacedName{
-		Namespace: req.NamespacedName.Namespace,
-		Name:      getBrowserPodName(req.NamespacedName.Name),
+		Namespace: req.Namespace,
+		Name:      getBrowserPodName(req.Name),
 	}, &browserkubePod)
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -173,8 +170,7 @@ func (r *BrowserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 
 			// create the browser
 			if cErr := r.createBrowser(ctx, instance); cErr != nil {
-				var bErr *browserErr
-				if sdkerrors.As(cErr, &bErr) {
+				if bErr, ok := sdkerrors.AsType[*browserErr](cErr); ok {
 					instance.Status.Reason = bErr.reason
 				} else {
 					instance.Status.Reason = browserkubeapiv1.ReasonUnknown
@@ -300,9 +296,9 @@ func (r *BrowserReconciler) getReadinessProbe(ctx context.Context, namespace, br
 		ProbeHandler: apiv1.ProbeHandler{
 			HTTPGet: probeAction,
 		},
-		InitialDelaySeconds: int32(initialDelay),
-		TimeoutSeconds:      int32(timeoutSecond),
-		FailureThreshold:    int32(failureThreshold),
+		InitialDelaySeconds: int32(initialDelay),     //nolint:gosec //trusted configmap data
+		TimeoutSeconds:      int32(timeoutSecond),    //nolint:gosec //trusted configmap data
+		FailureThreshold:    int32(failureThreshold), //nolint:gosec //trusted configmap data
 	}, nil
 }
 
@@ -390,7 +386,7 @@ func (r *BrowserReconciler) deletePod(ctx context.Context, pod *apiv1.Pod) error
 	})
 }
 
-// nolint:unparam
+//nolint:unparam
 func (r *BrowserReconciler) checkTerminated(ctx context.Context, instance *browserkubeapiv1.Browser, browserkubePod *apiv1.Pod) (*ctrl.Result, error) {
 	if instance.Status.Phase == browserkubeapiv1.PhaseTerminated {
 		if err := r.deletePod(context.Background(), browserkubePod); err != nil {
@@ -445,7 +441,6 @@ func (r *BrowserReconciler) checkSidecarRunning(ctx context.Context, instance *b
 	// sidecar container exited which signals that browser termination is requested
 	if browserkubePod.Status.Phase == apiv1.PodRunning {
 		logger := log.FromContext(ctx)
-		logger.Info("checking quit session:", "container status", browserkubePod.Status.ContainerStatuses)
 		for _, c := range browserkubePod.Status.ContainerStatuses {
 			if c.Name == containerNameSidecar && c.State.Terminated != nil {
 				logger.Info("Browser seems to be timed out. Deleting...")
@@ -542,7 +537,9 @@ func (r *BrowserReconciler) getReadinessProbeAction(browserType, path, port stri
 	return nil
 }
 
-func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Browser, browserConfig *browserkubeapiv1.BrowserConfig, opts *BrowserCtrlOpts) *apiv1.Pod {
+func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Browser,
+	browserConfig *browserkubeapiv1.BrowserConfig,
+	opts *BrowserCtrlOpts) *apiv1.Pod {
 	volumeMounts := buildVolumeMounts()
 
 	spec := &apiv1.PodSpec{
@@ -590,7 +587,7 @@ func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Br
 	if b.Spec.EnableVNC {
 		spec.Containers = append(spec.Containers,
 			apiv1.Container{
-				Name:         "x-server",
+				Name:         containerNameXServer,
 				Image:        opts.xServerImage,
 				VolumeMounts: volumeMounts,
 				Ports: []apiv1.ContainerPort{
@@ -602,7 +599,7 @@ func (r *BrowserReconciler) buildPod(ctx context.Context, b *browserkubeapiv1.Br
 				},
 			},
 			apiv1.Container{
-				Name:         "vnc-server",
+				Name:         containerNameVNC,
 				Image:        opts.vncServerImage,
 				VolumeMounts: volumeMounts,
 				Ports: []apiv1.ContainerPort{

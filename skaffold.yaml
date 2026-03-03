@@ -18,7 +18,7 @@ build:
       docker:
         dockerfile: backend/Dockerfile
         buildArgs:
-          COMPONENT: cmd/sidecar
+          COMPONENT: sidecar
     - image: ui
       context: ./frontend
       sync:
@@ -50,14 +50,14 @@ build:
       docker:
         dockerfile: backend/Dockerfile
         buildArgs:
-          COMPONENT: cmd/browser-updater
+          COMPONENT: browser-updater
     - image: session-archiver
       sync:
         auto: false
       docker:
         dockerfile: backend/Dockerfile
         buildArgs:
-          COMPONENT: cmd/session-archiver
+          COMPONENT: session-archiver
     - image: x-server
       sync:
         auto: false
@@ -104,7 +104,7 @@ manifests:
           xServer.image: '{{.IMAGE_FULLY_QUALIFIED_x_server}}'
           vncServer.image: '{{.IMAGE_FULLY_QUALIFIED_vnc_server}}'
           clipboard.image: '{{.IMAGE_FULLY_QUALIFIED_clipboard}}'
-          blob.minio.enabled: true
+          blob.rustfs.enabled: true
 
 deploy:
   helm:
@@ -190,7 +190,7 @@ profiles:
         path: /manifests/helm/releases/0/setValueTemplates/blob.url
         value: "{{.BROWSERKUBE_BUCKET}}"
       - op: add
-        path: /manifests/helm/releases/0/setValueTemplates/blob.minio.enabled
+        path: /manifests/helm/releases/0/setValueTemplates/blob.rustfs.enabled
         value: false
       - op: add
         path: /manifests/helm/releases/0/setValueTemplates/blob.aws.enabled

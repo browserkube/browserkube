@@ -54,8 +54,8 @@ spec:
             - "--browser-user-configmap={{ .Release.Name }}-browsers-usergroup"
             - "--browser-extension-configmap={{ .Release.Name }}-browser-extension-config"
             - "--browser-readinessprobe-configmap={{ .Release.Name }}-browsers-readinessprobe-config"
-          command:
-            - /manager
+{{/*          command:*/}}
+{{/*            - /manager*/}}
           image: "{{ .Values.operator.image }}"
           name: manager
           {{- if .Values.healthcheck.enabled }}

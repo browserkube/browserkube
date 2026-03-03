@@ -79,6 +79,7 @@ func PreInstall(ctx context.Context, cmd *cli.Command) error {
 		len(updateUrl) != len(extensionID) {
 		return fmt.Errorf("invalid format")
 	}
+	//nolint:gosec // not a credentials
 	if err := os.MkdirAll("/opt/extensions", os.ModePerm); err != nil {
 		log.Printf("error while creating extensions folder:%s", err.Error())
 		return nil
@@ -94,7 +95,7 @@ func PreInstall(ctx context.Context, cmd *cli.Command) error {
 				log.Printf("WARNING: Extension with ID :%s is not included in whitelist", extensionID[i])
 				continue
 			}
-			err := installChromeExtension(extensionID[i])
+			err := installChromeExtension(ctx, extensionID[i])
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -109,7 +110,7 @@ func PreInstall(ctx context.Context, cmd *cli.Command) error {
 				log.Printf("WARNING: Extension with ID :%s is not included in whitelist", extensionID[i])
 				continue
 			}
-			err := installFirefoxExtension(extensionID[i], updateUrl[i])
+			err := installFirefoxExtension(ctx, extensionID[i], updateUrl[i])
 			if err != nil {
 				log.Println(err.Error())
 			}

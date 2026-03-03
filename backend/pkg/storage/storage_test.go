@@ -18,8 +18,8 @@ import (
 	"github.com/browserkube/browserkube/pkg/storage/mocks"
 )
 
-//go:generate mockery --name Bucket --replace-type gocloud.dev/internal/gcerr=gocloud.dev/gcerrors --dir $GOPATH/pkg/mod/gocloud.dev@v0.36.0/blob/driver --output mocks
-//go:generate mockery --name BucketURLOpener --dir $GOPATH/pkg/mod/gocloud.dev@v0.36.0/blob --output mocks
+//go:generate mockery --name Bucket --replace-type gocloud.dev/internal/gcerr=gocloud.dev/gcerrors --dir $GOPATH/pkg/mod/gocloud.dev@v0.44.0/blob/driver --output mocks
+//go:generate mockery --name BucketURLOpener --dir $GOPATH/pkg/mod/gocloud.dev@v0.44.0/blob --output mocks
 func Test_blobStorage_GetSessionRecord(t *testing.T) {
 	type args struct {
 		sessionID string
@@ -42,7 +42,7 @@ func Test_blobStorage_GetSessionRecord(t *testing.T) {
 				urlstr:    "test1://",
 			},
 			prepare: func(f *mocks.Bucket) {
-				f.On("NewRangeReader", context.Background(), mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&r, nil).Maybe()
+				f.On("NewRangeReader", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&r, nil).Maybe()
 			},
 			wantErr: false,
 		},
@@ -56,7 +56,7 @@ func Test_blobStorage_GetSessionRecord(t *testing.T) {
 			},
 			prepare: func(f *mocks.Bucket) {
 				f.On("ErrorCode", mock.Anything).Return(gcerr.Unknown).Maybe()
-				f.On("NewRangeReader", context.Background(), mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, errors.New("error")).Maybe()
+				f.On("NewRangeReader", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, errors.New("error")).Maybe()
 			},
 			wantErr: true,
 		},

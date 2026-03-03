@@ -11,13 +11,8 @@ import (
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 
-func provideMetricsProxyPlugin() wd.PluginOpts {
-	return wd.PluginOpts{
-		Weight: 1,
-		Opts: []wd.PluginOpt{
-			wd.WithQuitSession(onQuitSession()),
-		},
-	}
+func NewMetricsProxyPlugin() wd.PluginOpt {
+	return wd.WithQuitSession(onQuitSession())
 }
 
 func onQuitSession() func(next wd.OnSessionQuit) wd.OnSessionQuit {

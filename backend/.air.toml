@@ -5,7 +5,7 @@ tmp_dir = "bin"
 [build]
   args_bin = []
   bin = "./bin/browserkube"
-  cmd = "go build -o ./bin/browserkube ./browserkube"
+  cmd = "go build -o ./bin/browserkube ./cmd/browserkube"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "bin", "sidecar"]
   exclude_file = []

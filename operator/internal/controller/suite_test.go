@@ -25,17 +25,15 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	ctrl "sigs.k8s.io/controller-runtime"
-
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	browserkubeapiv1 "github.com/browserkube/browserkube/operator/api/v1"
-	//+kubebuilder:scaffold:imports
 )
 
 // These tests use Ginkgo (BDD-style Go testing framework). Refer to
@@ -125,11 +123,12 @@ var _ = BeforeSuite(func() {
 			xServerImage:            "quay.io/browserkube/x-server:v1.0.0",
 			sidecarImage:            "quay.io/browserkube/browserkube-sidecar:v1.0.0",
 			clipboardImage:          "quay.io/browserkube/clipboard:v1.0.0",
+			recorderImage:           "recorder",
+			vncServerImage:          "vnc-server",
+			extensionInstallerImage: "extension-installer",
 			sidecarPort:             "9999",
 			OperatorNamespace:       "browserkube",
 			browserUserConfig:       "browserkube-browsers-usergroup",
-			recorderImage:           "recorder",
-			extensionInstallerImage: "extension-installer",
 			browserExtensionConfig:  "browserkube-browser-extension-config",
 			browserReadinessConfig:  probeConfigMapName,
 		},

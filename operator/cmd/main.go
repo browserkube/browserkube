@@ -21,26 +21,24 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
-	"sigs.k8s.io/controller-runtime/pkg/cache"
 
-	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
-	// to ensure that exec-entrypoint and run can make use of them.
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
-
-	apiv1 "github.com/browserkube/browserkube/operator/api/v1"
-	browserkubeiov1 "github.com/browserkube/browserkube/operator/api/v1"
-	"github.com/browserkube/browserkube/operator/internal/controller"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
+	// to ensure that exec-entrypoint and run can make use of them.
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/certwatcher"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
-	// +kubebuilder:scaffold:imports
+
+	browserkubeiov1 "github.com/browserkube/browserkube/operator/api/v1"
+	"github.com/browserkube/browserkube/operator/internal/controller"
 )
 
 var (
@@ -52,11 +50,10 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(browserkubeiov1.AddToScheme(scheme))
-	utilruntime.Must(apiv1.AddToScheme(scheme))
+	utilruntime.Must(browserkubeiov1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 
-// nolint:gocyclo
 func main() {
 	var metricsAddr string
 	var metricsCertPath, metricsCertName, metricsCertKey string

@@ -41,35 +41,35 @@ func (a *SessionResultArchiver) Archive(ctx context.Context) error {
 	zipW := zip.NewWriter(writer)
 
 	for i := range res.Items {
-		archive, err := zipW.Create(fmt.Sprintf("%s/", res.Items[i].Name) + "sessionresult.json")
-		if err != nil {
-			return err
+		archive, rErr := zipW.Create(fmt.Sprintf("%s/", res.Items[i].Name) + "sessionresult.json")
+		if rErr != nil {
+			return rErr
 		}
 
-		err = json.NewEncoder(archive).Encode(res.Items[i])
-		if err != nil {
-			return err
+		rErr = json.NewEncoder(archive).Encode(res.Items[i])
+		if rErr != nil {
+			return rErr
 		}
 
-		files, err := a.BlobSessionStorage.ListFileNames(ctx, res.Items[i].Name, "")
-		if err != nil {
-			return err
+		files, rErr := a.BlobSessionStorage.ListFileNames(ctx, res.Items[i].Name, "")
+		if rErr != nil {
+			return rErr
 		}
 
 		for _, name := range files {
-			file, err := a.BlobSessionStorage.GetFile(ctx, res.Items[i].Name, name)
-			if err != nil {
-				return err
+			file, frErr := a.BlobSessionStorage.GetFile(ctx, res.Items[i].Name, name)
+			if frErr != nil {
+				return frErr
 			}
 
-			archive, err := zipW.Create(fmt.Sprintf("%s/data/", res.Items[i].Name) + file.FileName)
-			if err != nil {
-				return err
+			archive, frErr := zipW.Create(fmt.Sprintf("%s/data/", res.Items[i].Name) + file.FileName)
+			if frErr != nil {
+				return frErr
 			}
 
-			_, err = io.Copy(archive, file.Content)
-			if err != nil {
-				return err
+			_, frErr = io.Copy(archive, file.Content)
+			if frErr != nil {
+				return frErr
 			}
 		}
 

@@ -1,4 +1,4 @@
-FROM golang:1.24.3 as builder
+FROM golang:1.26.0 AS builder
 
 RUN apt update && apt install --no-install-recommends
 
@@ -12,7 +12,7 @@ COPY preinstaller.go utils.go browsers.go ./
 RUN --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o extension-installer cmd/preinstaller/preinstaller.go
 
 
-FROM alpine:3.18 as runtime
+FROM alpine:3.18 AS runtime
 COPY --from=builder /app/extension-installer /usr/bin/extension-installer
 
 ENTRYPOINT ["/usr/bin/extension-installer"]

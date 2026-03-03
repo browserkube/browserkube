@@ -51,13 +51,7 @@ func (c *Context) WithValue(key, val any) *Context {
 
 type (
 	PluginOpt  func(*ProxyBuilder)
-	PluginOpts struct {
-		// Weight is a plugin initialization priority parameter.
-		// Higher weight means earlier initialization. Valid range is from 0 to 255
-		// Note: two plugins with equal weight may be in uncertain order.
-		Weight uint8
-		Opts   []PluginOpt
-	}
+	PluginOpts []PluginOpt
 )
 
 type (
@@ -287,7 +281,7 @@ func (p *ProxyManager) StartSessionHandler(w http.ResponseWriter, rq *http.Reque
 
 			return p.afterSessionHook(ctx, rs, originalSession)
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 }
 
 func (p *ProxyManager) ProxySessionHandler(w http.ResponseWriter, rq *http.Request) {
@@ -376,7 +370,7 @@ func (p *ProxyManager) ProxySessionHandler(w http.ResponseWriter, rq *http.Reque
 				}
 			}
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 }
 
 func (p *ProxyManager) ProxyBidirectionalSession(w http.ResponseWriter, rq *http.Request) {
@@ -463,7 +457,7 @@ func (p *ProxyManager) ProxyDownloads(w http.ResponseWriter, rq *http.Request) e
 			rq.URL = u
 			log.Info("Proxying request to ", rq.URL.String())
 		},
-	}).ServeHTTP(w, rq)
+	}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 	return nil
 }
 

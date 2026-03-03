@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -84,6 +85,7 @@ func initHandlers(mux chi.Router, c *conf, proxy *wdProxy) {
 	}))
 
 	mux.HandleFunc("/recorder/stop", func(w http.ResponseWriter, rq *http.Request) {
+		fmt.Println("Proxying request to recorder stop endpoint:" + c.recorderURL.String())
 		(&httputil.ReverseProxy{
 			Rewrite: func(prq *httputil.ProxyRequest) {
 				u := *prq.In.URL
@@ -91,7 +93,7 @@ func initHandlers(mux chi.Router, c *conf, proxy *wdProxy) {
 				prq.SetXForwarded()
 				prq.Out.URL = &u
 			},
-		}).ServeHTTP(w, rq)
+		}).ServeHTTP(w, rq) //nolint:gosec //trusted url
 	})
 
 	mux.HandleFunc("/wd/hub/session", proxy.StartSessionHandler)
@@ -110,6 +112,6 @@ func initHandlers(mux chi.Router, c *conf, proxy *wdProxy) {
 				rq.Out.Host = u.Host
 			},
 		}
-		proxy.ServeHTTP(w, rq)
+		proxy.ServeHTTP(w, rq) //nolint:gosec //trusted url
 	})
 }

@@ -181,7 +181,6 @@ func (w *WebsocketProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) { 
 	if err != nil {
 		log.Printf("websocketproxy: couldn't dial to remote backend url %s", err)
 		if resp != nil {
-			log.Printf("Proxy: error status: %d", resp.StatusCode)
 			// If the WebSocket handshake fails, ErrBadHandshake is returned
 			// along with a non-nil *http.Response so that callers can handle
 			// redirects, authentication, etcetera.

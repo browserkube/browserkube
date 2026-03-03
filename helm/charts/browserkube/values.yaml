@@ -6,16 +6,16 @@ env: dev
 name: browserkube
 pullPolicy: IfNotPresent
 blob:
-  minio:
+  rustfs:
     enabled: true
-    secretName: minio
-  url: "s3://browserkube?hostname_immutable=true&endpoint=http://minio.browserkube.svc.cluster.local:9000&use_path_style=true&region=us-east-1&disable_https=true"
+    secretName: rustfs-secret
+  url: "s3://browserkube?hostname_immutable=true&endpoint=http://rustfs-svc.browserkube.svc.cluster.local:9000&use_path_style=true&region=us-east-1&disable_https=true"
   aws:
     enabled: false
     accessKeyID:
     accessKeySecret:
   archive:
-    url: "s3://browserkube-archive?endpoint=http://minio.browserkube.svc.cluster.local:9000&use_path_style=true&region=us-east-1&disable_https=true"
+    url: "s3://browserkube-archive?endpoint=http://rustfs-svc.browserkube.svc.cluster.local:9000&use_path_style=true&region=us-east-1&disable_https=true"
 healthcheck:
   enabled: true
   port: 4444
@@ -161,13 +161,13 @@ prometheus:
   prometheus-pushgateway:
     enabled: false
 
-minio:
-  name: minio
+rustfs:
+  name: rustfs
   enabled: false
   ingress:
     tls: true
     enabled: true
-    hostname: minio.docker.internal
+    hostname: rustfs.docker.internal
     ingressClassName: nginx
 
 cronJobContext:

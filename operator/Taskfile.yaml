@@ -1,8 +1,13 @@
 version: 3
 
-## proxy tasks to skaffolded Makefile
+## override default makefile
+## with specific test task for operator
+includes:
+  root:
+    taskfile: ./../.taskfiles/go.yaml
+    flatten: true
+    excludes: ["test"]
 tasks:
-  lint:
-    cmd: make lint
+  ## proxy tasks to skaffolded Makefile
   test:
     cmd: make test

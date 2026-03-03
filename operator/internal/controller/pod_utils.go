@@ -16,12 +16,11 @@ import (
 )
 
 func buildContainerPort(name, port string) apiv1.ContainerPort {
-	//nolint:gosec
 	p, _ := strconv.Atoi(port)
 	return apiv1.ContainerPort{
 		Name:          name,
 		Protocol:      apiv1.ProtocolTCP,
-		ContainerPort: int32(p),
+		ContainerPort: int32(p), //nolint:gosec //trusted port
 	}
 }
 
@@ -131,7 +130,8 @@ func buildBrowserEnvVar(browser browserkubeapiv1.BrowserSpec, browserConfig *bro
 
 func buildSidecarEnvVar(browser browserkubeapiv1.BrowserSpec,
 	browserConfig *browserkubeapiv1.BrowserConfig,
-	sidecarPort string) []apiv1.EnvVar {
+	sidecarPort string,
+) []apiv1.EnvVar {
 	proxyURL := url.URL{
 		Scheme: "http",
 		Host:   net.JoinHostPort("localhost", browserConfig.Port),
@@ -228,6 +228,8 @@ func installPlugins(
 		}
 	}
 
+	//nolint:prealloc // The number of args is 3 times the number of extensions,
+	//but preallocating would require multiplying by 3 and make the code less readable
 	args := make([]string, len(extensions))
 	for _, extension := range extensions {
 		args = append(args,

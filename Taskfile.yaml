@@ -14,13 +14,15 @@ includes:
   extension-installer:
     taskfile: ./.taskfiles/go.yaml
     dir: ./cmds/extension-installer
-
+  backend:
+    taskfile: ./.taskfiles/go.yaml
+    dir: ./backend
   operator:
     taskfile: ./operator/Taskfile.yaml
     dir: ./operator
 
 vars:
-  GO_PROJECTS: clipboard extension-installer operator
+  GO_PROJECTS: clipboard extension-installer operator backend
 tasks:
   all:fmt:
     cmds:

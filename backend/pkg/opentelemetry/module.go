@@ -30,10 +30,6 @@ const usageObservePeriod = 5 * time.Minute
 var Module = fx.Options(
 	fx.Provide(
 		provideConfig,
-		fx.Annotate(
-			provideMetricsProxyPlugin,
-			fx.ResultTags(`group:"wd-extensions"`),
-		),
 	),
 	fx.Invoke(
 		registerActiveSessionsObserver,

@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1-experimental
 
 ## This one is based on Debian
-FROM golang:1.24.1-alpine3.21 AS builder
+FROM golang:1.26.0-alpine3.23 AS builder
 WORKDIR /app
 
 # install dependencies
@@ -18,7 +18,7 @@ RUN go mod download
 ARG COMPONENT
 
 COPY backend/pkg ./pkg
-COPY backend/$COMPONENT ./$COMPONENT
+COPY backend/cmd/$COMPONENT ./cmd/$COMPONENT
 COPY operator /operator
 
 # build an application

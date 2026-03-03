@@ -30,7 +30,8 @@ func InitBrowserCtrlOpts() *BrowserCtrlOpts {
 	flag.StringVar(&cfg.sidecarPort, "sidecar-port", "9999", "Port of sidecar")
 	flag.StringVar(&cfg.browserUserConfig, "browser-user-configmap", "browserkube-browsers-usergroup", "Browser Config Map Name")
 	flag.StringVar(&cfg.browserExtensionConfig, "browser-extension-configmap", "browserkube-browser-extension-config", "Browser Config Map Name")
-	flag.StringVar(&cfg.browserReadinessConfig, "browser-readinessprobe-configmap", "browserkube-browsers-readinessprobe-config", "Browser Readiness Config Map Name")
+	flag.StringVar(&cfg.browserReadinessConfig, "browser-readinessprobe-configmap",
+		"browserkube-browsers-readinessprobe-config", "Browser Readiness Config Map Name")
 
 	return cfg
 }

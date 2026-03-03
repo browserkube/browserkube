@@ -1,4 +1,4 @@
-FROM golang:1.23.1
+FROM golang:1.26.0
 
 ARG UID=65532
 ARG GID=65532
@@ -18,7 +18,7 @@ RUN addgroup --gid $GID nonroot && \
     adduser --uid $UID --gid $GID --disabled-password --gecos "" nonroot && \
     echo 'nonroot ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
-USER nonroot
+USER $UID:$GID
 WORKDIR /home/nonroot/app
 
 # Copy the Go Modules manifests
@@ -28,9 +28,9 @@ COPY --chown=nonroot:nonroot go.mod go.sum .air.toml ./
 RUN go mod download
 
 # Copy the go source
-COPY --chown=nonroot:nonroot cmd/main.go cmd/main.go
-COPY --chown=nonroot:nonroot api/ api/
-COPY --chown=nonroot:nonroot internal/controller/ internal/controller/
+COPY --chown=$UID:$GID cmd/main.go cmd/main.go
+COPY --chown=$UID:$GID api/ api/
+COPY --chown=$UID:$GID internal/controller/ internal/controller/
 
 ## this is just to populate build cache
 RUN go build -a -o ./bin/manager cmd/main.go

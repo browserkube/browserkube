@@ -101,15 +101,14 @@ func initRoutes(mux chi.Router, h *handler) {
 }
 
 type handler struct {
-	sessionRepo           session.Repository
-	sessionResultsRepo    sessionresult.Repository
-	provisioner           provision.Provisioner
-	upgrader              websocket.Upgrader
-	logger                *zap.SugaredLogger
-	startTime             time.Time
-	provider              *sdktrace.TracerProvider
-	sessionStorage        storage.BlobSessionStorage
-	archiveSessionStorage storage.BlobSessionArchiveStorage
+	sessionRepo        session.Repository
+	sessionResultsRepo sessionresult.Repository
+	provisioner        provision.Provisioner
+	upgrader           websocket.Upgrader
+	logger             *zap.SugaredLogger
+	startTime          time.Time
+	provider           *sdktrace.TracerProvider
+	sessionStorage     storage.BlobSessionStorage
 }
 
 func newHandler(
@@ -241,7 +240,7 @@ func (h *handler) results(w http.ResponseWriter, rq *http.Request) error {
 		pageToken string
 		err       error
 	)
-	pageSizeStr := chi.URLParam(rq, "pageSize")
+	pageSizeStr := rq.URL.Query().Get("pageSize")
 	if pageSizeStr != "" {
 		pageSize, err = strconv.Atoi(pageSizeStr)
 		if err != nil {
@@ -251,7 +250,7 @@ func (h *handler) results(w http.ResponseWriter, rq *http.Request) error {
 		pageSize = defaultPageSize
 	}
 
-	pageToken = chi.URLParam(rq, "pageToken")
+	pageToken = rq.URL.Query().Get("pageToken")
 
 	sessResults, err := h.sessionResultsRepo.FindAll(rq.Context(), pageSize, pageToken)
 	if err != nil {
@@ -306,14 +305,22 @@ func (h *handler) resultByID(w http.ResponseWriter, rq *http.Request) error {
 //	@Failure		500	{string}	Internal	Server	Error
 //	@Router			/status [get]
 func (h *handler) status(w http.ResponseWriter, _ *http.Request) error {
-	qCurrent, qMax, err := h.sessionRepo.Quota()
+	s, err := h.buildStatus()
 	if err != nil {
 		return browserkubehttp.NewHTTPErr(http.StatusInternalServerError, errors.WithStack(err))
+	}
+	return errors.WithStack(browserkubehttp.WriteJSON(w, http.StatusOK, s))
+}
+
+func (h *handler) buildStatus() (*Status, error) {
+	qCurrent, qMax, err := h.sessionRepo.Quota()
+	if err != nil {
+		return nil, errors.WithStack(err)
 	}
 	var qConnecting, qQueued, qRunning int
 	sessions, err := h.sessionRepo.FindAll()
 	if err != nil {
-		return browserkubehttp.NewHTTPErr(http.StatusInternalServerError, errors.WithStack(err))
+		return nil, errors.WithStack(err)
 	}
 	for _, sess := range sessions {
 		switch sess.State {
@@ -327,13 +334,11 @@ func (h *handler) status(w http.ResponseWriter, _ *http.Request) error {
 			qRunning++
 		}
 	}
-
-	return errors.WithStack(browserkubehttp.WriteJSON(w, http.StatusOK,
-		&Status{
-			QuotesLimit: qMax,
-			MaxTimeout:  time.Minute,
-			Stats:       StatusStats{All: qCurrent, Connecting: qConnecting, Queued: qQueued, Running: qRunning},
-		}))
+	return &Status{
+		QuotesLimit: qMax,
+		MaxTimeout:  time.Minute,
+		Stats:       StatusStats{All: qCurrent, Connecting: qConnecting, Queued: qQueued, Running: qRunning},
+	}, nil
 }
 
 // browsers godoc
@@ -498,7 +503,7 @@ func (h *handler) getScreenshotByID(w http.ResponseWriter, rq *http.Request) err
 	logger := h.logger.With("session_id", sessionID)
 
 	fileName := chi.URLParam(rq, screenshotID)
-	if sessionID == "" {
+	if fileName == "" {
 		logger.Error("screenshot name not found")
 		return browserkubehttp.NewHTTPErr(http.StatusBadRequest, fmt.Errorf("screenshot name not found"))
 	}
@@ -853,33 +858,11 @@ func (h *handler) toSessionResult(sess *sessionresult.Result) (*SessionResult, e
 }
 
 func (h *handler) wsStatus(ws *websocket.Conn) error {
-	qCurrent, qMax, err := h.sessionRepo.Quota()
+	s, err := h.buildStatus()
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	var qConnecting, qQueued, qRunning int
-	sessions, err := h.sessionRepo.FindAll()
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	for _, sess := range sessions {
-		switch sess.State {
-		case "pending":
-			if qCurrent > qMax {
-				qQueued++
-				break
-			}
-			qConnecting++
-		case "running":
-			qRunning++
-		}
-	}
-	wErr := ws.WriteJSON(NewWSMessage("status", &Status{
-		QuotesLimit: qMax,
-		MaxTimeout:  time.Minute,
-		Stats:       StatusStats{All: qCurrent, Connecting: qConnecting, Queued: qQueued, Running: qRunning},
-	}))
-	return errors.WithStack(wErr)
+	return errors.WithStack(ws.WriteJSON(NewWSMessage("status", s)))
 }
 
 func (h *handler) sortBrowsers(browsers []Browser) {

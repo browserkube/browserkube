@@ -3,17 +3,17 @@ package wd
 import (
 	"net/http"
 
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportcommand"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportlog"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportportal"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/sessionresult"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
-	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportcommand"
-	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportlog"
-	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportportal"
 	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportvideo"
-	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/sessionresult"
 	browserkubehttp "github.com/browserkube/browserkube/pkg/http"
 	"github.com/browserkube/browserkube/pkg/opentelemetry"
 	"github.com/browserkube/browserkube/pkg/session"
@@ -32,16 +32,16 @@ var Module = fx.Options(
 		envConfig *provision.Config,
 	) wd.PluginOpts {
 		var plugins []wd.PluginOpt
-		plugins = append(plugins, NewK8SProxyPlugins(serviceProvider)...) // weight 1
+
+		plugins = append(plugins, reportvideo.NewReportVideoPlugin(client, store))              // weight 251
+		plugins = append(plugins, reportportal.NewReportPortalPlugins(clientset, envConfig)...) // weight 250
 		plugins = append(plugins,
-			opentelemetry.NewMetricsProxyPlugin(),                           // weight 1
-			sessionresult.NewSessionResultPlugin(sessionResultsRepo, store), // weight 1
 			reportlog.NewReportLogPlugin(serviceProvider, store),            // weight 250
 			reportcommand.NewReportCommandPlugin(store),                     // weight 250
-
+			opentelemetry.NewMetricsProxyPlugin(),                           // weight 1
+			sessionresult.NewSessionResultPlugin(sessionResultsRepo, store), // weight 1
 		)
-		plugins = append(plugins, reportportal.NewReportPortalPlugins(clientset, envConfig)...) // weight 250
-		plugins = append(plugins, reportvideo.NewReportVideoPlugin(client, store))              // weight 251
+		plugins = append(plugins, NewK8SProxyPlugins(serviceProvider)...) // weight 1
 
 		return plugins
 	},

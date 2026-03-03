@@ -8,7 +8,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
 )
 
 const label = "io.browserkube.rp-project"

@@ -16,7 +16,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision/k8s/mocks"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision/k8s/mocks"
 	v1 "github.com/browserkube/browserkube/operator/api/v1"
 	"github.com/browserkube/browserkube/pkg/session"
 	mocks2 "github.com/browserkube/browserkube/pkg/util/broadcast/mocks"

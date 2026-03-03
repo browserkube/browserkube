@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision/k8s/mocks"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision/k8s/mocks"
 	v1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 

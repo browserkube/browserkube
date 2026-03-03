@@ -16,8 +16,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/browserkube/browserkube/browserkube/internal/playwright/mocks"
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/playwright/mocks"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
 	browserkubev1 "github.com/browserkube/browserkube/operator/api/v1"
 )
 

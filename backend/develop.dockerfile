@@ -17,10 +17,10 @@ WORKDIR /app/backend
 RUN go mod download
 
 COPY backend/pkg /app/backend/pkg
-COPY backend/browserkube /app/backend/browserkube
+COPY backend/cmd/browserkube /app/backend/cmd/browserkube
 COPY operator /app/operator
 
 ## this is just to populate build cache
-RUN go build -o ./bin/browserkube ./browserkube
+RUN go build -o ./bin/browserkube ./cmd/browserkube
 
 CMD ["make", "run"]

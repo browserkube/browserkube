@@ -18,7 +18,7 @@ RUN go mod download
 ARG COMPONENT
 
 COPY backend/pkg ./pkg
-COPY backend/$COMPONENT ./$COMPONENT
+COPY backend/cmd/$COMPONENT ./cmd/$COMPONENT
 COPY operator /operator
 
 # build an application

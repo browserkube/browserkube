@@ -10,7 +10,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/browserkube/browserkube/browserkube/internal/api"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/api"
 	"github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/storage"
 	"github.com/browserkube/browserkube/pkg/wd"

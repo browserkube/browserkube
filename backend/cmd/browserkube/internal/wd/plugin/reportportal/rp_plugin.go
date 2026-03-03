@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
 	"github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/wd"
 	"github.com/browserkube/browserkube/pkg/wd/wdproto"

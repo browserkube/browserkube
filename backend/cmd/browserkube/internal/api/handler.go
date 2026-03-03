@@ -26,8 +26,8 @@ import (
 	netwebsocket "golang.org/x/net/websocket"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
-	"github.com/browserkube/browserkube/browserkube/internal/snippet"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/snippet"
 	browserkubev1 "github.com/browserkube/browserkube/operator/api/v1"
 	browserkubehttp "github.com/browserkube/browserkube/pkg/http"
 	"github.com/browserkube/browserkube/pkg/opentelemetry"

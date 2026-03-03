@@ -39,8 +39,8 @@ dependencies:
     condition: prometheus.enabled
     version: "25.3.1"
     repository: "https://prometheus-community.github.io/helm-charts"
-  - name: minio
-    alias: minio
-    condition: minio.enabled
-    version: "14.4.0"
-    repository: "oci://registry-1.docker.io/bitnamicharts"
+  - name: rustfs
+    alias: rustfs
+    condition: rustfs.enabled
+    version: "0.0.84"
+    repository: "https://charts.rustfs.com/"

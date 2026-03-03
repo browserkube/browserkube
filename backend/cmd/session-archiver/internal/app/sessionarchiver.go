@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
+	browserkubeutil "github.com/browserkube/browserkube/pkg/util"
 	"github.com/urfave/cli/v3"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -55,7 +54,7 @@ func Archive(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, contextTimeout)
-	go handleSignals(cancel)
+	defer cancel()
 
 	ns, err := getCurrentNamespace()
 	if err != nil {
@@ -83,6 +82,7 @@ func archiveSessionResults(ctx context.Context, cmd *cli.Command, ns string) err
 	if err != nil {
 		return fmt.Errorf("failed to open blob storage: %w", err)
 	}
+	defer browserkubeutil.CloseQuietly(blobSessionStorage)
 
 	blobSessionArchiveStorage, err := storage.New(ctx, cmd.String("blob-url-archive"))
 	if err != nil {
@@ -119,18 +119,4 @@ func provideClient() (browserkubeclientv1.Interface, error) {
 	}
 
 	return browserkubeClient, nil
-}
-
-func handleSignals(cancel context.CancelFunc) {
-	sigChn := make(chan os.Signal, 1)
-	signal.Notify(sigChn, os.Interrupt, syscall.SIGTERM)
-
-	for {
-		sig := <-sigChn
-		switch sig {
-		default:
-			cancel()
-			return
-		}
-	}
 }

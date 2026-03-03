@@ -8,12 +8,12 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
-	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportcommand"
-	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportlog"
-	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportportal"
-	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/reportvideo"
-	"github.com/browserkube/browserkube/browserkube/internal/wd/plugin/sessionresult"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportcommand"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportlog"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportportal"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/reportvideo"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/plugin/sessionresult"
 	browserkubehttp "github.com/browserkube/browserkube/pkg/http"
 	"github.com/browserkube/browserkube/pkg/opentelemetry"
 	"github.com/browserkube/browserkube/pkg/session"
@@ -41,7 +41,7 @@ var Module = fx.Options(
 
 		)
 		plugins = append(plugins, reportportal.NewReportPortalPlugins(clientset, envConfig)...) // weight 250
-		plugins = append(plugins, reportvideo.NewReportLogPlugin(client, store))                // weight 251
+		plugins = append(plugins, reportvideo.NewReportVideoPlugin(client, store))              // weight 251
 
 		return plugins
 	},

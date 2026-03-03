@@ -19,7 +19,7 @@ import (
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/utils/ptr"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
 	browserkubev1 "github.com/browserkube/browserkube/operator/api/v1"
 	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
 	"github.com/browserkube/browserkube/pkg/session"

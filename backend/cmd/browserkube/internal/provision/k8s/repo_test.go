@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/resource"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision/k8s/mocks"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision/k8s/mocks"
 	v1 "github.com/browserkube/browserkube/operator/api/v1"
 	"github.com/browserkube/browserkube/pkg/session"
 )

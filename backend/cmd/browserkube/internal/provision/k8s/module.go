@@ -10,7 +10,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
 	browserkubeclientv1 "github.com/browserkube/browserkube/operator/pkg/client/v1"
 	wdsession "github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/sessionresult"

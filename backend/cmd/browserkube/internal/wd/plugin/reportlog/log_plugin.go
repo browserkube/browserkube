@@ -3,7 +3,7 @@ package reportlog
 import (
 	"go.uber.org/zap"
 
-	"github.com/browserkube/browserkube/browserkube/internal/provision"
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/provision"
 	"github.com/browserkube/browserkube/pkg/session"
 	"github.com/browserkube/browserkube/pkg/sessionresult"
 	"github.com/browserkube/browserkube/pkg/storage"

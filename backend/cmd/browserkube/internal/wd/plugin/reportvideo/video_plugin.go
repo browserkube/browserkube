@@ -14,7 +14,7 @@ import (
 	"github.com/browserkube/browserkube/pkg/wd"
 )
 
-func NewReportLogPlugin(client *http.Client, storage storage.BlobSessionStorage) wd.PluginOpt {
+func NewReportVideoPlugin(client *http.Client, storage storage.BlobSessionStorage) wd.PluginOpt {
 	return wd.WithQuitSession(fetchVideoHook(client, storage))
 }
 

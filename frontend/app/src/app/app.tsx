@@ -29,9 +29,30 @@ createRoot(rootElement!).render(
         <ConnectWebSocket>
           <BrowsersLoader>
             <Routes>
-              <Route path={PATHS.HOME} element={<ErrorBoundary><ZeroPage /></ErrorBoundary>} />
-              <Route path={PATHS.LIVE_SESSIONS} element={<ErrorBoundary><LiveSessions /></ErrorBoundary>} />
-              <Route path={PATHS.ACTIVE_SESSION_DETAILS} element={<ErrorBoundary><VncPanel /></ErrorBoundary>} />
+              <Route
+                path={PATHS.HOME}
+                element={
+                  <ErrorBoundary>
+                    <ZeroPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path={PATHS.LIVE_SESSIONS}
+                element={
+                  <ErrorBoundary>
+                    <LiveSessions />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path={PATHS.ACTIVE_SESSION_DETAILS}
+                element={
+                  <ErrorBoundary>
+                    <VncPanel />
+                  </ErrorBoundary>
+                }
+              />
             </Routes>
             <ToastContainer
               position={toast.POSITION.BOTTOM_LEFT}

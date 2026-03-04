@@ -1,8 +1,68 @@
-Thank you for installing {{ .Chart.Name }}.
+BrowserKube {{ .Chart.AppVersion }} has been installed as release "{{ .Release.Name }}".
 
-Your release is named {{ .Release.Name }}.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ENDPOINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  UI:        http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}/browserkube/
+  API:       http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}/browserkube/api/
+  WebDriver: http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}/wd/hub
+{{- end }}
+{{- else }}
+  Ingress is disabled. Access the UI via port-forward:
 
-To learn more about the release, try:
+    kubectl port-forward -n {{ .Release.Namespace }} \
+      svc/{{ include "browserkube.fullname" . }}-ui {{ .Values.ui.port }}:{{ .Values.ui.port }}
 
-  $ helm status {{ .Release.Name }}
-  $ helm get all {{ .Release.Name }}
+  Then open: http://localhost:{{ .Values.ui.port }}/
+{{- end }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HEALTH CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Wait for all pods to become ready:
+
+    kubectl rollout status deployment/{{ include "browserkube.fullname" . }} \
+      -n {{ .Release.Namespace }}
+
+  Check the backend health endpoint:
+
+    kubectl exec -n {{ .Release.Namespace }} \
+      deploy/{{ include "browserkube.fullname" . }} -- \
+      wget -qO- http://localhost:{{ .Values.healthcheck.port | default 4444 }}/health
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  NEXT STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Verify installed browser versions:
+
+       kubectl get browserset -n {{ .Release.Namespace }}
+
+  2. Run a quick WebDriver session (requires curl):
+
+       curl -s -X POST \
+         http://{{ index .Values.ingress.hosts 0 | default "localhost" }}/wd/hub/session \
+         -H "Content-Type: application/json" \
+         -d '{"capabilities":{"browserName":"chrome"}}'
+
+  3. Upgrade image tags independently of the chart:
+
+       helm upgrade {{ .Release.Name }} <chart> \
+         --set backend.tag=v1.2.0 \
+         --set operator.tag=v1.2.0
+
+  4. Enable observability (Prometheus + Grafana + Tempo):
+
+       helm upgrade {{ .Release.Name }} <chart> \
+         --set prometheus.enabled=true \
+         --set grafana.enabled=true \
+         --set tempo.enabled=true
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  INSPECT / TROUBLESHOOT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    helm status {{ .Release.Name }}
+    helm get values {{ .Release.Name }}
+    kubectl get pods -n {{ .Release.Namespace }}
+    kubectl logs -n {{ .Release.Namespace }} deploy/{{ include "browserkube.fullname" . }}

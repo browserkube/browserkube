@@ -41,6 +41,16 @@ chart: {{ include "browserkube.chart" . }}
 app: {{ $.Chart.Name | quote }}
 {{- end -}}
 
+{{/*
+Render a full image reference as "repository:tag".
+The tag falls back to .Chart.AppVersion when not explicitly set.
+Usage: {{ include "browserkube.image" (dict "component" .Values.backend "appVersion" .Chart.AppVersion) }}
+*/}}
+{{- define "browserkube.image" -}}
+{{- printf "%s:%s" .component.repository (.component.tag | default .appVersion) -}}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "browserkube.serviceAccountName" -}}

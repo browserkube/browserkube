@@ -16,7 +16,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: session-archiver-job
-              image: "{{ .Values.sessionArchiver.image }}"
+              image: "{{ include "browserkube.image" (dict "component" .Values.sessionArchiver "appVersion" .Chart.AppVersion) }}"
               imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
               env:
                 - name: EXECUTION_TIMEOUT

@@ -19,7 +19,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "browserkube.fullname" . }}-session-results-pvc
       containers:
-        - image: "{{ .Values.backend.image }}"
+        - image: "{{ include "browserkube.image" (dict "component" .Values.backend "appVersion" .Chart.AppVersion) }}"
           imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
           name: server
           ports:

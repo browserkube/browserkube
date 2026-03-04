@@ -14,7 +14,7 @@ spec:
         component: {{ include "browserkube.fullname" . }}-ui
     spec:
       containers:
-        - image: "{{ .Values.ui.image }}"
+        - image: "{{ include "browserkube.image" (dict "component" .Values.ui "appVersion" .Chart.AppVersion) }}"
           imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
           name: ui
           ports:

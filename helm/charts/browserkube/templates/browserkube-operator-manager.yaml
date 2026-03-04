@@ -45,18 +45,18 @@ spec:
             - --metrics-bind-address=:8443
             - --health-probe-bind-address=:8081
             - --leader-elect
-            - "--sidecar-image={{.Values.sidecar.image}}"
-            - "--recorder-image={{.Values.recorder.image}}"
-            - "--extension-installer-image={{.Values.extensionInstaller.image}}"
-            - "--x-server-image={{.Values.xServer.image}}"
-            - "--vnc-server-image={{.Values.vncServer.image}}"
-            - "--clipboard-image={{.Values.clipboard.image}}"
+            - "--sidecar-image={{ include "browserkube.image" (dict "component" .Values.sidecar "appVersion" .Chart.AppVersion) }}"
+            - "--recorder-image={{ include "browserkube.image" (dict "component" .Values.recorder "appVersion" .Chart.AppVersion) }}"
+            - "--extension-installer-image={{ include "browserkube.image" (dict "component" .Values.extensionInstaller "appVersion" .Chart.AppVersion) }}"
+            - "--x-server-image={{ include "browserkube.image" (dict "component" .Values.xServer "appVersion" .Chart.AppVersion) }}"
+            - "--vnc-server-image={{ include "browserkube.image" (dict "component" .Values.vncServer "appVersion" .Chart.AppVersion) }}"
+            - "--clipboard-image={{ include "browserkube.image" (dict "component" .Values.clipboard "appVersion" .Chart.AppVersion) }}"
             - "--browser-user-configmap={{ .Release.Name }}-browsers-usergroup"
             - "--browser-extension-configmap={{ .Release.Name }}-browser-extension-config"
             - "--browser-readinessprobe-configmap={{ .Release.Name }}-browsers-readinessprobe-config"
 {{/*          command:*/}}
 {{/*            - /manager*/}}
-          image: "{{ .Values.operator.image }}"
+          image: "{{ include "browserkube.image" (dict "component" .Values.operator "appVersion" .Chart.AppVersion) }}"
           name: manager
           {{- if .Values.healthcheck.enabled }}
           livenessProbe:

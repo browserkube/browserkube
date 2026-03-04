@@ -57,37 +57,48 @@ ingress:
 
 sidecar:
   port: 9999
-  image: quay.io/browserkube/browserkube-sidecar:v1.0.0
+  repository: quay.io/browserkube/browserkube-sidecar
+  tag: ""
 ui:
   port: 8080
-  image: quay.io/browserkube/browserkube-ui:v1.0.0
+  repository: quay.io/browserkube/browserkube-ui
+  tag: ""
 operator:
-  image: quay.io/browserkube/browser-operator:v1.0.0
+  repository: quay.io/browserkube/browser-operator
+  tag: ""
   runAsNonRoot: true
   runAsUser:
   runAsGroup:
 backend:
-  image: quay.io/browserkube/browserkube:v1.0.0
+  repository: quay.io/browserkube/browserkube
+  tag: ""
   volumes:
     sessionResult:
       sizeLimit: 100Mi
       storageClassName: hostpath
 recorder:
-  image: quay.io/browserkube/recorder:v1.0.0
+  repository: quay.io/browserkube/recorder
+  tag: ""
 extensionInstaller:
-  image: quay.io/browserkube/extension-installer:v1.0.0
+  repository: quay.io/browserkube/extension-installer
+  tag: ""
 browserUpdater:
   enabled: false
-  image: quay.io/browserkube/browser-updater:v1.0.0
+  repository: quay.io/browserkube/browser-updater
+  tag: ""
 sessionArchiver:
   enabled: true
-  image: quay.io/browserkube/session-archiver:v1.0.0
+  repository: quay.io/browserkube/session-archiver
+  tag: ""
 xServer:
-  image: quay.io/browserkube/x-server:1.0.0
+  repository: quay.io/browserkube/x-server
+  tag: ""
 vncServer:
-  image: quay.io/browserkube/vnc-server:1.0.0
+  repository: quay.io/browserkube/vnc-server
+  tag: ""
 clipboard:
-  image: quay.io/browserkube/clipboard:v1.0.0
+  repository: quay.io/browserkube/clipboard
+  tag: ""
 
 rbac:
   create: true

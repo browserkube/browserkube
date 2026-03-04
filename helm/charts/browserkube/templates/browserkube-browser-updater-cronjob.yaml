@@ -17,6 +17,6 @@ spec:
             - name: browser-updater-job
               command:
                 - --namespace {{ .Values.browsers.namespace }}
-              image: "{{ .Values.browserUpdater.image }}"
+              image: "{{ include "browserkube.image" (dict "component" .Values.browserUpdater "appVersion" .Chart.AppVersion) }}"
               imagePullPolicy: "{{ .Values.pullPolicy | default "Always" }}"
 {{ end }}

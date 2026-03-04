@@ -6,15 +6,30 @@ const path = require('path');
 const Dotenv = require('dotenv-webpack');
 const SOURCE_PATH = path.resolve(__dirname, 'src/app/');
 const PUBLIC_PATH = path.resolve(__dirname, 'public');
+const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
   entry: path.join(SOURCE_PATH, 'app.tsx'),
   mode: process.env.NODE_ENV || 'development',
 
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
+    chunkFilename: '[name].chunk.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
+  },
+
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
   },
 
   resolve: {
@@ -32,12 +47,12 @@ module.exports = {
       {
         test: /\.s?css$/,
         exclude: /\.module\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
+        use: [isProduction ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.module\.scss$/,
         use: [
-          'style-loader',
+          isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
           {
             loader: 'css-loader',
             options: {
@@ -87,7 +102,7 @@ module.exports = {
       template: path.join(PUBLIC_PATH, 'index.html'),
       manifest: path.join(PUBLIC_PATH, 'manifest.json'),
     }),
-    new MiniCssExtractPlugin(),
+    ...(isProduction ? [new MiniCssExtractPlugin()] : []),
     new ForkTsCheckerWebpackPlugin(),
     new Dotenv(),
   ],

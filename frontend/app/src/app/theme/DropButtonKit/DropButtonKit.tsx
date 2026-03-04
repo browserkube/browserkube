@@ -49,8 +49,8 @@ export const DropDownKit: React.FC<DropDownKitProps> = ({ icon, placeholder, chi
     };
   }, []);
 
-  const iconHandler = () => {
-    event?.stopPropagation();
+  const iconHandler = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsOpen((prevState) => !prevState);
   };
 

@@ -1,22 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { type TerminalOutput } from '@components/Logs/useTerminal';
 
-interface SocketOptions {
-  wsUrl: string;
-  onOpen: (e: Event) => void;
-  onMessage: (e: MessageEvent) => void;
-  onClose: (e: CloseEvent) => void;
-}
-
-function createSocket(options: SocketOptions) {
-  const { wsUrl, onOpen, onMessage, onClose } = options;
-  const ws = new WebSocket(wsUrl);
-  ws.binaryType = 'arraybuffer';
-  ws.addEventListener('open', onOpen);
-  ws.addEventListener('message', onMessage);
-  ws.addEventListener('close', onClose);
-  return ws;
-}
+const RECONNECT_DELAY_MS = 2000;
+const MAX_RECONNECT_ATTEMPTS = 5;
 
 interface UseWebSocketOptions {
   wsUrl: string;
@@ -25,42 +11,52 @@ interface UseWebSocketOptions {
 
 export const useWebSocketForTerminal = ({ wsUrl, xterm }: UseWebSocketOptions): void => {
   const decoder = useRef(new TextDecoder('utf8'));
+  const socketRef = useRef<WebSocket | null>(null);
+  const attemptsRef = useRef(0);
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
-    if (xterm) {
-      const wsSocket = createSocket({
-        wsUrl,
-        onOpen,
-        onMessage,
-        onClose,
+    if (!xterm) return;
+
+    cancelledRef.current = false;
+    attemptsRef.current = 0;
+
+    function connect() {
+      if (cancelledRef.current) return;
+
+      const ws = new WebSocket(wsUrl);
+      ws.binaryType = 'arraybuffer';
+      socketRef.current = ws;
+
+      ws.addEventListener('open', () => {
+        attemptsRef.current = 0;
+        xterm!.terminal.clear();
+        xterm!.terminal.writeln('Session Logs...');
       });
 
-      return () => {
-        if (wsSocket.readyState === 1) {
-          wsSocket.removeEventListener('open', onOpen);
-          wsSocket.removeEventListener('message', onMessage);
-          wsSocket.removeEventListener('close', onClose);
-          wsSocket.close();
+      ws.addEventListener('message', (e: MessageEvent) => {
+        xterm!.terminal.writeln(decoder.current.decode(e.data));
+      });
+
+      ws.addEventListener('close', (e: CloseEvent) => {
+        if (cancelledRef.current) return;
+        if (attemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+          attemptsRef.current++;
+          xterm!.terminal.writeln(`\r\nConnection lost. Reconnecting (${attemptsRef.current}/${MAX_RECONNECT_ATTEMPTS})...`);
+          setTimeout(connect, RECONNECT_DELAY_MS);
+        } else {
+          xterm!.terminal.writeln('\r\nCould not reconnect to session logs.');
         }
-      };
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [xterm]);
 
-  function onOpen() {
-    if (xterm) {
-      xterm.terminal.clear();
-      xterm.terminal.writeln('Session Logs...');
-    }
-  }
+    connect();
 
-  function onMessage(e: MessageEvent) {
-    if (xterm) {
-      xterm.terminal.writeln(decoder.current.decode(e.data));
-    }
-  }
-
-  function onClose(e: CloseEvent) {
-    // TODO: add reconnection logic
-  }
+    return () => {
+      cancelledRef.current = true;
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.close();
+      }
+    };
+  }, [xterm, wsUrl]);
 };

@@ -184,7 +184,7 @@ func (pp *Proxy) screenshotRecord(msg *websocketproxy.Message) error {
 					}
 				}()
 
-				if err = json.NewEncoder(f).Encode(imgBytes); err != nil {
+				if _, err = f.Write(imgBytes); err != nil {
 					return websocketproxy.ErrDoNotSend
 				}
 				return websocketproxy.ErrDoNotSend
@@ -218,7 +218,6 @@ func (pp *Proxy) SaveScreenshotRecord(ctx context.Context, sessionID string) err
 		return errors.WithStack(err)
 	}
 
-	var buf bytes.Buffer
 	for _, file := range files {
 		filePath := path.Join(pp.screenshoter.dirPath, file.Name())
 
@@ -226,14 +225,12 @@ func (pp *Proxy) SaveScreenshotRecord(ctx context.Context, sessionID string) err
 
 		data, fErr := os.ReadFile(filePath) //nolint:gosec //should be accessible
 		if fErr != nil {
-			return errors.WithStack(err)
+			return errors.WithStack(fErr)
 		}
-		buf.Write(data)
-		defer buf.Reset()
 		err = pp.SessionRecorder.SaveFile(ctx, sessionID, "", &storage.BlobFile{
 			FileName:    file.Name(),
 			ContentType: "image/png",
-			Content:     &buf,
+			Content:     bytes.NewReader(data),
 		})
 		if err != nil {
 			return errors.WithStack(err)

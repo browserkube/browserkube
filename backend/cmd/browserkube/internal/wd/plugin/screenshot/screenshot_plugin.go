@@ -3,7 +3,6 @@ package screenshot
 import (
 	"bytes"
 	"encoding/base64"
-	"encoding/json"
 	"io"
 	"net/http"
 	"time"
@@ -79,19 +78,12 @@ func screenshotIfNotFound(store storage.BlobSessionStorage) func(next wd.OnAfter
 				return next(ctx, rs, sess, command)
 			}
 
-			var buf bytes.Buffer
-
-			if err := json.NewEncoder(&buf).Encode(screenshotBytes); err != nil {
-				log.Errorf("failed to encode screenshotBytes: %v", err)
-				return next(ctx, rs, sess, command)
-			}
-
 			fileName := time.Now().UTC().Format("2006-01-02-15-04-05") + "-auto-screenshot.png"
 
 			if err := store.SaveFile(ctx, sess.ID, api.ScreenshotsPath, &storage.BlobFile{
 				FileName:    fileName,
 				ContentType: "image/png",
-				Content:     &buf,
+				Content:     bytes.NewReader(screenshotBytes),
 			}); err != nil {
 				log.Errorf("failed to save sessionRecord: %v", err)
 				return next(ctx, rs, sess, command)

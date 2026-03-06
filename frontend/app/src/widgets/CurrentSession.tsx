@@ -81,15 +81,25 @@ export const CurrentSession = () => {
     }
   }, [session?.state]);
 
+  if (!session) {
+    return (
+      <div className={styles.currrentSession_container}>
+        <div className={styles.activeSession_container}>
+          <div style={currentSessionTitle}>Choose session</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.currrentSession_container}>
       <div className={styles.activeSession_container}>
-        <div style={currentSessionTitle}>{session?.name || 'Choose session'}</div>
+        <div style={currentSessionTitle}>{session.name}</div>
         <div className={styles.panel_container}>
           <div className={styles.left_panel}>
             <Tabs value={tab} onChange={handleChange}>
               {!SELECTED_SESSION_IS_TERMINATED && <Tab value={'liveSession'} label="Live Session" style={tabStyle} />}
-              <Tab disabled={!session} value={'details'} label="Details" style={tabStyle} />
+              <Tab value={'details'} label="Details" style={tabStyle} />
               <Tab value={'attachments'} label="Attachments" style={lastTabStyle} />
             </Tabs>
           </div>
@@ -99,10 +109,10 @@ export const CurrentSession = () => {
             </div>
             <Button
               style={deleteBtn}
-              disabled={session?.state === 'Terminated'}
+              disabled={session.state === 'Terminated'}
               variant={'danger'}
               onClick={handleTerminate}>
-              {session?.state !== 'Terminated' ? 'Terminate' : 'Delete Session'}
+              {session.state !== 'Terminated' ? 'Terminate' : 'Delete Session'}
             </Button>
           </div>
         </div>

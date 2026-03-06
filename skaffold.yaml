@@ -93,17 +93,28 @@ manifests:
         namespace: browserkube
         setValueTemplates:
           ingress.enabled: "true"
-          operator.image: '{{.IMAGE_FULLY_QUALIFIED_operator}}'
-          recorder.image: '{{.IMAGE_FULLY_QUALIFIED_recorder}}'
-          ui.image: '{{.IMAGE_FULLY_QUALIFIED_ui}}'
-          backend.image: '{{.IMAGE_FULLY_QUALIFIED_browserkube}}'
-          extensionInstaller.image: '{{.IMAGE_FULLY_QUALIFIED_extension_installer}}'
-          sidecar.image: '{{.IMAGE_FULLY_QUALIFIED_sidecar}}'
-          browserUpdater.image: "{{.IMAGE_FULLY_QUALIFIED_browser_updater}}"
-          sessionArchiver.image: "{{.IMAGE_FULLY_QUALIFIED_session_archiver}}"
-          xServer.image: '{{.IMAGE_FULLY_QUALIFIED_x_server}}'
-          vncServer.image: '{{.IMAGE_FULLY_QUALIFIED_vnc_server}}'
-          clipboard.image: '{{.IMAGE_FULLY_QUALIFIED_clipboard}}'
+          operator.repository: '{{.IMAGE_REPO_operator}}'
+          operator.tag: '{{.IMAGE_TAG_operator}}'
+          recorder.repository: '{{.IMAGE_REPO_recorder}}'
+          recorder.tag: '{{.IMAGE_TAG_recorder}}'
+          ui.repository: '{{.IMAGE_REPO_ui}}'
+          ui.tag: '{{.IMAGE_TAG_ui}}'
+          backend.repository: '{{.IMAGE_REPO_browserkube}}'
+          backend.tag: '{{.IMAGE_TAG_browserkube}}'
+          extensionInstaller.repository: '{{.IMAGE_REPO_extension_installer}}'
+          extensionInstaller.tag: '{{.IMAGE_TAG_extension_installer}}'
+          sidecar.repository: '{{.IMAGE_REPO_sidecar}}'
+          sidecar.tag: '{{.IMAGE_TAG_sidecar}}'
+          browserUpdater.repository: '{{.IMAGE_REPO_browser_updater}}'
+          browserUpdater.tag: '{{.IMAGE_TAG_browser_updater}}'
+          sessionArchiver.repository: '{{.IMAGE_REPO_session_archiver}}'
+          sessionArchiver.tag: '{{.IMAGE_TAG_session_archiver}}'
+          xServer.repository: '{{.IMAGE_REPO_x_server}}'
+          xServer.tag: '{{.IMAGE_TAG_x_server}}'
+          vncServer.repository: '{{.IMAGE_REPO_vnc_server}}'
+          vncServer.tag: '{{.IMAGE_TAG_vnc_server}}'
+          clipboard.repository: '{{.IMAGE_REPO_clipboard}}'
+          clipboard.tag: '{{.IMAGE_TAG_clipboard}}'
           blob.rustfs.enabled: true
 
 deploy:
@@ -180,27 +191,6 @@ profiles:
       - op: replace
         path: /build/platforms/0
         value: linux/amd64
-
-  - name: rp-beta
-    patches:
-      - op: add
-        path: /manifests/helm/releases/0/setValueTemplates/browsers.nodeSelector.eks\.amazonaws\.com~1nodegroup
-        value: "{{.BROWSERKUBE_BROWSERS_NODE_SELECTOR}}"
-      - op: add
-        path: /manifests/helm/releases/0/setValueTemplates/blob.url
-        value: "{{.BROWSERKUBE_BUCKET}}"
-      - op: add
-        path: /manifests/helm/releases/0/setValueTemplates/blob.rustfs.enabled
-        value: false
-      - op: add
-        path: /manifests/helm/releases/0/setValueTemplates/blob.aws.enabled
-        value: true
-      - op: add
-        path: /manifests/helm/releases/0/setValueTemplates/blob.aws.accessKeyID
-        value: "{{.BROWSERKUBE_AWS_ACCESS_KEY_ID}}"
-      - op: add
-        path: /manifests/helm/releases/0/setValueTemplates/blob.aws.accessKeySecret
-        value: "{{.BROWSERKUBE_AWS_SECRET_ACCESS_KEY}}"
 
   - name: github-build
     build:

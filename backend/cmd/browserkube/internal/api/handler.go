@@ -193,7 +193,7 @@ func (h *handler) events(w http.ResponseWriter, rq *http.Request) {
 			return h.wsStatus(ws)
 		})
 		if bErr != nil {
-			h.logger.Error(bErr)
+			h.logger.Errorf("Event batcher: %v", bErr)
 		}
 	}()
 }
@@ -460,19 +460,12 @@ func (h *handler) createScreenshot(w http.ResponseWriter, rq *http.Request) erro
 		return browserkubehttp.NewHTTPErr(http.StatusInternalServerError, errors.WithStack(err))
 	}
 
-	var buf bytes.Buffer
-
-	if err := json.NewEncoder(&buf).Encode(screenshotBytes); err != nil {
-		logger.Errorf("failed to encode screenshotBytes: %v", err)
-		return browserkubehttp.NewHTTPErr(http.StatusInternalServerError, errors.WithStack(err))
-	}
-
 	fileName := time.Now().UTC().Format("2006-01-02-15-04-05") + "-screenshot.png"
 
 	if err := h.sessionStorage.SaveFile(ctx, sess.ID, ScreenshotsPath, &storage.BlobFile{
 		FileName:    fileName,
 		ContentType: "image/png",
-		Content:     &buf,
+		Content:     bytes.NewReader(screenshotBytes),
 	}); err != nil {
 		logger.Errorf("failed to save screenshot to storage: %v", err)
 		return browserkubehttp.NewHTTPErr(http.StatusInternalServerError, errors.WithStack(err))

@@ -28,11 +28,11 @@ spec:
                 - name: AWS_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.rustfs.name }}
+                      name: {{ .Values.blob.rustfs.secretName }}
                       key: RUSTFS_ACCESS_KEY
                 - name: AWS_SECRET_KEY
                   valueFrom:
                     secretKeyRef:
-                      name: {{ .Values.rustfs.name }}
+                      name: {{ .Values.blob.rustfs.secretName }}
                       key: RUSTFS_SECRET_KEY
 {{ end }}

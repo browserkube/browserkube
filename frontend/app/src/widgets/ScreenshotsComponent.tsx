@@ -1,5 +1,4 @@
-import { Buffer } from 'buffer';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { lang } from '@app/constants';
 
 const imageContainer = {
@@ -45,26 +44,10 @@ const screenshotContainer = {
 const { numberOfScreenshotsToShow } = lang.attachments;
 
 export const ScreenshotsComponent = ({ screeshotArr }: { screeshotArr: string[] }) => {
-  const [imageUrls, setImageUrl] = useState<string[]>([]);
-
-  // try to memo the url array result, cause having each time a new render
-  useEffect(() => {
-    const urls = screeshotArr.map((base64Image) => {
-      const binaryString = Buffer.from(base64Image, 'base64').toString('utf-8');
-      const blob = new Blob([new Uint8Array(binaryString.split('').map((char) => char.charCodeAt(0)))], {
-        type: 'image/png',
-      });
-      return URL.createObjectURL(blob);
-    });
-
-    setImageUrl(urls);
-
-    return () => {
-      urls.forEach((url) => {
-        URL.revokeObjectURL(url);
-      });
-    };
-  }, [screeshotArr]);
+  const imageUrls = useMemo(
+    () => screeshotArr.map((base64Image) => `data:image/png;base64,${base64Image}`),
+    [screeshotArr],
+  );
 
   return (
     <div style={screenshotContainer}>

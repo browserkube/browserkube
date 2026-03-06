@@ -24,9 +24,7 @@ export const ChosenSessionProvider = (props: any) => {
   const ACTIVE_STATE_TERMINATED = session && session.state === 'Terminated';
 
   useEffect(() => {
-    if (activeSessionById) {
-      setSession(activeSessionById);
-    }
+    setSession(activeSessionById ?? null);
   }, [activeSessionById]);
 
   useEffect(() => {

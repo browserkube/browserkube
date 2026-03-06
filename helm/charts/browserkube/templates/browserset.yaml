@@ -35,11 +35,19 @@ spec:
           port: "4444"
           provider: k8s
     chrome:
-      defaultVersion: "132.0"
+      defaultVersion: "145.0"
       defaultPath: "/"
       versions:
-        "132.0":
-          image: quay.io/browser/google-chrome-stable:132.0
+        "145.0":
+          image: quay.io/browser/google-chrome-stable:145.0
+          port: "4444"
+          provider: k8s
+    chromium:
+      defaultVersion: "145.0"
+      defaultPath: "/"
+      versions:
+        "124.0":
+          image: quay.io/browser/chromium:124.0.6367.60-1
           port: "4444"
           provider: k8s
   playwright:

@@ -12,9 +12,6 @@ import (
 	"time"
 
 	"github.com/urfave/cli/v3"
-	_ "gocloud.dev/blob/fileblob"
-	_ "gocloud.dev/blob/gcsblob"
-	_ "gocloud.dev/blob/s3blob"
 )
 
 const (

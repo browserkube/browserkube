@@ -175,6 +175,15 @@ func (h *handler) events(w http.ResponseWriter, rq *http.Request) {
 		defer cancelFunc()
 		defer browserkubeutil.CloseQuietly(ws)
 
+		go func() {
+			defer cancelFunc()
+			for {
+				if _, _, rErr := ws.ReadMessage(); rErr != nil {
+					return
+				}
+			}
+		}()
+
 		sessions := h.sessionRepo.Watch(ctx)
 		batcher := broadcast.NewBatcher[*session.Session](barchFrame, false)
 

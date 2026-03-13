@@ -184,7 +184,7 @@ func (r *BrowserReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 				return ctrl.Result{}, cErr
 			}
 			// pod is created. requeue to wait until it's running
-			return reconcile.Result{Requeue: true}, nil
+			return reconcile.Result{RequeueAfter: 500 * time.Millisecond}, nil
 		}
 		logger.Error(err, "unable to get browser pod")
 		// Error reading the object - requeue the request.
@@ -433,7 +433,7 @@ func (r *BrowserReconciler) checkPending(ctx context.Context, instance *browserk
 	}
 
 	// requeue to wait for pod to get up and running
-	return &ctrl.Result{Requeue: true}, nil
+	return &ctrl.Result{RequeueAfter: 500 * time.Millisecond}, nil
 }
 
 //nolint:unparam

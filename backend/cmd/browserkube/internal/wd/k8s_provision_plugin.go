@@ -2,10 +2,10 @@ package wd
 
 import (
 	"context"
-	"net/http"
 	"net/http/httputil"
 	"net/url"
 
+	"github.com/browserkube/browserkube/cmd/browserkube/internal/wd/wdctx"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -19,13 +19,12 @@ import (
 func NewK8SProxyPlugins(serviceProvider provision.Provisioner) []wd.PluginOpt {
 	return []wd.PluginOpt{
 		wd.WithBeforeSessionCreated(provisionBrowserHandler(serviceProvider)),
-		wd.WithAfterSessionCreated(maximizeWindowOnStart()),
-		wd.WithQuitSession(quitSessionHandler(serviceProvider)),
+		wd.WithQuitSession(destroyBrowserHandler(serviceProvider)),
 	}
 }
 
-// afterCommandHandler deletes a pod when quit session is requested
-func quitSessionHandler(serviceProvider provision.Provisioner) func(next wd.OnSessionQuit) wd.OnSessionQuit {
+// destroyBrowserHandler deletes a pod when quit session is requested
+func destroyBrowserHandler(serviceProvider provision.Provisioner) func(next wd.OnSessionQuit) wd.OnSessionQuit {
 	return func(next wd.OnSessionQuit) wd.OnSessionQuit {
 		return func(ctx *wd.Context, sess *session.Session) error {
 			go func(srv *browserkubev1.Browser) {
@@ -34,20 +33,6 @@ func quitSessionHandler(serviceProvider provision.Provisioner) func(next wd.OnSe
 				}
 			}(sess.Browser)
 			return next(ctx, sess)
-		}
-	}
-}
-
-// maximizeWindowOnStart maximizes window on start
-//
-//nolint:deadcode
-func maximizeWindowOnStart() func(next wd.OnAfterSessionStart) wd.OnAfterSessionStart {
-	return func(next wd.OnAfterSessionStart) wd.OnAfterSessionStart {
-		return func(ctx *wd.Context, rs *http.Response, sID string) error {
-			if err := maximize(ctx, sID); err != nil {
-				zap.S().Errorf("unable to maximize window: %+v", err)
-			}
-			return next(ctx, rs, sID)
 		}
 	}
 }
@@ -73,20 +58,7 @@ func provisionBrowserHandler(serviceProvider provision.Provisioner) func(next wd
 			pURL.Path = prq.In.URL.Path
 			prq.Out.URL = pURL
 
-			return next(withBrowser(ctx, remoteSelenium), prq, sessionRQ, sessionID)
+			return next(wdctx.WithBrowser(ctx, remoteSelenium), prq, sessionRQ, sessionID)
 		}
 	}
-}
-
-func maximize(ctx *wd.Context, sessionID string) error {
-	sessionRemote, found := getBrowser(ctx)
-	if !found {
-		zap.S().Warn("Remote session isn't available while maximizing window")
-		return errors.New("Session remote isn't found")
-	}
-	err := wdproto.NewWebDriver(sessionRemote.Status.SeleniumURL, sessionID).Maximize(ctx)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	return nil
 }

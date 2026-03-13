@@ -6,8 +6,6 @@ metadata:
     app.kubernetes.io/name: browserset
     app.kubernetes.io/instance: browserset-sample
     app.kubernetes.io/part-of: operator
-    app.kuberentes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: operator
     {{ include "labels" . | indent 4 }}
   name: browserkube-browserset
 spec:

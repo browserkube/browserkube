@@ -97,12 +97,15 @@ func shellAsync(command string, args ...string) (*exec.Cmd, error) {
 }
 
 func waitForDisplay() error {
-displayWaitLoop:
-	for timeout := time.After(time.Second * 60); ; {
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+	timeout := time.After(60 * time.Second)
+
+	for {
 		select {
 		case <-timeout:
 			return errors.New("timeout waiting for display")
-		default:
+		case <-ticker.C:
 			_, _, err := shellSync("sh", "-c", getDisplayCmd)
 			if err != nil {
 				if err.Error() == noDisplayFound {
@@ -110,9 +113,7 @@ displayWaitLoop:
 				}
 				return fmt.Errorf("unable to list displays: %w", err)
 			}
-			break displayWaitLoop
+			return nil
 		}
 	}
-
-	return nil
 }

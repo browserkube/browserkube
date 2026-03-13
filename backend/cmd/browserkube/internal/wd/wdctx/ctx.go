@@ -1,4 +1,4 @@
-package wd
+package wdctx
 
 import (
 	"context"
@@ -13,11 +13,11 @@ const (
 	ctxSessionRemote ctxKey = "session-remote"
 )
 
-func withBrowser(ctx *wd.Context, sr *browserkubev1.Browser) *wd.Context {
+func WithBrowser(ctx *wd.Context, sr *browserkubev1.Browser) *wd.Context {
 	return ctx.WithValue(ctxSessionRemote, sr)
 }
 
-func getBrowser(ctx context.Context) (*browserkubev1.Browser, bool) {
+func GetBrowser(ctx context.Context) (*browserkubev1.Browser, bool) {
 	u, ok := ctx.Value(ctxSessionRemote).(*browserkubev1.Browser)
 	return u, ok
 }

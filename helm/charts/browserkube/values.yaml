@@ -72,10 +72,6 @@ operator:
 backend:
   repository: quay.io/browserkube/browserkube
   tag: ""
-  volumes:
-    sessionResult:
-      sizeLimit: 100Mi
-      storageClassName: hostpath
 recorder:
   repository: quay.io/browserkube/recorder
   tag: ""

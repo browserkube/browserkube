@@ -94,27 +94,27 @@ manifests:
         setValueTemplates:
           ingress.enabled: "true"
           operator.repository: '{{.IMAGE_REPO_operator}}'
-          operator.tag: '{{.IMAGE_TAG_operator}}'
+          operator.tag: '{{.IMAGE_TAG_operator}}@{{.IMAGE_DIGEST_operator}}'
           recorder.repository: '{{.IMAGE_REPO_recorder}}'
-          recorder.tag: '{{.IMAGE_TAG_recorder}}'
+          recorder.tag: '{{.IMAGE_TAG_recorder}}@{{.IMAGE_DIGEST_recorder}}'
           ui.repository: '{{.IMAGE_REPO_ui}}'
-          ui.tag: '{{.IMAGE_TAG_ui}}'
+          ui.tag: '{{.IMAGE_TAG_ui}}@{{.IMAGE_DIGEST_ui}}'
           backend.repository: '{{.IMAGE_REPO_browserkube}}'
-          backend.tag: '{{.IMAGE_TAG_browserkube}}'
+          backend.tag: '{{.IMAGE_TAG_browserkube}}@{{.IMAGE_DIGEST_browserkube}}'
           extensionInstaller.repository: '{{.IMAGE_REPO_extension_installer}}'
-          extensionInstaller.tag: '{{.IMAGE_TAG_extension_installer}}'
+          extensionInstaller.tag: "{{.IMAGE_TAG_extension_installer}}@{{.IMAGE_DIGEST_extension_installer}}"
           sidecar.repository: '{{.IMAGE_REPO_sidecar}}'
-          sidecar.tag: '{{.IMAGE_TAG_sidecar}}'
+          sidecar.tag: "{{.IMAGE_TAG_sidecar}}@{{.IMAGE_DIGEST_sidecar}}"
           browserUpdater.repository: '{{.IMAGE_REPO_browser_updater}}'
-          browserUpdater.tag: '{{.IMAGE_TAG_browser_updater}}'
+          browserUpdater.tag: "{{.IMAGE_TAG_browser_updater}}@{{.IMAGE_DIGEST_browser_updater}}"
           sessionArchiver.repository: '{{.IMAGE_REPO_session_archiver}}'
-          sessionArchiver.tag: '{{.IMAGE_TAG_session_archiver}}'
+          sessionArchiver.tag: "{{.IMAGE_TAG_session_archiver}}@{{.IMAGE_DIGEST_session_archiver}}"
           xServer.repository: '{{.IMAGE_REPO_x_server}}'
-          xServer.tag: '{{.IMAGE_TAG_x_server}}'
+          xServer.tag: "{{.IMAGE_TAG_x_server}}@{{.IMAGE_DIGEST_x_server}}"
           vncServer.repository: '{{.IMAGE_REPO_vnc_server}}'
-          vncServer.tag: '{{.IMAGE_TAG_vnc_server}}'
+          vncServer.tag: "{{.IMAGE_TAG_vnc_server}}@{{.IMAGE_DIGEST_vnc_server}}"
           clipboard.repository: '{{.IMAGE_REPO_clipboard}}'
-          clipboard.tag: '{{.IMAGE_TAG_clipboard}}'
+          clipboard.tag: "{{.IMAGE_TAG_clipboard}}@{{.IMAGE_DIGEST_clipboard}}"
           blob.rustfs.enabled: true
 
 deploy:

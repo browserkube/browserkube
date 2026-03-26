@@ -2,7 +2,15 @@
 
 ## Project Overview
 
-BrowserKube is a Kubernetes-native platform for running browser sessions (WebDriver, Playwright, DevTools) in pods. It consists of a Go backend, a Kubernetes operator, a React frontend, and several sidecar/helper containers, all deployed via Helm + Skaffold.
+BrowserKube is a Kubernetes-native browser infrastructure that acts as a **custom Selenium Grid implementation** and a **remote Playwright server**. It accepts standard WebDriver / Playwright session requests, spins up an isolated pod per session with the appropriate browser, and tears the pod down when the session is quit.
+
+**Two usage modes:**
+- **Automation** — test frameworks (WebDriver, Playwright SDKs) create sessions via the standard protocol endpoints, just like with Selenium Grid
+- **Manual** — users create sessions through the BrowserKube UI; a WebDriver session is created in the background automatically
+
+Running sessions can be observed and controlled in real-time via **VNC** (embedded in the UI or via any VNC client).
+
+The project consists of a Go backend, a Kubernetes operator, a React frontend, and several sidecar/helper containers, all deployed via Helm + Skaffold.
 
 ## Repository Structure
 
@@ -16,6 +24,7 @@ cmds/             Helper binaries and containers
   recorder/         Go — X11 screen recorder via ffmpeg (urfave/cli)
   vnc-server/       Shell/Dockerfile — x11vnc container
   x-server/         Shell/Dockerfile — Xvfb + Openbox container
+example/          Usage examples (WebDriver Go, Playwright, etc.) for test automation
 helm/charts/browserkube/  Helm chart (deploys all components)
 .taskfiles/       Shared Taskfile templates for Go modules
 .github/workflows/ CI: backend lint+test, frontend lint+test, image builds

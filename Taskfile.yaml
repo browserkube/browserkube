@@ -67,6 +67,14 @@ tasks:
     cmds:
       - skaffold deploy -p remote-dev,rp-beta -t {{.TAG}}
 
+  ingress:install:
+    desc: "Installs ingress-nginx controller via Helm"
+    cmds:
+      - |
+        helm upgrade --install ingress-nginx ingress-nginx \
+          --repo https://kubernetes.github.io/ingress-nginx \
+          --namespace ingress-nginx --create-namespace
+
   rustfs:install:
     desc: "Installs RustFS (S3-compatible) Helm chart for development"
     cmds:

@@ -21,8 +21,8 @@ export const Vnc = ({ vncUrl, locked, isExpand }: VncProps) => {
     if (!activeSessionId) {
       return '';
     }
-    return sessions.byId[activeSessionId].vncPsw;
-  }, [activeSessionId]);
+    return sessions.byId[activeSessionId]?.vncPsw ?? '';
+  }, [activeSessionId, sessions]);
 
   return (
     <div className={isExpand ? styles.vnc_extended : styles.vnc}>

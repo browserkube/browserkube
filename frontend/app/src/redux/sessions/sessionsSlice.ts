@@ -31,7 +31,6 @@ const sessionsSlice = createSlice({
         state: session.state.toLowerCase(),
         name: session.name || session.id,
       };
-      // TODO: remove this line when create session flow will be fixed on BE
       state.createSessionStatus = REDUCER_STATUS.FULFILLED;
       return state;
     },
@@ -44,6 +43,20 @@ const sessionsSlice = createSlice({
       const { id, newState } = action.payload;
       const session = state.data.byId[id];
       state.data.byId[id] = { ...session, state: newState.toLowerCase() };
+      return state;
+    },
+    reconcileSessions(state, action: PayloadAction<Session[]>): SessionsState {
+      const incoming = action.payload;
+      const newById: SessionsByIdType = {};
+      for (const session of incoming) {
+        newById[session.id] = {
+          ...session,
+          state: session.state.toLowerCase(),
+          name: session.name || session.id,
+        };
+      }
+      state.data.byId = newById;
+      state.fetchSessionsStatus = REDUCER_STATUS.FULFILLED;
       return state;
     },
   },
@@ -76,4 +89,4 @@ const sessionsSlice = createSlice({
 });
 
 export const { reducer: sessionsReducer, actions } = sessionsSlice;
-export const { addSession, removeSession, updateSessionState } = actions;
+export const { addSession, removeSession, updateSessionState, reconcileSessions } = actions;

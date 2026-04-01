@@ -6,9 +6,8 @@ import { type ModalProps } from '@shared/types/UI';
 import { useAppDispatch } from '@hooks/useAppDispatch';
 import { closeModal } from '@redux/UI/UISlice';
 import { CreateManualSession } from '@api/sessions/getSessions';
-import { type CreateSessionResponse } from '@shared/types/webDriver';
 import { saveActiveSessionId } from '@redux/sessionDetails/sessionSlice';
-import { fetchSessions } from '@redux/sessions/sessionsThunk';
+import { addSession } from '@redux/sessions/sessionsSlice';
 import { CreateSessionModalForm } from './components/CreateSessionModalForm/CreateSessionModalForm';
 
 const INITIAL_FORM_STATE = {
@@ -42,9 +41,9 @@ export const CreateSessionModal = ({ id, zIndex }: ModalProps) => {
     navigate('/live-sessions/');
     closeModalHandler();
     try {
-      const { value }: CreateSessionResponse = await CreateManualSession(createSessionFormValues);
-      dispatch(saveActiveSessionId({ id: value.sessionId }));
-      void dispatch(fetchSessions());
+      const session = await CreateManualSession(createSessionFormValues);
+      dispatch(addSession({ session }));
+      dispatch(saveActiveSessionId({ id: session.id }));
     } catch (error) {
       console.log('Error in createNewSession, fill the correct data', error);
     }

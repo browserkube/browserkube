@@ -80,7 +80,7 @@ export const CommandVideos = (props: AttachmentsTabProps) => {
 
   const AVAILIABLE_EXTRA_COMMANDS = newPageToken && newPageToken !== initialPageToken;
   const COMMANDS_AVAILIABLE = data && !!data[0].sessionId;
-  const isSessionActiveTerminated = activeSessionId && state === 'Terminated';
+  const isSessionActiveTerminated = activeSessionId && state?.toLowerCase() === 'terminated';
   const videoUrl = `${BASE_URL}${getSessionFileUrl(activeSessionId, videoRefAddr)}`;
 
   const handleCommands = () => {

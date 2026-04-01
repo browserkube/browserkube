@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import {
+  type Session,
   type TerminatedSessionsByIdType,
   type TerminatedSessionsResponse,
   type TerminatedSessions,
@@ -21,8 +22,13 @@ const terminatedSessionsSlice = createSlice({
   name: 'terminatedSessions',
   initialState,
   reducers: {
-    // TODO: delete after implementation a new real reducer
-    stubReducer(state): TerminatedSessionsState {
+    addTerminatedSession(state, action: PayloadAction<{ session: Session }>): TerminatedSessionsState {
+      const { session } = action.payload;
+      state.data.byId[session.id] = {
+        ...session,
+        state: session.state.toLowerCase(),
+        name: session.name || session.id,
+      };
       return state;
     },
   },
@@ -35,7 +41,7 @@ const terminatedSessionsSlice = createSlice({
       .addCase(fetchTerminatedSessions.fulfilled, (state, action: PayloadAction<TerminatedSessionsResponse>) => {
         const sessions = action.payload.Items;
         state.data.byId = sessions.reduce<TerminatedSessionsByIdType>(function (resultMap, item) {
-          resultMap[item.id] = { ...item, name: item.name || item.id };
+          resultMap[item.id] = { ...item, state: item.state.toLowerCase(), name: item.name || item.id };
           return resultMap;
         }, {});
         state.status = REDUCER_STATUS.FULFILLED;
@@ -47,4 +53,4 @@ const terminatedSessionsSlice = createSlice({
 });
 
 export const { reducer: terminatedSessionsReducer, actions } = terminatedSessionsSlice;
-export const { stubReducer } = actions;
+export const { addTerminatedSession } = actions;

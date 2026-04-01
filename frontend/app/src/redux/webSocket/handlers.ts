@@ -1,32 +1,47 @@
 import { type Session, SessionStates } from '@shared/types/sessions';
-import { type SessionMessage, type StatusMessage, isSessionMessage, isStatusMessage } from '@shared/types/events';
+import {
+  type SessionMessage,
+  type StatusMessage,
+  isSessionMessage,
+  isSessionSnapshotMessage,
+  isStatusMessage,
+} from '@shared/types/events';
 import { saveStats } from '@redux/sessionStatus/sessionStatusSlice';
+import { addTerminatedSession } from '@redux/terminatedSessions/slice';
+import { fetchTerminatedSessions } from '@redux/terminatedSessions/thunk';
 import { type AppDispatch, type AppState } from '../store';
-import { addSession, removeSession, updateSessionState } from '../sessions/sessionsSlice';
+import { addSession, removeSession, reconcileSessions } from '../sessions/sessionsSlice';
 
 export const EventMessageHandlers = (dispatch: AppDispatch, getState: () => AppState) => {
   const handleStatus = (message: StatusMessage) => {
     dispatch(saveStats(message.payload));
   };
+
   const handleSession = (message: SessionMessage) => {
     const { payload } = message;
-    const sessions = getState().sessions.data;
 
     payload.forEach((session: Session) => {
       const { id, state } = session;
-      if (!sessions.byId[id]) {
-        dispatch(addSession({ session }));
-      } else if (state === SessionStates.TERMINATED) {
+      const normalizedState = state.toLowerCase();
+      if (normalizedState === SessionStates.TERMINATED) {
         dispatch(removeSession({ id }));
-      } else if (state !== sessions.byId[id].state) {
-        dispatch(updateSessionState({ id, newState: state }));
+        dispatch(addTerminatedSession({ session }));
+        void dispatch(fetchTerminatedSessions());
+      } else {
+        dispatch(addSession({ session }));
       }
     });
   };
 
+  const handleSnapshot = (message: SessionMessage) => {
+    dispatch(reconcileSessions(message.payload));
+  };
+
   const handleMessage = (message: MessageEvent<string>) => {
     const parsedMessage = JSON.parse(message.data);
-    if (isSessionMessage(parsedMessage)) {
+    if (isSessionSnapshotMessage(parsedMessage)) {
+      handleSnapshot(parsedMessage);
+    } else if (isSessionMessage(parsedMessage)) {
       handleSession(parsedMessage);
     }
     if (isStatusMessage(parsedMessage)) {

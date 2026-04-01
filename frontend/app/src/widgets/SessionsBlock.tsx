@@ -159,7 +159,7 @@ export const SessionsBlock = () => {
   //
 
   const selectSession = async (session: SessionLine) => {
-    if (session.state !== 'Terminated' && sessions) {
+    if (session.state.toLowerCase() !== 'terminated' && sessions) {
       const sessionToSet = sessions.byId[session.id];
       setSession(sessionToSet);
     } else {

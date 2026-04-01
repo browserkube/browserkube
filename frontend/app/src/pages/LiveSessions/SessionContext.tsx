@@ -21,7 +21,7 @@ export const ChosenSessionProvider = (props: any) => {
   const activeSessionById = useSelector((s) => getSession(s, activeSessionId));
   const prevSession = useRef('');
 
-  const ACTIVE_STATE_TERMINATED = session && session.state === 'Terminated';
+  const ACTIVE_STATE_TERMINATED = session && session.state.toLowerCase() === 'terminated';
 
   useEffect(() => {
     setSession(activeSessionById ?? null);

@@ -144,7 +144,7 @@ func (ac *sessionWatch) waitForCacheSync(ctx context.Context) error {
 }
 
 func (ac *sessionWatch) Watch(ctx context.Context) <-chan *session.Session {
-	sCh := make(chan *session.Session)
+	sCh := make(chan *session.Session, 64)
 	ac.broadcast.Register(sCh)
 	go func(c chan *session.Session) {
 		<-ctx.Done()

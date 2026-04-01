@@ -20,6 +20,10 @@ export function isSessionMessage(e: EventsPayload<unknown>): e is EventsPayload<
   return 'name' in e && 'payload' in e && e.name === 'session';
 }
 
+export function isSessionSnapshotMessage(e: EventsPayload<unknown>): e is EventsPayload<Session[]> {
+  return 'name' in e && 'payload' in e && e.name === 'session_snapshot';
+}
+
 export function isStatusMessage(e: EventsPayload<unknown>): e is EventsPayload<SessionStatus> {
   return 'name' in e && 'payload' in e && e.name === 'status';
 }

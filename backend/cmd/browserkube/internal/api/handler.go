@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -36,11 +37,13 @@ import (
 	"github.com/browserkube/browserkube/pkg/storage"
 	browserkubeutil "github.com/browserkube/browserkube/pkg/util"
 	"github.com/browserkube/browserkube/pkg/util/broadcast"
+	revuuid "github.com/browserkube/browserkube/pkg/util/uuid"
 	"github.com/browserkube/browserkube/pkg/wd/wdproto"
 )
 
 const (
 	defaultBatchFrameDuration = 3 * time.Second
+	defaultSyncInterval       = 15 * time.Second
 	defaultPageSize           = 20
 	keySessionID              = "sessionID"
 	screenshotID              = "screenshotID"
@@ -81,6 +84,7 @@ func initRoutes(mux chi.Router, h *handler) {
 		r.Get("/status", browserkubehttp.Handler(h.status))
 		// Deprecated
 		r.Get("/browsers", browserkubehttp.Handler(h.browsers))
+		r.Post("/sessions", browserkubehttp.Handler(h.createSession))
 		//-
 		r.HandleFunc("/events", h.events)
 
@@ -158,15 +162,8 @@ func (h *handler) events(w http.ResponseWriter, rq *http.Request) {
 	} else {
 		barchFrame, err = time.ParseDuration(batchFrameStr)
 		if err != nil || barchFrame <= 0 {
-			var msg string
-			if err != nil {
-				msg = err.Error()
-			} else {
-				msg = "incorrect duration interval"
-			}
-			if wErr := browserkubehttp.WriteJSON(w, http.StatusBadRequest, map[string]string{"error": msg}); wErr != nil {
-				h.logger.Error(wErr)
-			}
+			h.logger.Warnf("Invalid batch duration %q, using default", batchFrameStr)
+			barchFrame = defaultBatchFrameDuration
 		}
 	}
 
@@ -174,6 +171,13 @@ func (h *handler) events(w http.ResponseWriter, rq *http.Request) {
 		ctx, cancelFunc := context.WithCancel(context.Background())
 		defer cancelFunc()
 		defer browserkubeutil.CloseQuietly(ws)
+
+		var wsMu sync.Mutex
+		writeSnapshot := func() error {
+			wsMu.Lock()
+			defer wsMu.Unlock()
+			return h.sendFullSnapshot(ws)
+		}
 
 		go func() {
 			defer cancelFunc()
@@ -184,21 +188,44 @@ func (h *handler) events(w http.ResponseWriter, rq *http.Request) {
 			}
 		}()
 
+		if err := writeSnapshot(); err != nil {
+			h.logger.Errorf("Failed to send initial snapshot: %v", err)
+			return
+		}
+
 		sessions := h.sessionRepo.Watch(ctx)
 		batcher := broadcast.NewBatcher[*session.Session](barchFrame, false)
 
+		syncTicker := time.NewTicker(defaultSyncInterval)
+		defer syncTicker.Stop()
+
+		go func() {
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case <-syncTicker.C:
+					if syncErr := writeSnapshot(); syncErr != nil {
+						h.logger.Errorf("Periodic sync error: %v", syncErr)
+						cancelFunc()
+						return
+					}
+				}
+			}
+		}()
+
 		bErr := batcher.Batch(ctx, sessions, func(batch []*session.Session) error {
-			// Events
 			deduplicated := browserkubeutil.ReverseDeduplicateBY[*session.Session, string](batch, func(s *session.Session) string {
 				return s.ID
 			})
 			sess := browserkubeutil.Map[*session.Session, *Session](deduplicated, h.toSession)
+
+			wsMu.Lock()
+			defer wsMu.Unlock()
 			wErr := ws.WriteJSON(NewWSMessage("session", sess))
 			if wErr != nil {
 				return errors.WithStack(wErr)
 			}
-
-			// Stats
 			return h.wsStatus(ws)
 		})
 		if bErr != nil {
@@ -404,6 +431,98 @@ func (h *handler) browsers(w http.ResponseWriter, rq *http.Request) error {
 	h.sortBrowsers(browsers)
 
 	return errors.WithStack(browserkubehttp.WriteJSON(w, http.StatusOK, browsers))
+}
+
+// createSession godoc
+//
+//	@Summary		createSession
+//	@Description	create a browser session asynchronously (returns immediately)
+//	@Tags			browsers
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		wdproto.CreateBrowserRequest	true	"browser request"
+//	@Success		202		{object}	Session
+//	@Failure		400		{string}	Bad			request
+//	@Failure		500		{string}	Internal	Server	Error
+//	@Router			/sessions [post]
+func (h *handler) createSession(w http.ResponseWriter, rq *http.Request) error {
+	req := &wdproto.CreateBrowserRequest{}
+	if err := json.NewDecoder(rq.Body).Decode(req); err != nil {
+		return browserkubehttp.NewHTTPErr(http.StatusBadRequest, errors.Wrap(err, "invalid request body"))
+	}
+
+	sessionID := uuid.Must(revuuid.NewV7Reverse()).String()
+	caps := &session.Capabilities{
+		Platform:       req.Platform,
+		BrowserName:    req.BrowserName,
+		BrowserVersion: req.BrowserVersion,
+		BrowserKubeOpts: session.BrowserKubeOpts{
+			Type:             browserkubev1.TypeWebDriver,
+			EnableVideo:      req.RecordVideo,
+			EnableVNC:        true,
+			Name:             req.SessionName,
+			Manual:           true,
+			ScreenResolution: req.Resolution,
+		},
+	}
+
+	go func() {
+		ctx := context.Background()
+		browser, err := h.provisioner.Provision(ctx, sessionID, caps)
+		if err != nil {
+			h.logger.Errorf("Background session provisioning failed for %s: %v", sessionID, err)
+			return
+		}
+
+		newSessionRQ := &wdproto.NewSessionRQ{
+			W3CCapabilities: wdproto.W3CCapabilities{
+				Capabilities: *caps,
+			},
+		}
+		body, mErr := json.Marshal(newSessionRQ)
+		if mErr != nil {
+			h.logger.Errorf("Failed to marshal session request for %s: %v", sessionID, mErr)
+			return
+		}
+
+		seleniumSessionURL := browser.Status.SeleniumURL + "/session"
+		httpRQ, rErr := http.NewRequestWithContext(ctx, http.MethodPost, seleniumSessionURL, bytes.NewReader(body))
+		if rErr != nil {
+			h.logger.Errorf("Failed to build session request for %s: %v", sessionID, rErr)
+			return
+		}
+		httpRQ.Header.Set("Content-Type", "application/json")
+
+		resp, doErr := http.DefaultClient.Do(httpRQ) //nolint:gosec
+		if resp != nil {
+			defer browserkubeutil.CloseQuietly(resp.Body)
+		}
+		if doErr != nil {
+			h.logger.Errorf("Failed to create WebDriver session for %s: %v", sessionID, doErr)
+			return
+		}
+		if resp.StatusCode != http.StatusOK {
+			h.logger.Errorf("WebDriver session creation returned %d for %s", resp.StatusCode, sessionID)
+			return
+		}
+		h.logger.Infof("WebDriver session created successfully for %s", sessionID)
+	}()
+
+	return errors.WithStack(browserkubehttp.WriteJSON(w, http.StatusAccepted, &Session{
+		ID:               sessionID,
+		State:            "pending",
+		Name:             req.SessionName,
+		Browser:          req.BrowserName,
+		BrowserVersion:   req.BrowserVersion,
+		Platform:         provision.PlatformLinux,
+		Type:             string(browserkubev1.TypeWebDriver),
+		Manual:           true,
+		VncOn:            true,
+		LogsOn:           true,
+		VideoRecOn:       req.RecordVideo,
+		ScreenResolution: req.Resolution,
+		CreatedAt:        Timestamp(time.Now()),
+	}))
 }
 
 // deleteSessionResult godoc
@@ -835,7 +954,7 @@ func (h *handler) toSessionResult(sess *sessionresult.Result) (*SessionResult, e
 	}
 	sr := &SessionResult{
 		Session: Session{
-			State:            "Terminated",
+			State:            "terminated",
 			ID:               sess.Name,
 			Name:             caps.BrowserKubeOpts.Name,
 			Platform:         provision.PlatformLinux,
@@ -857,6 +976,21 @@ func (h *handler) toSessionResult(sess *sessionresult.Result) (*SessionResult, e
 	}
 
 	return sr, nil
+}
+
+func (h *handler) sendFullSnapshot(ws *websocket.Conn) error {
+	allSessions, err := h.sessionRepo.FindAll()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	sort.Slice(allSessions, func(i, j int) bool {
+		return allSessions[i].Browser.CreationTimestamp.After(allSessions[j].Browser.CreationTimestamp.Time)
+	})
+	mapped := browserkubeutil.Map[*session.Session, *Session](allSessions, h.toSession)
+	if wErr := ws.WriteJSON(NewWSMessage("session_snapshot", mapped)); wErr != nil {
+		return errors.WithStack(wErr)
+	}
+	return h.wsStatus(ws)
 }
 
 func (h *handler) wsStatus(ws *websocket.Conn) error {

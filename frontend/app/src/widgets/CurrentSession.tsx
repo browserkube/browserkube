@@ -36,7 +36,7 @@ export const CurrentSession = () => {
   const dispatch = useAppDispatch();
   const { session } = useSession();
   const [tab, setTab] = useState('liveSession');
-  const SELECTED_SESSION_IS_TERMINATED = session && session.state === 'Terminated';
+  const SELECTED_SESSION_IS_TERMINATED = session && session.state.toLowerCase() === 'terminated';
 
   const updateSetTabfromChild = (newState: string) => {
     setTab(newState);
@@ -66,8 +66,12 @@ export const CurrentSession = () => {
     }
 
     chipArray.push({ manual: manual ? 'Manual' : 'Auto' });
-    chipArray.push({ [type.toLowerCase()]: getStringFormated(type) });
-    chipArray.push({ [browser]: browserVersion });
+    if (type) {
+      chipArray.push({ [type.toLowerCase()]: getStringFormated(type) });
+    }
+    if (browser) {
+      chipArray.push({ [browser]: browserVersion });
+    }
     return chipArray;
   }, [session]);
 
@@ -109,10 +113,10 @@ export const CurrentSession = () => {
             </div>
             <Button
               style={deleteBtn}
-              disabled={session.state === 'Terminated'}
+              disabled={session.state.toLowerCase() === 'terminated'}
               variant={'danger'}
               onClick={handleTerminate}>
-              {session.state !== 'Terminated' ? 'Terminate' : 'Delete Session'}
+              {session.state.toLowerCase() !== 'terminated' ? 'Terminate' : 'Delete Session'}
             </Button>
           </div>
         </div>

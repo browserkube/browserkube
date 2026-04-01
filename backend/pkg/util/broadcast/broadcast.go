@@ -40,7 +40,11 @@ func NewBroadcaster[T any](buflen int) Broadcaster[T] {
 
 func (b *broadcaster[T]) broadcast(m T) {
 	for ch := range b.receivers {
-		ch <- m
+		select {
+		case ch <- m:
+		default:
+			b.logger.Warnf("Dropping message for slow receiver")
+		}
 	}
 }
 

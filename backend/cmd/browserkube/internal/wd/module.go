@@ -63,10 +63,7 @@ func initRoutes(params inputParams) {
 			r.Use(opentelemetry.NewMetricsMiddleware("proxy"))
 		}
 
-		// V2
-		r.HandleFunc("/api/browsers", proxy.CreateWDSession)
 		r.HandleFunc("/api/browsers/*", proxy.DeleteWDSession)
-		//
 		r.HandleFunc("/wd/hub/session", proxy.StartSessionHandler)
 		r.HandleFunc("/wd/hub/session/*", proxy.ProxySessionHandler)
 		r.HandleFunc("/wd/hub/bidi/{sessionID}", proxy.ProxyBidirectionalSession)

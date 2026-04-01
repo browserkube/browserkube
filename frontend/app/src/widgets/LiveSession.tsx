@@ -7,6 +7,7 @@ import { lang } from '@app/constants';
 import { ExpandIcon } from '@shared/icons/expandIcon';
 import { ScreenshotIcon } from '@shared/icons/screenshotIcon';
 import { RecordingIcon } from '@shared/icons/recordingCircle';
+import { SessionPending } from '@shared/icons/SessionPending';
 import { getActiveSessionId } from '@redux/sessionDetails/selectors';
 import { formatTime } from '@shared/utils/getVideoTimeFormated';
 import { getSessions } from '@redux/sessions/sessionsSelectors';
@@ -31,6 +32,22 @@ const screenShotContainer = {
   alignItems: 'center',
 } as const;
 
+const pendingContainer = {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100%',
+  gap: '16px',
+  color: '#6D7F8B',
+  fontSize: '14px',
+} as const;
+
+const pendingSpinner = {
+  width: '40px',
+  height: '40px',
+} as const;
+
 const { startTime, duration } = lang.liveSession;
 
 export const LiveSession = React.memo(function LiveSession() {
@@ -38,8 +55,9 @@ export const LiveSession = React.memo(function LiveSession() {
   const { isInitialized } = useVncPanel(activeSessionId);
   const sessions = useSelector(getSessions);
 
+  const sessionState = sessions?.byId[activeSessionId]?.state;
   const SESSION_CREATED_AT = sessions.byId[activeSessionId]?.createdAt ?? 0;
-  const IS_SESSION_RUNNING = sessions?.byId[activeSessionId]?.state === 'running';
+  const IS_SESSION_RUNNING = sessionState === 'running';
   const IS_SESSION_AUTO = !sessions?.byId[activeSessionId]?.manual;
 
   const [remainingTime, setRemainingTime] = useState(duration);
@@ -70,47 +88,66 @@ export const LiveSession = React.memo(function LiveSession() {
   }, [SESSION_CREATED_AT]);
 
   const vncBlock = useMemo(() => {
-    if (!isInitialized) {
+    if (IS_SESSION_RUNNING && !isInitialized) {
       return <div className={styles.vncPanelLoader} />;
     }
 
-    return <div style={screenShotContainer}>{IS_SESSION_RUNNING && <ActiveVncPanel />}</div>;
-  }, [activeSessionId, isInitialized, isExpand]);
+    if (IS_SESSION_RUNNING) {
+      return <div style={screenShotContainer}><ActiveVncPanel /></div>;
+    }
+
+    return (
+      <div style={pendingContainer}>
+        <div style={pendingSpinner}>
+          <div style={{ width: '100%', height: '100%', transform: 'scale(2.5)', transformOrigin: 'top left' }}>
+            <SessionPending />
+          </div>
+        </div>
+        <div>Session is starting…</div>
+      </div>
+    );
+  }, [activeSessionId, isInitialized, IS_SESSION_RUNNING, isExpand]);
 
   return (
     <div style={containerColor}>
-      <div className={styles.record_container}>
-        <div className={styles.record_bar}>
-          <RecordingIcon isAnimation={remainingTime !== 0} />
-          <div>Recording 00:00:00</div>
-        </div>
-        <div>Time Left: {activeSessionId ? formatTime(remainingTime) : startTime}</div>
-        <div>
-          <LockButton />
-          <IconButton
-            disabled={IS_SESSION_AUTO}
-            onClick={() => {
-              void handleScreenshot(activeSessionId);
-            }}>
-            <ScreenshotIcon />
-          </IconButton>
-          <IconButton disabled={!activeSessionId} onClick={handleExpandMode}>
-            <ExpandIcon />
-          </IconButton>
-          {isExpand &&
-            createPortal(
-              <>
-                <ExpandMode
-                  onClose={() => {
-                    toggleIsExpand(false);
-                  }}
-                />
-              </>,
-              document.body
-            )}
-        </div>
-      </div>
-      {IS_SESSION_RUNNING && vncBlock}
+      {IS_SESSION_RUNNING ? (
+        <>
+          <div className={styles.record_container}>
+            <div className={styles.record_bar}>
+              <RecordingIcon isAnimation={remainingTime !== 0} />
+              <div>Recording 00:00:00</div>
+            </div>
+            <div>Time Left: {activeSessionId ? formatTime(remainingTime) : startTime}</div>
+            <div>
+              <LockButton />
+              <IconButton
+                disabled={IS_SESSION_AUTO}
+                onClick={() => {
+                  void handleScreenshot(activeSessionId);
+                }}>
+                <ScreenshotIcon />
+              </IconButton>
+              <IconButton disabled={!activeSessionId} onClick={handleExpandMode}>
+                <ExpandIcon />
+              </IconButton>
+              {isExpand &&
+                createPortal(
+                  <>
+                    <ExpandMode
+                      onClose={() => {
+                        toggleIsExpand(false);
+                      }}
+                    />
+                  </>,
+                  document.body
+                )}
+            </div>
+          </div>
+          {vncBlock}
+        </>
+      ) : (
+        vncBlock
+      )}
     </div>
   );
 });

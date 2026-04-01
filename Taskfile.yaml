@@ -67,36 +67,37 @@ tasks:
     cmds:
       - skaffold deploy -p remote-dev,rp-beta -t {{.TAG}}
 
-  minio:install:
-    desc: "Installs minio as Helm Chart for development purposes"
+  rustfs:install:
+    desc: "Installs RustFS (S3-compatible) Helm chart for development"
     cmds:
+      - helm repo add rustfs https://charts.rustfs.com/ --force-update
       - |
-        helm install -n browserkube minio oci://registry-1.docker.io/bitnamicharts/minio \
-        --set persistence.size=10Gi \
-        --set ingress.enabled=true \
-        --set ingress.hostname=minio.docker.internal \
-        --set ingress.tls=true \
-        --set ingress.ingressClassName=nginx \
-        --set apiIngress.enabled=true
-  minio:get-pass:
-    desc: "Prints admin password for Min.io"
-    cmd: kubectl get secret --namespace browserkube minio -o jsonpath="{.data.root-password}" | base64 -d
+        helm install rustfs rustfs/rustfs -n browserkube --create-namespace \
+          --set ingress.enabled=true \
+          --set ingress.className=nginx \
+          --set "ingress.hosts[0].host=rustfs.docker.internal" \
+          --set "ingress.hosts[0].paths[0].path=/" \
+          --set "ingress.hosts[0].paths[0].pathType=Prefix" \
+          --set mode.standalone.enabled=true \
+          --set mode.distributed.enabled=false \
+          --set storageclass.name=hostpath
+  rustfs:get-pass:
+    desc: "Prints RUSTFS_SECRET_KEY from rustfs-secret"
+    cmd: kubectl get secret --namespace browserkube rustfs-secret -o jsonpath="{.data.RUSTFS_SECRET_KEY}" | base64 -d
 
-  minio:init:
+  rustfs:init:
     vars:
-      ROOT_USER:
-        sh: kubectl get secret --namespace browserkube minio -o jsonpath="{.data.root-user}" | base64 -d
-      ROOT_PASSWORD:
-        sh: kubectl get secret --namespace browserkube minio -o jsonpath="{.data.root-password}" | base64 -d
+      ACCESS_KEY:
+        sh: kubectl get secret --namespace browserkube rustfs-secret -o jsonpath="{.data.RUSTFS_ACCESS_KEY}" | base64 -d
+      SECRET_KEY:
+        sh: kubectl get secret --namespace browserkube rustfs-secret -o jsonpath="{.data.RUSTFS_SECRET_KEY}" | base64 -d
     cmds:
       - |
-        kubectl run --namespace browserkube minio-client \
-        --rm --tty -i --restart='Never' \
-        --env MINIO_SERVER_ROOT_USER={{.ROOT_USER}} \
-        --env MINIO_SERVER_ROOT_PASSWORD={{.ROOT_PASSWORD}} \
-        --env MINIO_SERVER_HOST=minio \
-        --image docker.io/bitnami/minio-client:2024.5.9 -- bash -c "
-            /opt/bitnami/scripts/minio-client/run.sh mb minio/browserkube-archive
-            /opt/bitnami/scripts/minio-client/run.sh mb minio/browserkube
-        "
+        kubectl run rustfs-mc-init \
+          --namespace browserkube \
+          --rm --tty -i --restart='Never' \
+          --env MINIO_ACCESS_KEY_ID={{.ACCESS_KEY}} \
+          --env MINIO_SECRET_ACCESS_KEY={{.SECRET_KEY}} \
+          --image quay.io/minio/mc:latest \
+          --command -- /bin/sh -c "mc alias set rustfs http://rustfs-svc.browserkube.svc.cluster.local:9000 \$MINIO_ACCESS_KEY_ID \$MINIO_SECRET_ACCESS_KEY && mc mb --ignore-existing rustfs/browserkube && mc mb --ignore-existing rustfs/browserkube-archive"
 

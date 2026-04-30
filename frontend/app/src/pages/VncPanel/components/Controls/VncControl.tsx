@@ -10,5 +10,5 @@ export const VncControl = ({ isExpand }: { isExpand: boolean }) => {
   const prefix = isHttps ? 'wss' : 'ws';
   const vncUrl = `${prefix}://${window.location.hostname}${BASE_URL}/vnc/${sessionId}`;
 
-  return <Vnc key={`locked-${String(isLocked)} ${sessionId}`} locked={isLocked} vncUrl={vncUrl} isExpand={isExpand} />;
+  return <Vnc key={sessionId} locked={isLocked} vncUrl={vncUrl} isExpand={isExpand} />;
 };

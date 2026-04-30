@@ -1,26 +1,38 @@
 package websocketproxy
 
-import "github.com/mailru/easyjson"
+import (
+	"encoding/json/jsontext"
 
-//go:generate easyjson
-//easyjson:json
+	jsonv2 "encoding/json/v2"
+)
+
 type Message struct {
-	easyjson.UnknownFieldsProxy
+	Extra    jsontext.Value         `json:",inline"`
 	ID       int                    `json:"id"`
 	GUID     string                 `json:"guid"`
-	Method   string                 `json:"method,omitempty"`
+	Method   string                 `json:"method,omitzero"`
 	Params   map[string]interface{} `json:"params,omitempty"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
-	Result   interface{}            `json:"result,omitempty"`
-	Error    *Error                 `json:"error,omitempty"`
+	Result   interface{}            `json:"result,omitzero"`
+	Error    *Error                 `json:"error,omitzero"`
+}
+
+func (v Message) MarshalJSON() ([]byte, error) {
+	type alias Message
+	return jsonv2.Marshal(alias(v))
+}
+
+func (v *Message) UnmarshalJSON(data []byte) error {
+	type alias Message
+	return jsonv2.Unmarshal(data, (*alias)(v))
 }
 
 type Error struct {
-	Error ErrorPayload `json:"error,omitempty"`
+	Error ErrorPayload `json:"error,omitzero"`
 }
 
 type ErrorPayload struct {
-	Name    string `json:"name,omitempty"`
-	Message string `json:"message,omitempty"`
-	Stack   string `json:"stack,omitempty"`
+	Name    string `json:"name,omitzero"`
+	Message string `json:"message,omitzero"`
+	Stack   string `json:"stack,omitzero"`
 }

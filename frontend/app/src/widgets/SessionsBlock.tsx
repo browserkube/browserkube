@@ -14,7 +14,7 @@ import { fetchTerminatedSessions } from '@redux/terminatedSessions/thunk';
 import { fetchSessions } from '@redux/sessions/sessionsThunk';
 import { getGridRows } from '@shared/utils/getGridRows';
 import { getBrowserChip } from '@shared/utils/getBrowserChip';
-import { type SessionLine, type SessionLinesArray } from '@shared/types/sessions';
+import { type SessionLine } from '@shared/types/sessions';
 import { getSessionStatusIcon } from '@shared/utils/getSessionStatusIcon';
 import { getOSChip } from '@shared/utils/getOsChip';
 import { getSessionMode } from '@shared/utils/getSessionMode';
@@ -231,9 +231,8 @@ export const SessionsBlock = () => {
     [search]
   );
 
-  // useMemo for array
-  const CreateListOfSessions = (props: SessionLinesArray) => {
-    let filteredSessions = props.sessionArr;
+  const renderSessionsList = (sessionArr: SessionLine[]) => {
+    let filteredSessions = sessionArr;
     if (getChipArray(chipState).length > 0 && filteredSessions.length > 0) {
       const mappedFilter = makeFilter(chipState);
       filteredSessions = getSessionsFiltered(mappedFilter, filteredSessions);
@@ -379,9 +378,9 @@ export const SessionsBlock = () => {
         </Tabs>
       </div>
       <Divider type={DividerType.HORIZON} />
-      {tab === 'allSessions' && <CreateListOfSessions sessionArr={sessionData} />}
-      {tab === 'active' && <CreateListOfSessions sessionArr={rowsActive} />}
-      {tab === 'terminated' && <CreateListOfSessions sessionArr={terminatedSessions} />}
+      {tab === 'allSessions' && renderSessionsList(sessionData)}
+      {tab === 'active' && renderSessionsList(rowsActive)}
+      {tab === 'terminated' && renderSessionsList(terminatedSessions)}
     </div>
   );
 };

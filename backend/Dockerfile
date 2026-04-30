@@ -16,6 +16,7 @@ COPY operator/go.mod operator/go.sum /operator/
 RUN go mod download
 
 ARG COMPONENT
+ENV GOEXPERIMENT=jsonv2
 
 COPY backend/pkg ./pkg
 COPY backend/cmd/$COMPONENT ./cmd/$COMPONENT

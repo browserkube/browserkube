@@ -2,7 +2,6 @@ import { IconButton } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ReactPlayer from 'react-player';
-import { v4 as uuidv4 } from 'uuid';
 import styles from '@app/styles/commandsVideos.module.scss';
 import { type AttachmentsTabProps } from '@shared/types/UI';
 import { getActiveSessionId, getSessionDetails, getSessionDetailsCommands } from '@redux/sessionDetails/selectors';
@@ -191,7 +190,7 @@ export const CommandVideos = (props: AttachmentsTabProps) => {
                 {data.map(({ commandId, statusCode, command, request, response, timestamp, method }: Commands) => {
                   const { secondsToJump, commandTime } = getCommandTimestamp(timestamp, data);
                   return (
-                    <div key={uuidv4()}>
+                    <div key={commandId}>
                       <div style={showCommand[commandId] ? { ...commandLine, margin: '8px 0 0' } : commandLine}>
                         <div className={styles.left_command_line}>
                           <IconButton

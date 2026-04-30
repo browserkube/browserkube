@@ -1,6 +1,7 @@
 version: '3'
 
 env:
+  GOEXPERIMENT: jsonv2
   GOLANGCI_LINT_VERSION: v2.10.1
   GOTESTSUM_VERSION: v1.13.0
 

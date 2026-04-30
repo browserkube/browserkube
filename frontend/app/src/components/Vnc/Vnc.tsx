@@ -1,4 +1,4 @@
-import { useRef, type ElementRef, useMemo } from 'react';
+import { useRef, useEffect, type ElementRef, useMemo } from 'react';
 import { VncScreen } from 'react-vnc';
 import { useSelector } from 'react-redux';
 import { getActiveSessionId } from '@redux/sessionDetails/selectors';
@@ -16,6 +16,13 @@ export const Vnc = ({ vncUrl, locked, isExpand }: VncProps) => {
   const sessions = useSelector(getSessions);
   const vncScreenRef = useRef<ElementRef<typeof VncScreen>>(null);
   const isValidUrl = () => vncUrl.startsWith('ws://') || vncUrl.startsWith('wss://');
+
+  useEffect(() => {
+    const rfb = (vncScreenRef.current as any)?.rfb;
+    if (rfb) {
+      rfb.viewOnly = locked;
+    }
+  }, [locked]);
 
   const vncPsw = useMemo(() => {
     if (!activeSessionId) {
@@ -37,6 +44,8 @@ export const Vnc = ({ vncUrl, locked, isExpand }: VncProps) => {
           }}
           url={vncUrl}
           scaleViewport
+          qualityLevel={8}
+          compressionLevel={6}
           className={styles.vncScreen}
           ref={vncScreenRef}
           loadingUI={<div className={styles.vncLoader} />}

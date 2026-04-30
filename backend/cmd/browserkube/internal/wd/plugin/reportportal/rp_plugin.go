@@ -49,11 +49,11 @@ func onQuitSession(sr settingsRepo) func(next wd.OnSessionQuit) wd.OnSessionQuit
 					log.Errorf("ReportPortal isn't properly configured: %s", err)
 					return next(ctx, s)
 				}
-				rp := gorp.NewReportingClient(settings.Host, project, settings.AuthToken)
+				rp := gorp.NewReportingClient(settings.Host, project, gorp.WithApiKeyAuth(ctx, settings.AuthToken))
 
-				_, err = rp.FinishTest(itemID, &openapi.FinishTestItemRQ{
+				_, err = rp.FinishTest(ctx, itemID, &openapi.FinishTestItemRQ{
 					LaunchUuid: launchID,
-					Status:     openapi.PtrString(string(gorp.Statuses.Passed)),
+					Status:     new(string(gorp.Statuses.Passed)),
 				})
 				if err != nil {
 					log.Errorf("Unable to finish test in ReportPortal: %s", err)
@@ -87,16 +87,16 @@ func beforeSessionCreated(sr settingsRepo) func(next wd.OnBeforeSessionStart) wd
 				return next(ctx, prq, sessionRQ, sID)
 			}
 
-			rp := gorp.NewReportingClient(settings.Host, project, settings.AuthToken)
+			rp := gorp.NewReportingClient(settings.Host, project, gorp.WithApiKeyAuth(ctx, settings.AuthToken))
 			if launchID == "" {
 				u := uuid.New()
-				newLaunch, err := rp.StartLaunch(&openapi.StartLaunchRQ{
+				newLaunch, err := rp.StartLaunch(ctx, &openapi.StartLaunchRQ{
 					Name:        "Browserkube",
-					Description: openapi.PtrString("Browser session: " + sID),
+					Description: new("Browser session: " + sID),
 					Uuid:        u.String(),
 					StartTime:   time.Now(),
-					Attributes:  []openapi.ItemAttributesRQ{{Key: openapi.PtrString("session"), Value: sID}},
-					Mode:        openapi.PtrString(string(gorp.LaunchModes.Default)),
+					Attributes:  []openapi.ItemAttributesRQ{{Key: new("session"), Value: sID}},
+					Mode:        new(string(gorp.LaunchModes.Default)),
 				})
 				if err != nil {
 					log.Errorf("Unable to start launch in ReportPortal: %s", err)
@@ -109,15 +109,15 @@ func beforeSessionCreated(sr settingsRepo) func(next wd.OnBeforeSessionStart) wd
 			}
 
 			if itemID == "" {
-				newTest, err := rp.StartTest(&openapi.StartTestItemRQ{
+				newTest, err := rp.StartTest(ctx, &openapi.StartTestItemRQ{
 					Type:       string(gorp.TestItemTypes.Test),
-					UniqueId:   openapi.PtrString(uuid.New().String()),
+					UniqueId:   new(uuid.New().String()),
 					LaunchUuid: launchID,
-					HasStats:   openapi.PtrBool(true),
-					Retry:      openapi.PtrBool(false),
-					TestCaseId: openapi.PtrString(uuid.NewString()),
+					HasStats:   new(true),
+					Retry:      new(false),
+					TestCaseId: new(uuid.NewString()),
 					Name:       fmt.Sprintf("WebDriver session: %s", sID),
-					Attributes: []openapi.ItemAttributesRQ{{Key: openapi.PtrString("session"), Value: sID}},
+					Attributes: []openapi.ItemAttributesRQ{{Key: new("session"), Value: sID}},
 					StartTime:  time.Now(),
 				})
 				if err != nil {
@@ -162,14 +162,14 @@ func afterCommandHandler(sr settingsRepo) func(next wd.OnAfterCommand) wd.OnAfte
 				log.Errorf("ReportPortal isn't properly configured: %s", err)
 				return next(ctx, rs, sess, command)
 			}
-			rp := gorp.NewReportingClient(settings.Host, project, settings.AuthToken)
+			rp := gorp.NewReportingClient(settings.Host, project, gorp.WithApiKeyAuth(ctx, settings.AuthToken))
 
-			if _, err = rp.SaveLog(&openapi.SaveLogRQ{
-				ItemUuid:   openapi.PtrString(itemID),
+			if _, err = rp.SaveLog(ctx, &openapi.SaveLogRQ{
+				ItemUuid:   new(itemID),
 				LaunchUuid: launchID,
-				Level:      openapi.PtrString(gorp.LogLevelInfo),
+				Level:      new(gorp.LogLevelInfo),
 				Time:       time.Now(),
-				Message:    openapi.PtrString(fmt.Sprintf("WebDriver command: %s %s", rs.Request.Method, command)),
+				Message:    new(fmt.Sprintf("WebDriver command: %s %s", rs.Request.Method, command)),
 			}); err != nil {
 				log.Errorf("Unable to send log to ReportPortal: %s", err)
 				return next(ctx, rs, sess, command)
@@ -212,18 +212,19 @@ func findElementHandler(sr settingsRepo) func(next wd.OnAfterCommand) wd.OnAfter
 			}
 
 			fileName := uuid.New().String() + ".png"
-			_, err = gorp.NewReportingClient(settings.Host, project, settings.AuthToken).SaveLogMultipart(
+			_, err = gorp.NewReportingClient(settings.Host, project, gorp.WithApiKeyAuth(ctx, settings.AuthToken)).SaveLogMultipart(
+				ctx,
 				[]*openapi.SaveLogRQ{
 					{
 						LaunchUuid: launchID,
-						ItemUuid:   openapi.PtrString(itemID),
-						Level:      openapi.PtrString(gorp.LogLevelError),
+						ItemUuid:   new(itemID),
+						Level:      new(gorp.LogLevelError),
 						Time:       time.Now(),
-						Message: openapi.PtrString(fmt.Sprintf(
+						Message: new(fmt.Sprintf(
 							"Element not found for item '%s', command: %s %s",
 							itemID, rs.Request.Method, command,
 						)),
-						File: &openapi.File{Name: openapi.PtrString(fileName)},
+						File: &openapi.File{Name: new(fileName)},
 					},
 				},
 				[]gorp.Multipart{

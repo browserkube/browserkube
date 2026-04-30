@@ -28,8 +28,6 @@ type Error struct {
 	Stacktrace string
 }
 
-//go:generate easyjson
-//easyjson:json
 type NewSessionRQ struct {
 	Capabilities    session.Capabilities `json:"desiredCapabilities,omitempty"`
 	W3CCapabilities W3CCapabilities      `json:"capabilities,omitempty"`

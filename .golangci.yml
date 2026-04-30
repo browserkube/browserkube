@@ -4,6 +4,8 @@ run:
   timeout: 10m
   tests: false
   go: '1.26'
+  env:
+    - GOEXPERIMENT=jsonv2
 
 
 formatters:
@@ -93,5 +95,6 @@ linters:
     - unparam
     - usestdlibvars
     - whitespace
+    - nolintlint
   disable:
     - unused

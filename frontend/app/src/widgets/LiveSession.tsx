@@ -1,20 +1,19 @@
 import IconButton from '@mui/material/IconButton';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
-import { lang } from '@app/constants';
 import { ExpandIcon } from '@shared/icons/expandIcon';
 import { ScreenshotIcon } from '@shared/icons/screenshotIcon';
 import { RecordingIcon } from '@shared/icons/recordingCircle';
 import { SessionPending } from '@shared/icons/SessionPending';
 import { getActiveSessionId } from '@redux/sessionDetails/selectors';
-import { formatTime } from '@shared/utils/getVideoTimeFormated';
 import { getSessions } from '@redux/sessions/sessionsSelectors';
 import { LockButton } from '@pages/VncPanel/components/LockButton/LockButton';
 import { useVncPanel } from '@pages/VncPanel/useVncPanel';
 import { ActiveVncPanel } from '@pages/VncPanel/components/ActiveVncPanel/ActiveVncPanel';
 import { handleScreenshot } from '@shared/utils/createScreenshot';
+import { CountdownTimer, useIsTimerActive } from '@components/CountdownTimer/CountdownTimer';
 import styles from '@pages/LiveSessions/LiveSession.module.scss';
 import { ExpandMode } from './ExpandMode';
 
@@ -48,8 +47,6 @@ const pendingSpinner = {
   height: '40px',
 } as const;
 
-const { startTime, duration } = lang.liveSession;
-
 export const LiveSession = React.memo(function LiveSession() {
   const activeSessionId = useSelector(getActiveSessionId);
   const { isInitialized } = useVncPanel(activeSessionId);
@@ -59,33 +56,13 @@ export const LiveSession = React.memo(function LiveSession() {
   const SESSION_CREATED_AT = sessions.byId[activeSessionId]?.createdAt ?? 0;
   const IS_SESSION_RUNNING = sessionState === 'running';
   const IS_SESSION_AUTO = !sessions?.byId[activeSessionId]?.manual;
+  const isTimerActive = useIsTimerActive(SESSION_CREATED_AT);
 
-  const [remainingTime, setRemainingTime] = useState(duration);
   const [isExpand, toggleIsExpand] = useState<boolean>(false);
 
   const handleExpandMode = () => {
     toggleIsExpand(!isExpand);
   };
-
-  useEffect(() => {
-    const updateTimer = () => {
-      const elapsed = Date.now() - SESSION_CREATED_AT;
-      const newRemainingTime = Math.max(duration - elapsed, 0);
-
-      if (newRemainingTime === 0) {
-        console.info('Timer has reached zero, session will be closed soon');
-        clearInterval(timerInterval);
-      }
-
-      setRemainingTime(newRemainingTime);
-    };
-
-    const timerInterval = setInterval(updateTimer, 1000);
-
-    return () => {
-      clearInterval(timerInterval);
-    };
-  }, [SESSION_CREATED_AT]);
 
   const vncBlock = useMemo(() => {
     if (IS_SESSION_RUNNING && !isInitialized) {
@@ -114,10 +91,10 @@ export const LiveSession = React.memo(function LiveSession() {
         <>
           <div className={styles.record_container}>
             <div className={styles.record_bar}>
-              <RecordingIcon isAnimation={remainingTime !== 0} />
+              <RecordingIcon isAnimation={isTimerActive} />
               <div>Recording 00:00:00</div>
             </div>
-            <div>Time Left: {activeSessionId ? formatTime(remainingTime) : startTime}</div>
+            <div>Time Left: <CountdownTimer createdAt={SESSION_CREATED_AT} sessionId={activeSessionId} /></div>
             <div>
               <LockButton />
               <IconButton

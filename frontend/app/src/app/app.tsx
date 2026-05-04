@@ -13,6 +13,7 @@ import { BrowsersLoader } from '@components/BrowsersLoader/BrowsersLoader';
 import { ModalFactory } from '@shared/ModalFactory/ModalFactory';
 import { ZeroPage } from '@pages/ZeroPage/ZeroPage';
 import { LiveSessions } from '@pages/LiveSessions/LiveSessions';
+import { ErrorBoundary } from '@shared/ErrorBoundary/ErrorBoundary';
 import 'react-toastify/ReactToastify.min.css';
 import '@reportportal/ui-kit/dist/style.css';
 import '@app/styles/globals.scss';
@@ -28,9 +29,30 @@ createRoot(rootElement!).render(
         <ConnectWebSocket>
           <BrowsersLoader>
             <Routes>
-              <Route path={PATHS.HOME} element={<ZeroPage />} />
-              <Route path={PATHS.LIVE_SESSIONS} element={<LiveSessions />} />
-              <Route path={PATHS.ACTIVE_SESSION_DETAILS} element={<VncPanel />} />
+              <Route
+                path={PATHS.HOME}
+                element={
+                  <ErrorBoundary>
+                    <ZeroPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path={PATHS.LIVE_SESSIONS}
+                element={
+                  <ErrorBoundary>
+                    <LiveSessions />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path={PATHS.ACTIVE_SESSION_DETAILS}
+                element={
+                  <ErrorBoundary>
+                    <VncPanel />
+                  </ErrorBoundary>
+                }
+              />
             </Routes>
             <ToastContainer
               position={toast.POSITION.BOTTOM_LEFT}

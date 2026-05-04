@@ -37,7 +37,7 @@ export const ZeroPage = () => {
     } else {
       navigate('/live-sessions/');
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <>

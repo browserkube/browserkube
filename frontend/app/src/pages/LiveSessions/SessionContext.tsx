@@ -43,7 +43,7 @@ export const ChosenSessionProvider = (props: any) => {
       }
       prevSession.current = newSessionId;
     }
-  }, [dispatch, session?.id]);
+  }, [dispatch, session?.id, session?.state, activeSessionId]);
 
   return <SessionContext.Provider value={{ session, setSession }} {...props} />;
 };

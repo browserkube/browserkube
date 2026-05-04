@@ -29,7 +29,7 @@ const getRequestConfig = (params?: AxiosRequestConfig['params']): AxiosRequestCo
 
 const getErrorMessage = (error: AxiosError, url: string) => {
   const errorRequest = url.replaceAll('/', '').toUpperCase();
-  const errorCode = String(error.request.status) ?? '';
+  const errorCode = error.request ? String(error.request.status) : '';
   const errorMessage = error.message ?? '';
   const errorCodeTemplate = errorCode ? `:${errorCode}` : '';
   const errorMessageTemplate = errorMessage ? ` : ${errorMessage}` : '';
@@ -45,11 +45,11 @@ const errorHandler = (error: AxiosError, url: string) => {
 
 const get = async <Response>({ url, params, allowErrorHandling = true }: DefaultRequestProps): Promise<Response> => {
   const requestConfig = getRequestConfig(params);
-  const response = await axios.get(getRequestUrl(url), requestConfig).catch(async (error) => {
+  const response = await axios.get(getRequestUrl(url), requestConfig).catch((error) => {
     if (allowErrorHandling) {
       errorHandler(error, url);
     }
-    return await Promise.reject(error);
+    throw error;
   });
   return response.data;
 };
@@ -61,11 +61,11 @@ const post = async <Response>({
   allowErrorHandling = true,
 }: RequestPropsWithData): Promise<Response> => {
   const requestConfig = getRequestConfig(params);
-  const response = await axios.post(getRequestUrl(url), data, requestConfig).catch(async (error) => {
+  const response = await axios.post(getRequestUrl(url), data, requestConfig).catch((error) => {
     if (allowErrorHandling) {
       errorHandler(error, url);
     }
-    return await Promise.reject(error);
+    throw error;
   });
   return response.data;
 };
@@ -76,11 +76,11 @@ const remove = async <Response = void>({
   allowErrorHandling = true,
 }: DefaultRequestProps): Promise<Response> => {
   const requestConfig = getRequestConfig(params);
-  const response = await axios.delete(getRequestUrl(url), requestConfig).catch(async (error) => {
+  const response = await axios.delete(getRequestUrl(url), requestConfig).catch((error) => {
     if (allowErrorHandling) {
       errorHandler(error, url);
     }
-    return await Promise.reject(error);
+    throw error;
   });
   return response.data;
 };
@@ -92,11 +92,11 @@ const put = async <Response>({
   allowErrorHandling = true,
 }: RequestPropsWithData): Promise<Response> => {
   const requestConfig = getRequestConfig(params);
-  const response = await axios.put(getRequestUrl(url), data, requestConfig).catch(async (error) => {
+  const response = await axios.put(getRequestUrl(url), data, requestConfig).catch((error) => {
     if (allowErrorHandling) {
       errorHandler(error, url);
     }
-    return await Promise.reject(error);
+    throw error;
   });
   return response.data;
 };

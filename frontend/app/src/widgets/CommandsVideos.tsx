@@ -71,6 +71,8 @@ export const CommandVideos = (props: AttachmentsTabProps) => {
   const playerRef = useRef<ReactPlayer | null>(null);
   const targetRef = useRef<HTMLDivElement | null>(null);
   const commandsContainerRef = useRef<HTMLDivElement | null>(null);
+  const handleScrollRef = useRef<() => void>(() => {});
+  const debouncedScrollRef = useRef(debounce(() => { handleScrollRef.current(); }, scrollThrottle));
 
   const commandsPayload: CommandsParams = {
     pageToken: newPageToken,
@@ -145,25 +147,25 @@ export const CommandVideos = (props: AttachmentsTabProps) => {
   }, [activeSessionId, dispatch, isSessionActiveTerminated]);
 
   useEffect(() => {
-    const container = commandsContainerRef.current;
-    const handleScroll = () => {
-      if (!container) {
-        return;
-      }
-
+    handleScrollRef.current = () => {
+      const container = commandsContainerRef.current;
+      if (!container) return;
       const { scrollTop, scrollHeight, clientHeight } = container;
       const isBottom = scrollTop + clientHeight >= scrollHeight - 10;
-
       if (isBottom && !isFetching) {
         void fetchCommands();
       }
     };
-    const debouncedHandleScroll = debounce(handleScroll, scrollThrottle);
-    container?.addEventListener('scroll', debouncedHandleScroll);
-    return () => {
-      container?.removeEventListener('scroll', debouncedHandleScroll);
-    };
   }, [fetchCommands, isFetching]);
+
+  useEffect(() => {
+    const container = commandsContainerRef.current;
+    const debouncedScroll = debouncedScrollRef.current;
+    container?.addEventListener('scroll', debouncedScroll);
+    return () => {
+      container?.removeEventListener('scroll', debouncedScroll);
+    };
+  }, []);
 
   return (
     <>
